@@ -1,6 +1,5 @@
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using json;
 
-app.MapGet("/", () => "Hello World!");
+LineManager.initialize();
 
-app.Run();
+Console.WriteLine("Stop");
