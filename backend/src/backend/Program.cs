@@ -1,5 +1,5 @@
 using json;
+using Simulation;
 
-LineManager.initialize();
-
+SimulationManager.startSimulation();
 Console.WriteLine("Stop");

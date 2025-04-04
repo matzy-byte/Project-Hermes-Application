@@ -1,31 +1,31 @@
 using json;
-
-public class GeoData
+namespace TrainLines
 {
-    public string name;
-    public Coordinate[] coordinates;
-
-
-    public GeoData(PropertiesWrapper propertiesWrapper, GeometryWrapper geometryWrapper)
+    public class GeoData
     {
-        name = propertiesWrapper.Name;
-        coordinates = extractCoordiantes(geometryWrapper);
-    }
+        public string name;
+        public Coordinate[] coordinates;
 
 
-    //Extract the Coodiantes from the json wrapper
-    // idex [0] = Longetude and index[i]= latitude
-    private Coordinate[] extractCoordiantes(GeometryWrapper geometryWrapper)
-    {
-        Coordinate[] coordiantes = new Coordinate[geometryWrapper.Coordinates.Count];
-
-        for (int i = 0; i < geometryWrapper.Coordinates.Count; i++)
+        public GeoData(PropertiesWrapper propertiesWrapper, GeometryWrapper geometryWrapper)
         {
-            coordiantes[i] = new Coordinate(geometryWrapper.Coordinates[i][1], geometryWrapper.Coordinates[i][0]);
+            name = propertiesWrapper.Name;
+            coordinates = extractCoordiantes(geometryWrapper);
         }
 
-        return coordiantes;
+
+        //Extract the Coodiantes from the json wrapper
+        // idex [0] = Longetude and index[i]= latitude
+        private Coordinate[] extractCoordiantes(GeometryWrapper geometryWrapper)
+        {
+            Coordinate[] coordiantes = new Coordinate[geometryWrapper.Coordinates.Count];
+
+            for (int i = 0; i < geometryWrapper.Coordinates.Count; i++)
+            {
+                coordiantes[i] = new Coordinate(geometryWrapper.Coordinates[i][1], geometryWrapper.Coordinates[i][0]);
+            }
+
+            return coordiantes;
+        }
     }
-
 }
-
