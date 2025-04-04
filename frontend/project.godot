@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="frontend"
-config/features=PackedStringArray("4.4", "Forward Plus")
+run/main_scene="uid://bbxpgeqy0x68g"
+config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+SessionManager="*res://SessionManager.cs"
 
 [dotnet]
 
