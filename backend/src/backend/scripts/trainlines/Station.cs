@@ -1,18 +1,19 @@
 using json;
-
-public class Station
+namespace TrainLines
 {
-    public string name;
-    public string triasID;
-    public string triasName;
-    public Coordinate coordPositionWGS84;
-
-    public Station(StationWrapper stationWrapper)
+    public class Station
     {
-        name = stationWrapper.Name;
-        triasID = stationWrapper.TriasID;
-        triasName = stationWrapper.TriasName;
-        coordPositionWGS84 = new Coordinate(stationWrapper.CoordPositionWGS84);
+        public string name;
+        public string triasID;
+        public string triasName;
+        public Coordinate coordPositionWGS84;
+
+        public Station(StationWrapper stationWrapper)
+        {
+            name = stationWrapper.Name;
+            triasID = stationWrapper.TriasID;
+            triasName = stationWrapper.TriasName;
+            coordPositionWGS84 = new Coordinate(stationWrapper.CoordPositionWGS84);
+        }
     }
 }
-

@@ -1,5 +1,5 @@
 using json;
-
+using TrainLines;
 public class TransitInfo()
 {
     public string lineDataName;
