@@ -3,7 +3,11 @@ namespace Simulation
 {
     public static class SimulationSettings
     {
-        public static float simulationSpeed { get; private set; } = 1.5f;
+        public static int simulationLoopsPerSecond = 60;
+        public static float simulationSpeed { get; private set; } = 30f;
+
+        //How many seconds is a train waiting at a station
+        public static float trainWaitingTimeAtStation = 30f;
         public static int numberOfLoadingStations = 2;
         public static string[] loadingStationIds;
 
