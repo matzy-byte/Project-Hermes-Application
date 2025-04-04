@@ -14,18 +14,31 @@ namespace TrainLines
         public GeoData geoData = null;
         public TransitInfo transitInfo = null;
 
-        public Line(LineWrapper lineWrapper, Station[] allStations)
+        public Line(LineWrapper lineWrapper)
         {
             id = lineWrapper.Id;
             name = lineWrapper.Name;
             disassembledName = lineWrapper.DisassembledName;
             number = lineWrapper.Number;
             iconID = lineWrapper.IconID;
-            stations = extracUsedStations(allStations, lineWrapper.Stations);
+            stations = extracUsedStations(lineWrapper.Stations);
             color = lineWrapper.Color;
         }
 
-        private Station[] extracUsedStations(Station[] allStations, List<string> usedStationsIds)
+        public Line(Line originalLine, Station[] newStations)
+        {
+            id = originalLine.id;
+            name = originalLine.name;
+            disassembledName = originalLine.disassembledName;
+            number = originalLine.number;
+            iconID = originalLine.iconID;
+            stations = newStations;
+            color = originalLine.color;
+            transitInfo = originalLine.transitInfo;
+            geoData = originalLine.geoData;
+        }
+
+        private Station[] extracUsedStations(List<string> usedStationsIds)
         {
             Station[] usedStations = new Station[usedStationsIds.Count];
 
@@ -33,22 +46,19 @@ namespace TrainLines
             for (int i = 0; i < usedStationsIds.Count; i++)
             {
                 //Search all stations for name match
-                foreach (Station station in allStations)
-                {
-                    if (station.triasID == usedStationsIds[i])
-                    {
-                        usedStations[i] = station;
-                        break;
-                    }
-
-                    if (station == allStations.Last())
-                    {
-                        throw new Exception("Cant find Matching Station: " + usedStationsIds[i] + " from Line: " + name);
-                    }
-                }
+                usedStations[i] = LineManager.getStationFromId(usedStationsIds[i]);
             }
 
             return usedStations;
+        }
+
+
+        /// <summary>
+        /// Flips the stations for lines where the train begins in the end station
+        /// </summary>
+        public void flipLine()
+        {
+            Array.Reverse(stations);
         }
     }
 }

@@ -15,7 +15,7 @@ public class TransitInfo()
         lineDataName = transitInfoWrapper.LineDataName;
         lineName = transitInfoWrapper.LineName;
         startStationId = transitInfoWrapper.StartStationID;
-        destinationStartionId = transitInfoWrapper.StartStationID;
+        destinationStartionId = transitInfoWrapper.DestinationID;
         lineNameAbreviation = transitInfoWrapper.LineNameAbreviation;
         travelTime = transitInfoWrapper.TravelTime;
         travelTimeReverse = transitInfoWrapper.TravelTimeReverse;

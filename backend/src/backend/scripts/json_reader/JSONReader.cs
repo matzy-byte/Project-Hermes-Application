@@ -39,7 +39,7 @@ namespace json
             return stations;
         }
 
-        public static Line[] loadLines(string path, Station[] allStations)
+        public static Line[] loadLines(string path)
         {
             //Read the json file into a string
             string jsonPath = getFullJsonPath(path);
@@ -55,7 +55,7 @@ namespace json
             Line[] lines = new Line[rootObjectWrapper.Lines.Count];
             for (int i = 0; i < lines.Length; i++)
             {
-                lines[i] = new Line(rootObjectWrapper.Lines[i], allStations);
+                lines[i] = new Line(rootObjectWrapper.Lines[i]);
             }
 
             //Print log and return Lines
@@ -208,8 +208,8 @@ namespace json
         public string LineName { get; set; }
         public string StartStationID { get; set; }
         public string StartStationName { get; set; }
-        public string DestinationStationID { get; set; }
-        public string DestinationStationName { get; set; }
+        public string DestinationID { get; set; }
+        public string DestinationName { get; set; }
         public string LineNameAbreviation { get; set; }
         public int TravelTime { get; set; }
         public int TravelTimeReverse { get; set; }

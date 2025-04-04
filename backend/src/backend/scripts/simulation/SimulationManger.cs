@@ -2,6 +2,7 @@ using System.Diagnostics;
 using json;
 using TrainLines;
 using System.Threading;
+using Trains;
 
 namespace Simulation
 {
@@ -21,7 +22,7 @@ namespace Simulation
 
         //Variables for debugging
         private static Random random = new Random();
-
+        private static int debugTrainIndex = 5;
 
         /// <summary>
         /// Starts the simulation
@@ -29,6 +30,7 @@ namespace Simulation
         public static void startSimulation()
         {
             isSimulationRunning = true;
+            Console.WriteLine("Starting Simulation");
             simulationLoop();
         }
 
@@ -50,9 +52,11 @@ namespace Simulation
             {
                 stopTime();
 
+                //Update train positions
+                TrainManager.updateAllTrains();
+                TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
 
-                //Simulate Work
-                System.Threading.Thread.Sleep(random.Next(10, 100));
+                sleepTime();
             }
         }
 
@@ -67,9 +71,18 @@ namespace Simulation
             actualDeltaTime = elapsed.Milliseconds / 1000f;
             scaledDeltaTime = actualDeltaTime * SimulationSettings.simulationSpeed;
             totalTime += actualDeltaTime;
-            Console.WriteLine("Delta Time Simulation: " + actualDeltaTime + "\t Delta Time Scaled: " + scaledDeltaTime + "\t Total Time: " + totalTime);
-            stopwatch.Reset();
-            stopwatch.Start();
+            //Console.WriteLine("Delta Time Simulation: " + actualDeltaTime + "\t Delta Time Scaled: " + scaledDeltaTime + "\t Total Time: " + totalTime);
+            stopwatch.Restart();
+        }
+
+        private static void sleepTime()
+        {
+            float cycleTime = 1f / SimulationSettings.simulationLoopsPerSecond;
+            float remainingTime = cycleTime - actualDeltaTime;
+            if (remainingTime > 0)
+            {
+                Thread.Sleep((int)(remainingTime * 1000)); // Convert seconds to milliseconds
+            }
         }
     }
 }
