@@ -10,11 +10,13 @@ namespace TrainLines
         const string TRANSITINFOPATH = "jsondata\\KVV_Transit_Information.json";
 
 
-        public static Line[] allLines;
+        //Array with all stations that have all informations needed
+        //Stations are sorted and only relevant stations are assign to the lines 
         public static Line[] usableLines;
 
 
-        //Array with all stations 
+        //Arrays with all loaded informations 
+        private static Line[] allLines;
         private static Station[] allStations;
         private static GeoData[] geoDatas;
         private static TransitInfo[] transitInfos;
@@ -25,6 +27,20 @@ namespace TrainLines
         public static void initialize()
         {
             Console.WriteLine("Start Initializing Line Data from JSON Files ...");
+            loadDataFromJson();
+            Console.WriteLine("Initialized Line Data from JSON files");
+
+            //Create the usable lines
+            initializeUsableLines();
+            Console.WriteLine("Number of Usable Lines: " + usableLines.Length);
+        }
+
+
+        /// <summary>
+        /// Loads all the data from the json files
+        /// </summary>
+        private static void loadDataFromJson()
+        {
             //Load all the data from the json files
             try
             {
@@ -38,75 +54,79 @@ namespace TrainLines
                 Console.WriteLine(ex);
                 throw ex;
             }
+        }
 
-            Console.WriteLine("Initialized Line Data from JSON files");
+        /// <summary>
+        /// Method to initialize all the usable lines
+        /// </summary>
+        private static void initializeUsableLines()
+        {
+            usableLines = new Line[transitInfos.Length];
 
-            //Add geodata and transitinfos to the lines
-            addGeoDataToLines();
-            createUsableLines();
-            Console.WriteLine("Number of Usable Lines: " + usableLines.Length);
+            for (int i = 0; i < transitInfos.Length; i++)
+            {
+                //Create a usabel line 
+                usableLines[i] = createUsableLineFromTranistInfo(transitInfos[i]);
+                addGeoDataToLine(usableLines[i]);
+
+                //Rearange stations and geoData so that transit info start station is at index 0
+                rearangeData(usableLines[i]);
+            }
         }
 
         /// <summary>
         /// Adds the GeoData to the Lines
         /// </summary>
-        private static void addGeoDataToLines()
+        private static void addGeoDataToLine(Line line)
         {
             //Loops over each geoData object and adds it to the line that has the same name or number
             for (int i = 0; i < geoDatas.Length; i++)
             {
-                string lineName = geoDatas[i].name;
-
-                for (int j = 0; j < allLines.Length; j++)
+                string geoDataLineName = geoDatas[i].name;
+                string lineNumber = line.number;
+                string lineDisassembledName = line.disassembledName;
+                if (lineDisassembledName == geoDataLineName || lineNumber == geoDataLineName)
                 {
-                    if (allLines[j].disassembledName == lineName || allLines[j].number == lineName)
-                    {
-                        allLines[j].geoData = geoDatas[i];
-                        break;
-                    }
+                    line.geoData = geoDatas[i];
+                    return;
                 }
             }
         }
 
 
         /// <summary>
-        /// Creates lines where Transitinfo is available
+        /// Creates line from transit info with relevant stations
         /// </summary>
-        private static void createUsableLines()
+        private static Line createUsableLineFromTranistInfo(TransitInfo transitInfo)
         {
-            List<Line> lines = new List<Line>();
-            for (int i = 0; i < transitInfos.Length; i++)
+            foreach (Line line in allLines)
             {
-                foreach (Line line in allLines)
+                if (line.name == transitInfo.lineName)
                 {
-                    if (line.name == transitInfos[i].lineName)
-                    {
-                        //save the line
-                        Line usableLine = line;
-                        //Format line so only relevant stations are in line saved
-                        usableLine.transitInfo = transitInfos[i];
-                        removeLoopingStations(line);
-                        Station[] relevantStations = copyStations(line);
+                    //Creates a 1 to 1 copy of the original line
+                    Line copyOriginalLine = new Line(line);
 
-                        //Add the new line to list with all usable lines
-                        lines.Add(new Line(line, relevantStations));
-                        break;
-                    }
+                    //Remove stations that are "looping"
+                    removeLoopingStations(copyOriginalLine);
+                    Station[] relevantStations = getRelevantStations(copyOriginalLine, transitInfo);
+
+                    //Add the new line to list with all usable lines
+                    return new Line(copyOriginalLine, transitInfo, relevantStations);
                 }
             }
 
-            usableLines = lines.ToArray();
+            throw new Exception("Cant create usable line with transit Info: " + transitInfo.lineName);
         }
 
 
         /// <summary>
-        /// Copies the relevant stations of a line 
+        /// Extracts the relevant stations of a line defined by the transitinfo
         /// </summary>
-        private static Station[] copyStations(Line line)
+        private static Station[] getRelevantStations(Line line, TransitInfo transitInfo)
         {
-            Station startStation = findStationWithIdInLine(line.transitInfo.startStationId, line);
+            Station startStation = findStationWithIdInLine(transitInfo.startStationId, line);
             int startStationIndex = Array.IndexOf(line.stations, startStation);
-            Station endStation = findStationWithIdInLine(line.transitInfo.destinationStartionId, line);
+            Station endStation = findStationWithIdInLine(transitInfo.destinationStartionId, line);
             int endStationIndex = Array.IndexOf(line.stations, endStation);
 
             bool forward = startStationIndex < endStationIndex;
@@ -169,22 +189,40 @@ namespace TrainLines
         /// </summary>
         private static void removeLoopingStations(Line line)
         {
-            bool isLooping = line.stations[0].triasID == line.stations.Last().triasID;
-            if (isLooping)
+
+            List<Station> singleInstaceStations = new List<Station>();
+            foreach (Station station in line.stations)
             {
-                List<Station> singleInstaceStations = new List<Station>();
-                foreach (Station station in line.stations)
+                if (singleInstaceStations.Contains(station) == false)
                 {
-                    if (singleInstaceStations.Contains(station) == false)
-                    {
-                        singleInstaceStations.Add(station);
-                    }
-                    else
-                    {
-                        line.stations = singleInstaceStations.ToArray();
-                        break;
-                    }
+                    singleInstaceStations.Add(station);
                 }
+                else
+                {
+                    Console.WriteLine("Looping Stations found at: " + line.name);
+                    break;
+                }
+            }
+            line.stations = singleInstaceStations.ToArray();
+        }
+
+
+        /// <summary>
+        /// Rearanges the stations and GeoData of a line so that start station is at index 0
+        /// </summary>
+        private static void rearangeData(Line line)
+        {
+            Station startStation = findStationWithIdInLine(line.transitInfo.startStationId, line);
+            int startStationIndex = Array.IndexOf(line.stations, startStation);
+            Station endStation = findStationWithIdInLine(line.transitInfo.destinationStartionId, line);
+            int endStationIndex = Array.IndexOf(line.stations, endStation);
+
+            //When startindex is bigger than end index
+            if (startStationIndex > endStationIndex)
+            {
+                line.flipStations();
+                line.flipGeoData();
+                Console.WriteLine("Rearanged Data for Line: " + line.name);
             }
         }
     }

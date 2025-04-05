@@ -25,7 +25,11 @@ namespace TrainLines
             color = lineWrapper.Color;
         }
 
-        public Line(Line originalLine, Station[] newStations)
+
+        /// <summary>
+        /// Copies all metadata from original line except transit info and stations
+        /// </summary>
+        public Line(Line originalLine, TransitInfo transitInfo, Station[] newStations)
         {
             id = originalLine.id;
             name = originalLine.name;
@@ -33,6 +37,22 @@ namespace TrainLines
             number = originalLine.number;
             iconID = originalLine.iconID;
             stations = newStations;
+            color = originalLine.color;
+            this.transitInfo = transitInfo;
+            geoData = originalLine.geoData;
+        }
+
+        /// <summary>
+        /// Creates a copy of the original line
+        /// </summary>
+        public Line(Line originalLine)
+        {
+            id = originalLine.id;
+            name = originalLine.name;
+            disassembledName = originalLine.disassembledName;
+            number = originalLine.number;
+            iconID = originalLine.iconID;
+            stations = originalLine.stations;
             color = originalLine.color;
             transitInfo = originalLine.transitInfo;
             geoData = originalLine.geoData;
@@ -52,13 +72,20 @@ namespace TrainLines
             return usedStations;
         }
 
-
         /// <summary>
-        /// Flips the stations for lines where the train begins in the end station
+        /// Flips the stations
         /// </summary>
-        public void flipLine()
+        public void flipStations()
         {
             Array.Reverse(stations);
+        }
+
+        /// <summary>
+        /// Flips geo data 
+        /// </summary>
+        public void flipGeoData()
+        {
+            geoData.coordinates.Reverse();
         }
     }
 }
