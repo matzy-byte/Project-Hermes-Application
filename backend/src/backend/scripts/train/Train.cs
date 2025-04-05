@@ -13,9 +13,6 @@ namespace Trains
         public Station currentStation;
         public Station nextStation;
         public float distanceBetweenStationsMoved;
-        private int startStationIndex;
-        private int endStationIndex;
-
 
         //Timer to manage timings of driving and standing
         private float inStationTimer = 0f;
@@ -38,15 +35,6 @@ namespace Trains
         /// </summary>
         public void initializeTrain()
         {
-            getStationRange();
-
-            //Check if the train starts in the back
-            if (startStationIndex > endStationIndex)
-            {
-                line.flipLine();
-                getStationRange();
-            }
-
             inStation = true;
             drivingForward = true;
             distanceBetweenStationsMoved = 0f;
@@ -136,19 +124,6 @@ namespace Trains
                 int index = Array.IndexOf(line.stations, currentStation);
                 return line.stations[index - 1];
             }
-        }
-
-
-        /// <summary>
-        /// Finds the start end end Index of the station in the station line
-        /// </summary>
-        private void getStationRange()
-        {
-            Station startStation = LineManager.findStationWithIdInLine(line.transitInfo.startStationId, line);
-            Station endStation = LineManager.findStationWithIdInLine(line.transitInfo.destinationStartionId, line);
-
-            startStationIndex = Array.IndexOf(line.stations, startStation);
-            endStationIndex = Array.IndexOf(line.stations, endStation);
         }
 
 
