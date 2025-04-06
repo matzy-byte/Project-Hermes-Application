@@ -34,5 +34,19 @@ namespace Trains
                 train.trainUpdate();
             }
         }
+
+
+        public static Train getTrainFromLine(Line line)
+        {
+            foreach (Train train in allTrains)
+            {
+                if (train.line == line)
+                {
+                    return train;
+                }
+            }
+            throw new Exception("Cant Find Train with Line: " + line.name);
+        }
+
     }
 }

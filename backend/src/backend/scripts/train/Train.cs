@@ -206,5 +206,16 @@ namespace Trains
             str += "\nIndex of CurrentStation: " + Array.IndexOf(line.stations, currentStation);
             Console.WriteLine(str);
         }
+
+
+        public float calculateTimeBetweenStations(bool drivingForward)
+        {
+            if (drivingForward)
+            {
+                return line.transitInfo.travelTime * 60 / line.stations.Length;
+            }
+
+            return line.transitInfo.travelTimeReverse * 60 / line.stations.Length;
+        }
     }
 }
