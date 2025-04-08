@@ -17,13 +17,24 @@ namespace Pathfinding
         }
 
 
-        public void getTravelTime()
+        public void getTravelTime(float enterTime)
         {
             totalTavelTime = 0;
-            foreach (SubPath subPath in subPaths)
+
+            for (int i = 0; i < subPaths.Length; i++)
             {
-                subPath.calculateTravelTime();
-                totalTavelTime += subPath.travelTime;
+                if (i == 0)
+                {
+                    SubPath subPath = subPaths[i];
+                    subPath.calculateTravelTime(enterTime);
+                    totalTavelTime += subPath.travelTime;
+                }
+                else
+                {
+                    SubPath subPath = subPaths[i];
+                    subPath.calculateTravelTime(subPaths[i - 1].exitTime);
+                    totalTavelTime += subPath.travelTime;
+                }
             }
         }
     }

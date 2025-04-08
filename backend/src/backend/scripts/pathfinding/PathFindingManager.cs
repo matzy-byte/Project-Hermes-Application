@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net.NetworkInformation;
 using TrainLines;
 
@@ -7,6 +8,7 @@ namespace Pathfinding
     {
         private static Dictionary<Line, List<Line>> directConnectionTable = new Dictionary<Line, List<Line>>();
         private static List<LinePath> allConnectionsTable = new List<LinePath>();
+        private static ConcurrentDictionary<(Station, Station), List<Path>> stationToStationPathTable = new ConcurrentDictionary<(Station, Station), List<Path>>();
 
         /// <summary>
         /// Initializes a table with connections between lines
@@ -21,8 +23,38 @@ namespace Pathfinding
             }
 
             initializeAllConnectionsTable();
+            //initializeStationToStationPathTable();
 
             Console.WriteLine("Path finding initialized");
+        }
+
+        private static void initializeStationToStationPathTable()
+        {
+
+            List<(Station, Station)> stationPairs = new List<(Station, Station)>();
+
+            foreach (Line startLine in LineManager.usableLines)
+            {
+                foreach (Line endLine in LineManager.usableLines)
+                {
+                    foreach (Station startStation in startLine.stations)
+                    {
+                        foreach (Station endStation in endLine.stations)
+                        {
+                            if (startStation != endStation)
+                            {
+                                stationPairs.Add((startStation, endStation));
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Generate Path infomrations
+            Parallel.ForEach(stationPairs, pair =>
+            {
+               // stationToStationPathTable.TryAdd((pair.Item1, pair.Item2), getAllTravelPaths(pair.Item1, pair.Item2));
+            });
         }
 
 
@@ -91,8 +123,6 @@ namespace Pathfinding
                         }
                     }
                 }
-
-                // No backtracking is needed as we're using BFS and exploring paths level by level.
             }
 
             // Return the list of all found paths
@@ -100,7 +130,7 @@ namespace Pathfinding
         }
 
 
-        public static List<Path> getAllTravelPaths(Station startStation, Station endStation)
+        public static List<Path> getAllTravelPaths(Station startStation, Station endStation, float enterTime)
         {
             List<LinePath> linePaths = getRelavantLinePaths(startStation, endStation);
 
@@ -113,7 +143,7 @@ namespace Pathfinding
                     //Create the travel path
                     travelPaths.Add(path);
                     //Calculate time of travel path
-                    travelPaths.Last().getTravelTime();
+                    travelPaths.Last().getTravelTime(enterTime);
                 }
             }
 
