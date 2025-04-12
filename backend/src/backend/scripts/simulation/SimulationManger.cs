@@ -15,6 +15,7 @@ namespace Simulation
         //Variables for timings
         public static float actualDeltaTime { get; private set; } = 0f;
         public static float scaledDeltaTime { get; private set; } = 0f;
+        public static float scaledTotalTime { get; private set; } = 0f;
         public static float totalTime { get; private set; } = 0f;
         private static Stopwatch stopwatch = new Stopwatch();
 
@@ -71,6 +72,7 @@ namespace Simulation
             actualDeltaTime = elapsed.Milliseconds / 1000f;
             scaledDeltaTime = actualDeltaTime * SimulationSettings.simulationSpeed;
             totalTime += actualDeltaTime;
+            scaledTotalTime += scaledDeltaTime;
             //Console.WriteLine("Delta Time Simulation: " + actualDeltaTime + "\t Delta Time Scaled: " + scaledDeltaTime + "\t Total Time: " + totalTime);
             stopwatch.Restart();
         }

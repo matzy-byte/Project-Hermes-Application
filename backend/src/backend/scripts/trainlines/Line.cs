@@ -87,5 +87,19 @@ namespace TrainLines
         {
             geoData.coordinates.Reverse();
         }
+
+
+        public override string ToString()
+        {
+            string str = "Name: " + name;
+            str += "\nStart Station: " + LineManager.getStationFromId(transitInfo.startStationId).name;
+            str += "\nEnd Station: " + LineManager.getStationFromId(transitInfo.destinationStartionId).name;
+            str += "\nStations: ";
+            foreach (Station station in stations)
+            {
+                str += "\n\t" + station.name;
+            }
+            return str;
+        }
     }
 }

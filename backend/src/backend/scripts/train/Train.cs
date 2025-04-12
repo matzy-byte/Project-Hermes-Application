@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Helper;
 using Simulation;
 using TrainLines;
@@ -18,6 +19,11 @@ namespace Trains
         private float inStationTimer = 0f;
         private float drivingTimer = 0f;
         private float timeBetweenStations;
+
+
+        //Dictionaries with times when the train will reach the diffrent stations
+        private Dictionary<Station, List<float>> timeTableForward = new Dictionary<Station, List<float>>();
+        private Dictionary<Station, List<float>> timeTableBackwards = new Dictionary<Station, List<float>>();
 
 
         /// <summary>
@@ -41,6 +47,7 @@ namespace Trains
             currentStation = LineManager.findStationWithIdInLine(line.transitInfo.startStationId, line);
             nextStation = findNextStation();
             timeBetweenStations = getTimeBetweenStations();
+            generateTimeTables();
         }
 
 
@@ -205,6 +212,177 @@ namespace Trains
             str += "\nNumber of Stations: " + line.stations.Length;
             str += "\nIndex of CurrentStation: " + Array.IndexOf(line.stations, currentStation);
             Console.WriteLine(str);
+        }
+
+
+        public float calculateTimeBetweenStations(bool drivingForward)
+        {
+            if (drivingForward)
+            {
+                return line.transitInfo.travelTime * 60 / line.stations.Length;
+            }
+
+            return line.transitInfo.travelTimeReverse * 60 / line.stations.Length;
+        }
+
+
+        private void generateTimeTables()
+        {
+            // Clear and initialize dictionaries
+            timeTableForward.Clear();
+            timeTableBackwards.Clear();
+            foreach (Station station in line.stations)
+            {
+                timeTableForward[station] = new List<float>();
+                timeTableBackwards[station] = new List<float>();
+            }
+            bool goingForward = true;
+
+            Station[] stations = line.stations;
+            Station startStation = stations.First();
+            Station endStation = stations.Last();
+
+            for (int i = 0; i < SimulationSettings.preComputedStopTimes * 2; i++)
+            {
+                float timeBetweenStations = calculateTimeBetweenStations(goingForward);
+
+                for (int j = 0; j < stations.Length; j++)
+                {
+                    //Get the correct station
+                    Station station;
+                    if (goingForward)
+                    {
+                        station = stations[j];
+                    }
+                    else
+                    {
+                        station = stations[stations.Length - 1 - j];
+                    }
+
+                    // Add the current time as a departure time
+                    if (goingForward)
+                    {
+                        //Skip station that cant travel forward
+                        if (station == endStation)
+                        {
+                            continue;
+                        }
+                        //Very first entry is hardcoded
+                        if (j == 0 && i == 0)
+                        {
+                            timeTableForward[station].Add(SimulationSettings.trainWaitingTimeAtStation);
+                        }
+                        //When at first station it needs time from backwards table
+                        else if (station == startStation)
+                        {
+                            float previousStationExitTime = timeTableBackwards[stations[1]].Last();
+                            float entryTime = previousStationExitTime + timeBetweenStations;
+                            float exitTime = entryTime + SimulationSettings.trainWaitingTimeAtStation;
+                            timeTableForward[station].Add(exitTime);
+                        }
+                        else
+                        {
+                            float previousStationExitTime = timeTableForward[stations[j - 1]].Last();
+                            float entryTime = previousStationExitTime + timeBetweenStations;
+                            float exitTime = entryTime + SimulationSettings.trainWaitingTimeAtStation;
+                            timeTableForward[station].Add(exitTime);
+                        }
+                    }
+                    else
+                    {
+                        //Skip station that cant go backwards
+                        if (station == startStation)
+                        {
+                            continue;
+                        }
+
+                        //if at end station time is from forward table
+                        if (station == endStation)
+                        {
+                            //Get exit time from last station that can move forward direction
+                            float previousStationExitTime = timeTableForward[stations[stations.Length - 2]].Last();
+                            float entryTime = previousStationExitTime + timeBetweenStations;
+                            float exitTime = entryTime + SimulationSettings.trainWaitingTimeAtStation;
+                            timeTableBackwards[station].Add(exitTime);
+                        }
+                        else
+                        {
+                            //Get exit time from previous station
+                            int index = stations.Length - 1 - (j - 1);
+                            float previousStationExitTime = timeTableBackwards[stations[index]].Last();
+                            float entryTime = previousStationExitTime + timeBetweenStations;
+                            float exitTime = entryTime + SimulationSettings.trainWaitingTimeAtStation;
+                            timeTableBackwards[station].Add(exitTime);
+                        }
+                    }
+                }
+
+                // Switch direction
+                goingForward = !goingForward;
+            }
+        }
+
+
+        public float nextPickupTime(Station station, bool drivingForward, float time)
+        {
+            if (drivingForward)
+            {
+                foreach (float pickupTime in timeTableForward[station])
+                {
+                    if (pickupTime >= time)
+                    {
+                        return pickupTime;
+                    }
+                }
+            }
+
+            else
+            {
+                foreach (float pickupTime in timeTableBackwards[station])
+                {
+                    if (pickupTime >= time)
+                    {
+                        return pickupTime;
+                    }
+                }
+            }
+
+            return float.PositiveInfinity;
+        }
+
+
+        public float getTravelTime(Station enterStation, Station exitStation, bool drivingForward)
+        {
+            float exitTime;
+            float enterTime;
+            if (drivingForward)
+            {
+                //Edge cases where exit station is last station
+                if (exitStation == line.stations.Last())
+                {
+                    exitTime = timeTableBackwards[exitStation].First();
+                }
+                else
+                {
+                    exitTime = timeTableForward[exitStation].First();
+                }
+                enterTime = timeTableForward[enterStation].First();
+            }
+            else
+            {
+                //edge case where exit station is first station
+                if (exitStation == line.stations.First())
+                {
+                    exitTime = timeTableForward[exitStation][1];
+                }
+                else
+                {
+                    exitTime = timeTableBackwards[exitStation].First();
+                }
+                enterTime = timeTableBackwards[enterStation].First();
+            }
+            return exitTime - enterTime - SimulationSettings.trainWaitingTimeAtStation;
+
         }
     }
 }
