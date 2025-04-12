@@ -55,7 +55,11 @@ namespace Simulation
                 //Update train positions
                 TrainManager.updateAllTrains();
                 TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
-
+                string test = TrainManager.getTrainPositionsJSON();
+                string test2 = TrainManager.getTrainLinesJSON();
+                string test3 = TrainManager.getTrainStationsJSON();
+                string test4 = TrainManager.getTrainGeoDataJSON();
+                string test5 = TrainManager.getUsedStationsJSON();
                 sleepTime();
             }
         }

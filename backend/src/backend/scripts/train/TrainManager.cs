@@ -15,8 +15,7 @@ namespace Trains
 
             for (int i = 0; i < LineManager.usableLines.Length; i++)
             {
-                usableTrains.Add(new Train(LineManager.usableLines[i]));
-
+                usableTrains.Add(new Train(LineManager.usableLines[i], i));
             }
 
             allTrains = usableTrains.ToArray();
@@ -33,6 +32,112 @@ namespace Trains
             {
                 train.trainUpdate();
             }
+        }
+
+
+        public static string getTrainPositionsJSON()
+        {
+            string str = "{\n";
+            str += "\"TrainPositions\" : [";
+            foreach (Train train in allTrains)
+            {
+                str += "\n";
+                str += train.getTrainPostionJson();
+                if (train != allTrains.Last())
+                {
+                    str += ",";
+                }
+            }
+            str += "\n]\n}";
+
+            return str;
+        }
+
+        public static string getTrainLinesJSON()
+        {
+            string str = "{\n";
+            str += "\"TrainLines\" : [\n";
+
+            foreach (Train train in allTrains)
+            {
+                str += "{\n";
+                str += "\"TrainID\" : " + train.id.ToString() + ",\n";
+                str += "\"LineName\" : " + "\"" + train.line.name.ToString() + "\"" + "\n";
+                str += "}";
+                if (train != allTrains.Last())
+                {
+                    str += ",";
+                }
+                str += "\n";
+            }
+            str += "]\n";
+            str += "}";
+            return str;
+        }
+
+        public static string getTrainStationsJSON()
+        {
+            string str = "{\n";
+            str += "\"StationsInLine\" : [";
+            foreach (Train train in allTrains)
+            {
+                str += "\n";
+                str += train.getTrainStationsJSON();
+                if (train != allTrains.Last())
+                {
+                    str += ",";
+                }
+            }
+            str += "\n]\n}";
+            return str;
+        }
+
+        public static string getTrainGeoDataJSON()
+        {
+            string str = "{\n";
+            str += "\"TrainGeoData\" : [";
+            foreach (Train train in allTrains)
+            {
+                str += "\n";
+                str += train.getTrainGeoDataJSON();
+                if (train != allTrains.Last())
+                {
+                    str += ",";
+                }
+            }
+            str += "\n]\n}";
+            return str;
+        }
+
+
+        public static string getUsedStationsJSON()
+        {
+            //Find all used Stations
+            List<Station> usedStations = new List<Station>();
+            foreach (Train train in allTrains)
+            {
+                foreach (Station station in train.line.stations)
+                {
+                    if (usedStations.Contains(station) == false)
+                    {
+                        usedStations.Add(station);
+                    }
+                }
+            }
+
+            string str = "{\n";
+            str += "\"UsedStations\" : [\n";
+            foreach (Station station in usedStations)
+            {
+                str += "\n";
+                str += station.getStationJSON();
+                if (station != usedStations.Last())
+                {
+                    str += ",";
+                }
+            }
+            str += "\n]\n}";
+            return str;
         }
     }
 }

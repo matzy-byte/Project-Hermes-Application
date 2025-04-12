@@ -15,5 +15,17 @@ namespace TrainLines
             triasName = stationWrapper.TriasName;
             coordPositionWGS84 = new Coordinate(stationWrapper.CoordPositionWGS84);
         }
+
+
+        public string getStationJSON()
+        {
+            string str = "{\n";
+            str += "\"StationID\" : " + "\"" + triasID + "\",\n";
+            str += "\"StationName\" : " + "\"" + name + "\",\n";
+            str += "\"Long\" : " + coordPositionWGS84.longetude.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+            str += "\"Lat\" : " + coordPositionWGS84.latitude.ToString(System.Globalization.CultureInfo.InvariantCulture) + "\n";
+            str += "}";
+            return str;
+        }
     }
 }
