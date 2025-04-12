@@ -13,34 +13,14 @@ namespace Simulation
 
         public static int numberOfRobots = 2;
 
+        /// <summary>
+        /// Time between data transmision in ms
+        /// </summary>
+        public static int dataStreamDelay = 50;
 
         /// <summary>
-        /// Change the loading Stations with Ids
+        /// URL of the WebSocket
         /// </summary>
-        public static void setLoadingStationsWithID(string[] newLoadingStationIds)
-        {
-            loadingStationIds = newLoadingStationIds;
-        }
-
-        /// <summary>
-        /// Change the loading Stations with station Objects
-        /// </summary>
-        public static void setLoadingStationsWithStation(Station[] newLoadingStations)
-        {
-            loadingStationIds = new string[newLoadingStations.Length];
-            for (int i = 0; i < loadingStationIds.Length; i++)
-            {
-                loadingStationIds[i] = newLoadingStations[i].triasID;
-            }
-        }
-
-
-        /// <summary>
-        /// Method to change the simultion speed
-        /// </summary>
-        public static void changeSimulationSpeed(float newSimulationSpeed)
-        {
-            simulationSpeed = newSimulationSpeed;
-        }
+        public static string webSocketURL = "http://localhost:5000/ws/";
     }
 }
