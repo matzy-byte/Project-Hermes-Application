@@ -7,6 +7,7 @@ namespace Trains
 {
     public class Train
     {
+        public int id;
         public Line line;
 
         public bool inStation;
@@ -29,8 +30,9 @@ namespace Trains
         /// <summary>
         /// Create Instance of train assignt to a train line
         /// </summary>
-        public Train(Line line)
+        public Train(Line line, int id)
         {
+            this.id = id;
             this.line = line;
             initializeTrain();
         }
@@ -202,7 +204,57 @@ namespace Trains
             }
         }
 
+        public string getTrainPostionJson()
+        {
+            string str = "{\n";
+            str += "\"TrainID\" : " + id.ToString() + ",\n";
+            if (inStation)
+            {
+                str += "\"Driving\" : false,\n";
+                str += "\"InStation\" : true,\n";
+            }
+            else
+            {
+                str += "\"Driving\" : true,\n";
+                str += "\"InStation\" : false,\n";
+            }
+            str += "\"DrivingForward\" : " + drivingForward.ToString().ToLower() + ",\n";
+            str += "\"CurrentStation\" : " + "\"" + currentStation.triasID + "\"" + ",\n";
+            str += "\"NextStation\" : " + "\"" + nextStation.triasID + "\"" + ",\n";
+            str += "\"TravelDistance\" : " + distanceBetweenStationsMoved.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+            str += "\"WaitingTime\" : " + (inStationTimer / SimulationSettings.trainWaitingTimeAtStation).ToString(System.Globalization.CultureInfo.InvariantCulture) + "\n";
+            str += "}";
+            return str;
+        }
 
+        public string getTrainStationsJSON()
+        {
+            string str = "{\n";
+            str += "\"TrainID\" : " + id.ToString() + ",\n";
+            str += "\"Stations\" : [\n";
+            foreach (Station station in line.stations)
+            {
+                str += "\"" + station.triasID + "\"";
+                if (station != line.stations.Last())
+                {
+                    str += ",";
+                }
+                str += "\n";
+            }
+            str += "]\n";
+            str += "}";
+            return str;
+        }
+
+
+        public string getTrainGeoDataJSON()
+        {
+            string str = "{\n";
+            str += "\"TrainID\" : " + id.ToString() + ",\n";
+            str += line.geoData.geoDatJSON();
+            str += "}";
+            return str;
+        }
         public void printTrainInfoDebug()
         {
             string str = line.name + " :";

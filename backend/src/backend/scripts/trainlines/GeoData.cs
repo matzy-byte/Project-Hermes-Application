@@ -27,5 +27,28 @@ namespace TrainLines
 
             return coordiantes;
         }
+
+
+        public string geoDatJSON()
+        {
+            string str = "\"GeoData\" : [";
+
+            foreach (Coordinate coordinate in coordinates)
+            {
+                str += "\n{\n";
+                str += "\"Long\" : " + coordinate.longetude.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+                str += "\"Lat\" : " + coordinate.latitude.ToString(System.Globalization.CultureInfo.InvariantCulture) + "\n";
+
+                str += "}";
+                if (coordinate != coordinates.Last())
+                {
+                    str += ",";
+                }
+                str += "\n";
+            }
+            str += "]\n";
+
+            return str;
+        }
     }
 }

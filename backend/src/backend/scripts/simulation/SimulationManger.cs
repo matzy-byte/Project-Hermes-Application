@@ -55,8 +55,7 @@ namespace Simulation
 
                 //Update train positions
                 TrainManager.updateAllTrains();
-                TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
-
+                //TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
                 sleepTime();
             }
         }

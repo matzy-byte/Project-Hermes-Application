@@ -4,17 +4,18 @@ using Pathfinding;
 using Simulation;
 using TrainLines;
 using Trains;
-
+using WS;
+using System.Threading;
+using System.Threading.Tasks;
 LineManager.initialize();
 TrainManager.initialize();
 
 
-PathfindingManager.initializePathFinding();
-
-Station startStation = LineManager.getStationFromId("de:08212:18");
-Station endStation = LineManager.getStationFromId("de:08212:1001");
-var path = PathfindingManager.getAllTravelPaths(startStation, endStation, 20);
-var path2 = PathfindingManager.getAllTravelPaths(startStation, endStation, 1000);
+// Create an instance of the WebSocketManager
+WS.WebSocketManager webSocketManager = new WS.WebSocketManager(SimulationSettings.webSocketURL);
+// Start the WebSocket server in a separate thread (asynchronous task)
+Task.Run(() => webSocketManager.Start());
+Console.WriteLine("WebSocket server started on " + SimulationSettings.webSocketURL);
 
 SimulationManager.startSimulation();
 Console.WriteLine("Stop");
