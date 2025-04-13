@@ -33,6 +33,8 @@ namespace TrainLines
             //Create the usable lines
             initializeUsableLines();
             Console.WriteLine("Number of Usable Lines: " + usableLines.Length);
+            string str = usableLinesToString();
+            Console.WriteLine(str);
         }
 
 
@@ -191,19 +193,24 @@ namespace TrainLines
         {
 
             List<Station> singleInstaceStations = new List<Station>();
-            foreach (Station station in line.stations)
+            if (line.stations[0] == line.stations.Last())
             {
-                if (singleInstaceStations.Contains(station) == false)
+                foreach (Station station in line.stations)
                 {
-                    singleInstaceStations.Add(station);
+                    if (singleInstaceStations.Contains(station) == false)
+                    {
+                        singleInstaceStations.Add(station);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Looping Stations found at: " + line.name);
+                        break;
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("Looping Stations found at: " + line.name);
-                    break;
-                }
+                line.stations = singleInstaceStations.ToArray();
             }
-            line.stations = singleInstaceStations.ToArray();
+
+
         }
 
 
@@ -224,6 +231,38 @@ namespace TrainLines
                 line.flipGeoData();
                 Console.WriteLine("Rearanged Data for Line: " + line.name);
             }
+        }
+
+
+        /// <summary>
+        /// Gets all lines that contain a station
+        /// </summary>
+        public static List<Line> getLinesWithStation(Station station)
+        {
+            List<Line> linesWithStation = new List<Line>();
+            foreach (Line line in usableLines)
+            {
+                if (line.stations.Contains(station))
+                {
+                    linesWithStation.Add(line);
+                }
+            }
+
+            return linesWithStation;
+        }
+
+
+
+        private static string usableLinesToString()
+        {
+            string str = "All Usable Lines: ";
+
+            foreach (Line line in usableLines)
+            {
+                str += "\n" + line.ToString() + "\n";
+            }
+
+            return str;
         }
     }
 }

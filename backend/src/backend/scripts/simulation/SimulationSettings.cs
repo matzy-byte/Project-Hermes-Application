@@ -6,11 +6,13 @@ namespace Simulation
         public static int simulationLoopsPerSecond = 60;
         public static float simulationSpeed { get; private set; } = 50f;
 
+        //How many stop times are precomputed
+        public static int preComputedStopTimes = 1000;
+
         //How many seconds is a train waiting at a station
         public static float trainWaitingTimeAtStation = 30f;
         public static int numberOfLoadingStations = 2;
         public static string[] loadingStationIds;
-
         public static int numberOfRobots = 2;
 
         /// <summary>

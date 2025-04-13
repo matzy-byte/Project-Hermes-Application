@@ -34,7 +34,6 @@ namespace Trains
             }
         }
 
-
         public static string getTrainPositionsJSON()
         {
             string str = "{\n";
