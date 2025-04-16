@@ -20,6 +20,10 @@ namespace Pathfinding
             this.line = line;
         }
 
+
+        /// <summary>
+        /// Calculates the travel time for a sub path based on the enter time at the station
+        /// </summary>
         public void calculateTravelTime(float enterTime)
         {
             int enterStationIndex = Array.IndexOf(line.stations, enterStation);
@@ -33,6 +37,36 @@ namespace Pathfinding
             travelTime = timeWaitingForTrain + timeDrivingTrain;
             exitTime = enterTime + travelTime;
         }
+
+
+        public string getSubPathJSON()
+        {
+
+            List<Station> stations = LineManager.getBetweenStation(enterStation, exitStation, line);
+
+            string str = "{\n";
+            str += "\"Train ID\" : " + TrainManager.getTrainFromLine(line).id + ",\n";
+            str += "\"Stations\" : [\n";
+
+            //Loop over the stations used for this sub path
+            foreach (Station station in stations)
+            {
+                str += "\"" + station.triasID + "\"";
+                if (station != stations.Last())
+                {
+                    str += ",";
+                }
+                str += "\n";
+            }
+
+            str += "]\n";
+            str += "}";
+
+            return str;
+        }
+
+
+
     }
 
 

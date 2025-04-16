@@ -252,7 +252,10 @@ namespace TrainLines
         }
 
 
-
+        /// <summary>
+        /// String with all usabel lines as Debug output
+        /// </summary>
+        /// <returns></returns>
         private static string usableLinesToString()
         {
             string str = "All Usable Lines: ";
@@ -263,6 +266,36 @@ namespace TrainLines
             }
 
             return str;
+        }
+
+
+        /// <summary>
+        /// Gets the station between a start and a end station in correct order
+        /// </summary>
+        public static List<Station> getBetweenStation(Station startStation, Station endStation, Line line)
+        {
+            int enterStationIndex = Array.IndexOf(line.stations, startStation);
+            int exitStationIndex = Array.IndexOf(line.stations, endStation);
+            bool drivingForward = enterStationIndex < exitStationIndex;
+
+            List<Station> stations = new List<Station>();
+            if (drivingForward)
+            {
+                for (int i = enterStationIndex; i < exitStationIndex + 1; i++)
+                {
+                    stations.Add(line.stations[i]);
+                }
+                return stations;
+            }
+
+            else
+            {
+                for (int i = enterStationIndex; i >= exitStationIndex; i--)
+                {
+                    stations.Add(line.stations[i]);
+                }
+                return stations;
+            }
         }
     }
 }

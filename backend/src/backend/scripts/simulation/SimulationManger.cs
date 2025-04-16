@@ -3,6 +3,7 @@ using json;
 using TrainLines;
 using System.Threading;
 using Trains;
+using Robots;
 
 namespace Simulation
 {
@@ -55,7 +56,11 @@ namespace Simulation
 
                 //Update train positions
                 TrainManager.updateAllTrains();
+                RobotManager.updateAllRobots();
+
                 //TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
+                string test = RobotManager.getRobotDataJSON();
+                RobotManager.debugRobot();
                 sleepTime();
             }
         }

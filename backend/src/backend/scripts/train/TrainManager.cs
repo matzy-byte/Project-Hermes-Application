@@ -34,6 +34,10 @@ namespace Trains
             }
         }
 
+
+        /// <summary>
+        /// Generates a json string that stores the positions of the trains
+        /// </summary>
         public static string getTrainPositionsJSON()
         {
             string str = "{\n";
@@ -52,6 +56,30 @@ namespace Trains
             return str;
         }
 
+
+        /// <summary>
+        /// gets all stations that are used in the train lines
+        /// </summary>
+        public static List<Station> getAllUsedStations()
+        {
+            List<Station> usedStations = new List<Station>();
+            foreach (Train train in allTrains)
+            {
+                foreach (Station station in train.line.stations)
+                {
+                    if (usedStations.Contains(station) == false)
+                    {
+                        usedStations.Add(station);
+                    }
+                }
+            }
+
+            return usedStations;
+        }
+
+        /// <summary>
+        /// Generates a json string with index and line name of all used train lines
+        /// </summary>
         public static string getTrainLinesJSON()
         {
             string str = "{\n";
@@ -74,6 +102,9 @@ namespace Trains
             return str;
         }
 
+        /// <summary>
+        /// Generates a json string that stores the used stations of the lines
+        /// </summary>
         public static string getTrainStationsJSON()
         {
             string str = "{\n";
@@ -91,6 +122,10 @@ namespace Trains
             return str;
         }
 
+
+        /// <summary>
+        /// generates a json string that stores the geo data of the used lines
+        /// </summary>
         public static string getTrainGeoDataJSON()
         {
             string str = "{\n";
@@ -109,20 +144,13 @@ namespace Trains
         }
 
 
+        /// <summary>
+        /// generates a json string with all used stations ids
+        /// </summary>
         public static string getUsedStationsJSON()
         {
             //Find all used Stations
-            List<Station> usedStations = new List<Station>();
-            foreach (Train train in allTrains)
-            {
-                foreach (Station station in train.line.stations)
-                {
-                    if (usedStations.Contains(station) == false)
-                    {
-                        usedStations.Add(station);
-                    }
-                }
-            }
+            List<Station> usedStations = getAllUsedStations();
 
             string str = "{\n";
             str += "\"UsedStations\" : [\n";
@@ -138,6 +166,11 @@ namespace Trains
             str += "\n]\n}";
             return str;
         }
+
+
+        /// <summary>
+        /// returns a train object that uses the line object
+        /// </summary>
         public static Train getTrainFromLine(Line line)
         {
             foreach (Train train in allTrains)

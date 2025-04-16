@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using Robots;
 using Simulation;
 using Trains;
 namespace WS
@@ -102,13 +103,17 @@ namespace WS
             while (socket.State == WebSocketState.Open)
             {
                 string trainPositionsJSON = TrainManager.getTrainPositionsJSON();
+                string robotPositionJSON = RobotManager.getRobotDataJSON();
                 //Convert the json string to a buffer
-                var buffer = Encoding.UTF8.GetBytes(trainPositionsJSON);
+                var bufferTrain = Encoding.UTF8.GetBytes(trainPositionsJSON);
+                var bufferRobot = Encoding.UTF8.GetBytes(robotPositionJSON);
 
                 try
                 {
                     //Send the data
-                    await socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                    await socket.SendAsync(new ArraySegment<byte>(bufferTrain), WebSocketMessageType.Text, true, CancellationToken.None);
+                    await Task.Delay(5);
+                    await socket.SendAsync(new ArraySegment<byte>(bufferRobot), WebSocketMessageType.Text, true, CancellationToken.None);
                 }
                 catch (Exception ex)
                 {

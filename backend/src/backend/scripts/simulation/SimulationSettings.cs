@@ -18,7 +18,7 @@ namespace Simulation
         /// <summary>
         /// Time between data transmision in ms
         /// </summary>
-        public static int dataStreamDelay = 50;
+        public static int dataStreamDelay = 120;
 
         /// <summary>
         /// URL of the WebSocket
