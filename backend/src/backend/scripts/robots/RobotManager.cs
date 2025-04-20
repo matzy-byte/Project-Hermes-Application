@@ -2,6 +2,7 @@ using Simulation;
 using Trains;
 using TrainLines;
 using Pathfinding;
+using Packages;
 namespace Robots
 {
     public static class RobotManager
@@ -16,7 +17,8 @@ namespace Robots
             allRobots = new List<Robot>();
             for (int i = 0; i < SimulationSettings.numberOfRobots; i++)
             {
-                allRobots.Add(new Robot(i, getNewPath(null)));
+                //allRobots.Add(new Robot(i, getNewPath(null)));
+                allRobots.Add(new Robot(i, PackageManager.loadingStations.First()));
             }
             Console.WriteLine("Number of Robots initialized: " + allRobots.Count);
         }

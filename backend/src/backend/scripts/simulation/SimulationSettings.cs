@@ -11,9 +11,10 @@ namespace Simulation
 
         //How many seconds is a train waiting at a station
         public static float trainWaitingTimeAtStation = 30f;
-        public static int numberOfLoadingStations = 2;
-        public static string[] loadingStationIds;
-        public static int numberOfRobots = 2;
+        public static string[] loadingStationIds = { "de:08212:1011", "de:08212:302", "de:08212:17" };
+        public static int startPackageCount = 1500; //How many packages are at each station at the start
+        public static int numberOfPackagesInRobot = 50;
+        public static int numberOfRobots = 1;
 
         /// <summary>
         /// Time between data transmision in ms

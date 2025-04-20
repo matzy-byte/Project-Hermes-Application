@@ -10,11 +10,15 @@ namespace Pathfinding
         public SubPath[] subPaths;
         public float totalTavelTime;
 
+        public List<Station> passedStaions;
+
         public Path(Station startStation, Station endStation, SubPath[] subPaths)
         {
             this.startStation = startStation;
             this.endStation = endStation;
             this.subPaths = subPaths;
+
+            getAllPassedStations();
         }
 
 
@@ -95,6 +99,20 @@ namespace Pathfinding
             str += "]\n";
             str += "}";
             return str;
+        }
+
+
+        private void getAllPassedStations()
+        {
+            passedStaions = new List<Station>();
+
+            foreach (SubPath subPaths in subPaths)
+            {
+                List<Station> stations = LineManager.getBetweenStation(subPaths.enterStation, subPaths.exitStation, subPaths.line);
+            }
+
+            //Remove dublicates
+            passedStaions = passedStaions.Distinct().ToList();
         }
     }
 }

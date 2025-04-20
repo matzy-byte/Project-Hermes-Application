@@ -8,10 +8,11 @@ using WS;
 using System.Threading;
 using System.Threading.Tasks;
 using Robots;
+using Packages;
 LineManager.initialize();
 TrainManager.initialize();
+PackageManager.initialize();
 RobotManager.initialize();
-
 
 // Create an instance of the WebSocketManager
 WS.WebSocketManager webSocketManager = new WS.WebSocketManager(SimulationSettings.webSocketURL);

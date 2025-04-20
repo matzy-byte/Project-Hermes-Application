@@ -2,6 +2,7 @@ using Pathfinding;
 using Simulation;
 using TrainLines;
 using Trains;
+using Packages;
 
 namespace Robots
 {
@@ -14,10 +15,9 @@ namespace Robots
         public bool onStation;
         public Station currentStation;
         public Pathfinding.Path path;
-
-
         private Station nextExitStation;
 
+        public Dictionary<Station, List<Package>> loadedPackages;
         public Robot(int index, Pathfinding.Path path)
         {
             this.index = index;
@@ -28,18 +28,29 @@ namespace Robots
             onTrain = false;
             onStation = true;
             currentTrain = null;
+
+            loadedPackages = new Dictionary<Station, List<Package>>();
         }
 
+        public Robot(int index, Station startStation)
+        {
+            this.index = index;
+            currentStation = startStation;
+            onPath = false;
+            onTrain = false;
+            onStation = true;
+            currentTrain = null;
+            loadedPackages = new Dictionary<Station, List<Package>>();
+        }
 
         public void update()
         {
             //All debug to test robots
-            //Check if robot is currently on a path
-            if (onPath == false)
+            //Check if robot has any packages left or is no longer on a path (should always be both true)
+            if (onPath == false || loadedPackages.Count == 0)
             {
-                //get the next path
-                path = RobotManager.getNewPath(currentStation);
-                onPath = true;
+                Console.WriteLine("Path Finished");
+                travelToNextLoadingStation();
             }
 
             if (onPath)
@@ -69,6 +80,17 @@ namespace Robots
                     }
                 }
             }
+
+            //Mange the packages
+            if (canRemovePackages())
+            {
+                removePackages();
+            }
+
+            if (canLoadPackages())
+            {
+                addPackagesOnPath();
+            }
         }
 
         /// <summary>
@@ -78,6 +100,69 @@ namespace Robots
         {
             onTrain = true;
             currentTrain = train;
+        }
+
+
+
+
+        /// <summary>
+        /// Returns true when robot is at a station and has packages for that station
+        /// </summary>
+        private bool canRemovePackages()
+        {
+            if (onStation)
+            {
+                if (loadedPackages.ContainsKey(currentStation))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Remove the packages that can be dropped of at station
+        /// </summary>
+        private void removePackages()
+        {
+            if (loadedPackages.ContainsKey(currentStation))
+            {
+                Console.WriteLine("Removed " + loadedPackages[currentStation].Count + " packages at station " + currentStation.name);
+                loadedPackages.Remove(currentStation);
+            }
+        }
+
+
+        /// <summary>
+        /// Checks if train is at a loading station (must be on the station and not just on the train)
+        /// </summary>
+        private bool canLoadPackages()
+        {
+            if (onTrain == false && onStation == true)
+            {
+                if (PackageManager.loadingStations.Contains(currentStation))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Add packages when robot is at a loading station and not on the train while still being on a path
+        /// Just to add more packages for the current path
+        /// </summary>
+        private void addPackagesOnPath()
+        {
+            //fill remaining space with packages that go to station that are on the way
+            Dictionary<Station, List<Package>> newPackagesList = PackageManager.fillRemainingSpace(this);
+            foreach (KeyValuePair<Station, List<Package>> kvp in newPackagesList)
+            {
+                loadedPackages.Add(kvp.Key, kvp.Value);
+            }
+            Console.WriteLine("Adds packages at station" + currentStation.name);
         }
 
         /// <summary>
@@ -221,11 +306,70 @@ namespace Robots
             {
                 str += "Current Train: " + currentTrain.line.name + "\n";
             }
-            str += "Final Station: " + path.endStation.name + "\n";
+            if (onPath)
+            {
+                str += "Final Station: " + path.endStation.name + "\n";
+            }
+            else
+            {
+                str += "Final Station: null\n";
+
+            }
             str += ".\n.\n.\n";
 
 
             return str;
+        }
+
+
+
+        /// <summary>
+        /// Sets to robot so it travels to the next loading station
+        /// </summary>
+        public void travelToNextLoadingStation()
+        {
+            //When robot is at loading station without a path 
+            if (PackageManager.loadingStations.Contains(currentStation))
+            {
+                addNewPackageRoute();
+                return;
+            }
+
+            //Robot rides to the loading station with the most packages waiting
+            Dictionary<Station, int> waitingPackagesCount = PackageManager.getNumberOfPackagesWaiting();
+
+            //Get the station where the most packages are waiting
+            Station nextStation = waitingPackagesCount.OrderByDescending(kvp => kvp.Value).First().Key;
+
+            //get the next path
+            path = PathfindingManager.getAllTravelPaths(currentStation, nextStation, SimulationManager.scaledTotalTime).First(); ;
+            onPath = true;
+        }
+
+
+        /// <summary>
+        /// Adds a completly new package route to the robot
+        /// </summary>
+        public void addNewPackageRoute()
+        {
+            Console.WriteLine("Add packages at station: " + currentStation.name);
+
+            //Gets a list of packages that go into the robot
+            List<Package> newPackages = PackageManager.getNewPackageDestination(this);
+
+            Station targetStation = newPackages.First().targetStation;
+            loadedPackages.Add(targetStation, newPackages);
+
+            //get the next path
+            path = PathfindingManager.getAllTravelPaths(currentStation, targetStation, SimulationManager.scaledTotalTime).First();
+
+            //fill remaining space with packages that go to station that are on the way
+            Dictionary<Station, List<Package>> newPackagesList = PackageManager.fillRemainingSpace(this);
+            foreach (KeyValuePair<Station, List<Package>> kvp in newPackagesList)
+            {
+                loadedPackages.Add(kvp.Key, kvp.Value);
+            }
+            onPath = true;
         }
     }
 }
