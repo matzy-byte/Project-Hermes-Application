@@ -97,7 +97,7 @@ namespace Robots
         {
             Station startStation = currentStation;
             Station endStation = path.getNextExit(startStation);
-            Train train = path.getTrainFromStartStaion(currentStation);
+            Train train = path.getTrainFromStartStation(currentStation);
 
             //check if train is traveling at the right direciton
             int enterStationIndex = Array.IndexOf(train.line.stations, startStation);
@@ -186,11 +186,11 @@ namespace Robots
 
             if (onTrain == false || (onTrain && currentTrain != null && currentTrain.inStation))
             {
-                str += "\"CurrentStaionID\" : " + "\"" + currentStation.triasID + "\"" + ",\n";
+                str += "\"CurrentStationID\" : " + "\"" + currentStation.triasID + "\"" + ",\n";
             }
             else
             {
-                str += "\"CurrentStaionID\" : null, \n";
+                str += "\"CurrentStationID\" : null, \n";
             }
 
             if (onPath)

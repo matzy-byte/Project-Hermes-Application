@@ -43,7 +43,7 @@ namespace Pathfinding
         /// <summary>
         /// Returns which train must be taken from a station
         /// </summary>
-        public Train getTrainFromStartStaion(Station startStation)
+        public Train getTrainFromStartStation(Station startStation)
         {
             foreach (SubPath subPath in subPaths)
             {
