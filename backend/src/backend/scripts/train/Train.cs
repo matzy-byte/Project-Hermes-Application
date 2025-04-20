@@ -204,6 +204,10 @@ namespace Trains
             }
         }
 
+        /// <summary>
+        /// Generates the JSON string with train Position
+        /// </summary>
+        /// <returns></returns>
         public string getTrainPostionJson()
         {
             string str = "{\n";
@@ -227,6 +231,10 @@ namespace Trains
             return str;
         }
 
+
+        /// <summary>
+        /// Generates json string with all stations inside the train line
+        /// </summary>
         public string getTrainStationsJSON()
         {
             string str = "{\n";

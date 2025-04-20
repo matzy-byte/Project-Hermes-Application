@@ -7,8 +7,10 @@ using Trains;
 using WS;
 using System.Threading;
 using System.Threading.Tasks;
+using Robots;
 LineManager.initialize();
 TrainManager.initialize();
+RobotManager.initialize();
 
 
 // Create an instance of the WebSocketManager

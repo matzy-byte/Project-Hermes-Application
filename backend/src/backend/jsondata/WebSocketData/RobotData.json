@@ -1,0 +1,54 @@
+{
+    "RobotData": [
+        {
+            "RobotID": 0,
+            "OnPath": true,
+            "OnTrain": false,
+            "OnStation": true,
+            "TrainID": null,
+            "CurrentStaionID": "de:08212:1011",
+            "TotalPath": {
+                "StartStationID": "de:08212:1011",
+                "EndStationID": "de:08212:1001",
+                "SubPaths": [
+                    {
+                        "Train ID": 1,
+                        "Stations": [
+                            "de:08212:1011",
+                            "de:08212:1002",
+                            "de:08212:1001"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "RobotID": 1,
+            "OnPath": true,
+            "OnTrain": false,
+            "OnStation": true,
+            "TrainID": null,
+            "CurrentStaionID": "de:08212:604",
+            "TotalPath": {
+                "StartStationID": "de:08212:604",
+                "EndStationID": "de:08212:71",
+                "SubPaths": [
+                    {
+                        "Train ID": 3,
+                        "Stations": [
+                            "de:08212:604",
+                            "de:08212:603",
+                            "de:08212:602",
+                            "de:08212:40",
+                            "de:08212:39",
+                            "de:08212:37",
+                            "de:08212:37:4",
+                            "de:08212:61",
+                            "de:08212:71"
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
