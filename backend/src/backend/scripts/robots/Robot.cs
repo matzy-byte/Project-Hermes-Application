@@ -47,7 +47,7 @@ namespace Robots
         {
             //All debug to test robots
             //Check if robot has any packages left or is no longer on a path (should always be both true)
-            if (onPath == false || loadedPackages.Count == 0)
+            if (onPath == false)
             {
                 Console.WriteLine("Path Finished");
                 travelToNextLoadingStation();
@@ -157,11 +157,7 @@ namespace Robots
         private void addPackagesOnPath()
         {
             //fill remaining space with packages that go to station that are on the way
-            Dictionary<Station, List<Package>> newPackagesList = PackageManager.fillRemainingSpace(this);
-            foreach (KeyValuePair<Station, List<Package>> kvp in newPackagesList)
-            {
-                loadedPackages.Add(kvp.Key, kvp.Value);
-            }
+            PackageManager.fillRemainingSpace(this);
             Console.WriteLine("Adds packages at station" + currentStation.name);
         }
 
@@ -328,6 +324,12 @@ namespace Robots
         /// </summary>
         public void travelToNextLoadingStation()
         {
+            //Check if robot is actually empty
+            if (loadedPackages.Count != 0)
+            {
+                throw new Exception("Robot is not empty");
+            }
+
             //When robot is at loading station without a path 
             if (PackageManager.loadingStations.Contains(currentStation))
             {
@@ -335,14 +337,11 @@ namespace Robots
                 return;
             }
 
-            //Robot rides to the loading station with the most packages waiting
-            Dictionary<Station, int> waitingPackagesCount = PackageManager.getNumberOfPackagesWaiting();
-
-            //Get the station where the most packages are waiting
-            Station nextStation = waitingPackagesCount.OrderByDescending(kvp => kvp.Value).First().Key;
-
+            //When robot is not at a loading station travel to the station where most packages are waiting
+            Station nextStation = PackageManager.getStationWithMostPackagesWaiting();
             //get the next path
-            path = PathfindingManager.getAllTravelPaths(currentStation, nextStation, SimulationManager.scaledTotalTime).First(); ;
+            List<Pathfinding.Path> possiblePaths = PathfindingManager.getAllTravelPaths(currentStation, nextStation, SimulationManager.scaledTotalTime);
+            path = possiblePaths.First();
             onPath = true;
         }
 
@@ -354,21 +353,18 @@ namespace Robots
         {
             Console.WriteLine("Add packages at station: " + currentStation.name);
 
-            //Gets a list of packages that go into the robot
-            List<Package> newPackages = PackageManager.getNewPackageDestination(this);
-
-            Station targetStation = newPackages.First().targetStation;
-            loadedPackages.Add(targetStation, newPackages);
+            //Get the station that is the final station of the new path
+            Station targetStation = PackageManager.getNewRobotDestination(this);
 
             //get the next path
-            path = PathfindingManager.getAllTravelPaths(currentStation, targetStation, SimulationManager.scaledTotalTime).First();
+            List<Pathfinding.Path> possiblePaths = PathfindingManager.getAllTravelPaths(currentStation, targetStation, SimulationManager.scaledTotalTime);
+            path = possiblePaths.First();
+            //Fill the empty robot with packages that go to the final station
+            PackageManager.fillEmptyRobot(this);
 
             //fill remaining space with packages that go to station that are on the way
-            Dictionary<Station, List<Package>> newPackagesList = PackageManager.fillRemainingSpace(this);
-            foreach (KeyValuePair<Station, List<Package>> kvp in newPackagesList)
-            {
-                loadedPackages.Add(kvp.Key, kvp.Value);
-            }
+            PackageManager.fillRemainingSpace(this);
+
             onPath = true;
         }
     }

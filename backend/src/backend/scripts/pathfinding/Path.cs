@@ -109,6 +109,7 @@ namespace Pathfinding
             foreach (SubPath subPaths in subPaths)
             {
                 List<Station> stations = LineManager.getBetweenStation(subPaths.enterStation, subPaths.exitStation, subPaths.line);
+                passedStaions.AddRange(stations);
             }
 
             //Remove dublicates

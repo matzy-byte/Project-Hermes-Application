@@ -18,7 +18,7 @@ namespace Robots
             for (int i = 0; i < SimulationSettings.numberOfRobots; i++)
             {
                 //allRobots.Add(new Robot(i, getNewPath(null)));
-                allRobots.Add(new Robot(i, PackageManager.loadingStations.First()));
+                allRobots.Add(new Robot(i, LineManager.getStationFromId("de:08212:39")));
             }
             Console.WriteLine("Number of Robots initialized: " + allRobots.Count);
         }
