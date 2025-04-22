@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://bbxpgeqy0x68g"]
+
+[ext_resource type="PackedScene" uid="uid://enjkpxce74v3" path="res://assets/robot/Robot.tscn" id="1_c6gwx"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2dftf"]
+size = Vector2(100, 100)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_bcbcq"]
+points = PackedVector3Array(50.7837, 0.793495, 50.7837, -50.7837, -0.793495, -50.7837, -50.7837, 0.793495, -50.7837, 50.7837, -0.793495, -50.7837, -50.7837, -0.793495, 50.7837, -50.7837, 0.793495, 50.7837, 50.7837, 0.793495, -50.7837, 50.7837, -0.793495, 50.7837)
+
+[node name="World" type="Node3D"]
+
+[node name="Robot" parent="." instance=ExtResource("1_c6gwx")]
+
+[node name="Map" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Map"]
+mesh = SubResource("PlaneMesh_2dftf")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map"]
+shape = SubResource("ConvexPolygonShape3D_bcbcq")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.79653, 0.604599, 0, -0.604599, 0.79653, 0.0365863, 16.2483, 14.1926)
