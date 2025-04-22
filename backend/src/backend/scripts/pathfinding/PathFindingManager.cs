@@ -53,7 +53,7 @@ namespace Pathfinding
             //Generate Path infomrations
             Parallel.ForEach(stationPairs, pair =>
             {
-               // stationToStationPathTable.TryAdd((pair.Item1, pair.Item2), getAllTravelPaths(pair.Item1, pair.Item2));
+                // stationToStationPathTable.TryAdd((pair.Item1, pair.Item2), getAllTravelPaths(pair.Item1, pair.Item2));
             });
         }
 
@@ -82,53 +82,37 @@ namespace Pathfinding
         /// </summary>
         private static List<LinePath> getAllLinePaths(Line startLine, Line endLine)
         {
-            // List to store all the possible paths from startLine to endLine
             List<LinePath> allPaths = new List<LinePath>();
-
-            // Queue for BFS that will hold paths and their associated visited lines
             Queue<List<Line>> pathQueue = new Queue<List<Line>>();
             pathQueue.Enqueue(new List<Line> { startLine });
 
-            // Set to track all visited lines across all paths
-            HashSet<Line> visitedLinesAcrossPaths = new HashSet<Line>();
-
-            // Start BFS
             while (pathQueue.Count > 0)
             {
-                // Get the current path from the queue
                 List<Line> currentPath = pathQueue.Dequeue();
-                Line currentLine = currentPath.Last();  // Last line in the current path
+                Line currentLine = currentPath.Last();
 
-                // If we reached the endLine, save the path
                 if (currentLine == endLine)
                 {
                     allPaths.Add(new LinePath(startLine, endLine, new List<Line>(currentPath)));
-                    continue; // Continue with other potential paths
+                    continue;
                 }
 
-                // Mark the current line as visited for this path
-                visitedLinesAcrossPaths.Add(currentLine);
+                if (!directConnectionTable.ContainsKey(currentLine))
+                    continue;
 
-                // Explore all connected lines (direct connections)
-                if (directConnectionTable.ContainsKey(currentLine))
+                foreach (var nextLine in directConnectionTable[currentLine])
                 {
-                    foreach (var nextLine in directConnectionTable[currentLine])
+                    // Check if this line has already been visited in the *current path*
+                    if (!currentPath.Contains(nextLine))
                     {
-                        // If the next line is not visited in any previous path, we can explore it
-                        if (!visitedLinesAcrossPaths.Contains(nextLine))
-                        {
-                            // Copy the current path to continue exploration
-                            List<Line> newPath = new List<Line>(currentPath) { nextLine };
-                            pathQueue.Enqueue(newPath);
-                        }
+                        List<Line> newPath = new List<Line>(currentPath) { nextLine };
+                        pathQueue.Enqueue(newPath);
                     }
                 }
             }
 
-            // Return the list of all found paths
             return allPaths;
         }
-
 
         public static List<Path> getAllTravelPaths(Station startStation, Station endStation, float enterTime)
         {
