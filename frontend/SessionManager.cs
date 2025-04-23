@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
 
 public partial class SessionManager : Node
 {
@@ -29,18 +31,56 @@ public partial class SessionManager : Node
             while (webSocket.GetAvailablePacketCount() > 0)
             {
                 var packet = webSocket.GetPacket();
-                GD.Print("Received packet: " + packet.ToString());
-                StreamPeerBuffer buffer = new()
-                {
-                    DataArray = packet
-                };
-                byte packetId = buffer.GetU8();
-                int value = buffer.Get32();
-                string message = buffer.GetUtf8String(packet.Length - buffer.GetPosition());
+                string message = packet.GetStringFromUtf8();
 
-                GD.Print($"ID: {packetId}, Int: {value}, Msg: {message}");
+                if (message.Contains("TrainPositions"))
+                {
+                    Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(message);
+                    Train[] trains = data["TrainPositions"].Deserialize<Train[]>();
+                    if (GameManager.Instance.trains.Count > 0)
+                    {
+                        GameManager.Instance.UpdateTrains(trains);
+                    }
+                    else if (GameManager.Instance.stations.Count > 0)
+                    {
+                        GameManager.Instance.SpawnTrains(trains);
+                    }
+                    //Streamed Train positions
+                    //GD.Print("Streamed Train Positons \t Message Length: " + message.Length);
+                }
+                else if (message.Contains("TrainLines"))
+                {
+                    //train line Request
+                    //GD.Print("Requested TrainLine \t Message Length: " + message.Length);
+                }
+                else if (message.Contains("StationsInLine"))
+                {
+                    //Stations in line
+                    //GD.Print("Requested StationInLine \t Message Length: " + message.Length);
+                }
+                else if (message.Contains("TrainGeoData"))
+                {
+                    //Geo Data
+                    //GD.Print("Requested TrainGeoData \t Message Length: " + message.Length);
+                }
+                else if (message.Contains("RobotData"))
+                {
+                    //Geo Data
+                    //GD.Print("Requested RobotData \t Message Length: " + message.Length);
+                }
+                else if (message.Contains("UsedStations"))
+                {
+                    Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(message);
+                    Station[] stations = data["UsedStations"].Deserialize<Station[]>();
+                    GameManager.Instance.SpawnStations(stations);
+                }
             }
         }
+    }
+
+    public void Request(string message)
+    {
+        webSocket.SendText(message);
     }
 }
 

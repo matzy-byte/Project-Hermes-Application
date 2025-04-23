@@ -20,6 +20,11 @@ config/icon="res://icon.svg"
 SessionManager="*res://SessionManager.cs"
 GameManager="*res://GameManager.cs"
 
+[display]
+
+window/size/initial_position_type=0
+window/size/initial_position=Vector2i(140, 495)
+
 [dotnet]
 
 project/assembly_name="frontend"
