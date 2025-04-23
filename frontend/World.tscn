@@ -1,12 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://bbxpgeqy0x68g"]
+[gd_scene load_steps=6 format=3 uid="uid://bbxpgeqy0x68g"]
 
 [ext_resource type="PackedScene" uid="uid://enjkpxce74v3" path="res://assets/robot/Robot.tscn" id="1_c6gwx"]
+[ext_resource type="Script" uid="uid://cx4ab6bc4jshp" path="res://controlScript.gd" id="2_2dftf"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_2dftf"]
 size = Vector2(100, 100)
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_bcbcq"]
 points = PackedVector3Array(50.7837, 0.793495, 50.7837, -50.7837, -0.793495, -50.7837, -50.7837, 0.793495, -50.7837, 50.7837, -0.793495, -50.7837, -50.7837, -0.793495, 50.7837, -50.7837, 0.793495, 50.7837, 50.7837, 0.793495, -50.7837, 50.7837, -0.793495, 50.7837)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2dftf"]
+bg_color = Color(0.194349, 0.194349, 0.194349, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [node name="World" type="Node3D"]
 
@@ -30,6 +38,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+script = ExtResource("2_2dftf")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control"]
 layout_mode = 1
@@ -88,3 +98,16 @@ rounded = true
 [node name="HSeparator4" type="HSeparator" parent="Control/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 30
+
+[node name="Label_Loadingstation" type="Label" parent="Control/VBoxContainer"]
+layout_mode = 2
+text = "Loadingstation"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Control/VBoxContainer"]
+layout_mode = 2
+
+[node name="AddButton" type="Button" parent="Control/VBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_2dftf")
+text = "+"
