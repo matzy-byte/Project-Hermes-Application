@@ -1,0 +1,64 @@
+[gd_scene load_steps=7 format=3 uid="uid://dm7n715dmfb4h"]
+
+[ext_resource type="Script" uid="uid://cceeyfa4lxubh" path="res://assets/station/StationScript.cs" id="1_lrann"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lrann"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_frsht"]
+material = SubResource("StandardMaterial3D_lrann")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lrann"]
+points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_lrann"]
+viewport_path = NodePath("Sprite3D/SubViewport")
+
+[sub_resource type="LabelSettings" id="LabelSettings_lrann"]
+font_size = 30
+
+[node name="Station" type="StaticBody3D"]
+script = ExtResource("1_lrann")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_frsht")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("ConvexPolygonShape3D_lrann")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 5.37653, 0)
+visible = false
+billboard = 1
+texture = SubResource("ViewportTexture_lrann")
+
+[node name="SubViewport" type="SubViewport" parent="Sprite3D"]
+size = Vector2i(300, 50)
+size_2d_override_stretch = true
+
+[node name="Control" type="Control" parent="Sprite3D/SubViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Sprite3D/SubViewport/Control"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "Station"
+label_settings = SubResource("LabelSettings_lrann")
+horizontal_alignment = 1
+vertical_alignment = 1
