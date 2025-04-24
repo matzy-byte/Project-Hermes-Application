@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://bhyjuh2yni7x"]
+
+[ext_resource type="Script" uid="uid://cutsb2qin0dng" path="res://ui/LoadingStationEntryScript.cs" id="1_ohdh3"]
+
+[node name="LoadingStationEntry" type="HBoxContainer"]
+script = ExtResource("1_ohdh3")
+
+[node name="EntryLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "# 0"
+
+[node name="EntryOption" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EntryRemove" type="Button" parent="."]
+layout_mode = 2
+text = "  -  "

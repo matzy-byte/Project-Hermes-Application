@@ -11,16 +11,7 @@ public partial class SessionManager : Node
 
     public override void _Ready()
     {
-        Instance = this;
-        Error error = webSocket.ConnectToUrl(connectionString);
-        if (error != Error.Ok)
-        {
-            GD.Print("Error connecting to WebSocket: " + error);
-            return;
-        } else
-        {
-            GD.Print("Connected to WebSocket: " + connectionString);
-        }   
+        Instance = this; 
     }
 
     public override void _Process(double delta)
@@ -78,6 +69,27 @@ public partial class SessionManager : Node
         }
     }
 
+    public void SetConnectionURL(string url)
+    {
+        connectionString = url;
+    }
+
+    public void ConnectToUrl()
+    {
+        Error error = webSocket.ConnectToUrl(connectionString);
+        if (error != Error.Ok)
+        {
+            GD.Print("Error connecting to WebSocket: " + error);
+            GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowConnectionDebugInfo(error);
+            return;
+        }
+        else
+        {
+            GD.Print("Connected to WebSocket: " + connectionString);
+            GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowSimmulationSettings();
+        }
+    }
+    
     public void Request(string message)
     {
         webSocket.SendText(message);
