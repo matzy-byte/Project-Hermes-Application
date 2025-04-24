@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bbxpgeqy0x68g"]
 
 [ext_resource type="PackedScene" uid="uid://enjkpxce74v3" path="res://assets/robot/Robot.tscn" id="1_c6gwx"]
-[ext_resource type="Script" uid="uid://cx4ab6bc4jshp" path="res://controlScript.gd" id="2_2dftf"]
+[ext_resource type="Script" uid="uid://dvk6g3i67ksul" path="res://HUDScript.cs" id="3_js7pq"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_2dftf"]
 size = Vector2(100, 100)
@@ -9,12 +9,10 @@ size = Vector2(100, 100)
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_bcbcq"]
 points = PackedVector3Array(50.7837, 0.793495, 50.7837, -50.7837, -0.793495, -50.7837, -50.7837, 0.793495, -50.7837, 50.7837, -0.793495, -50.7837, -50.7837, -0.793495, 50.7837, -50.7837, 0.793495, 50.7837, 50.7837, 0.793495, -50.7837, 50.7837, -0.793495, 50.7837)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2dftf"]
-bg_color = Color(0.194349, 0.194349, 0.194349, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+[sub_resource type="LabelSettings" id="LabelSettings_2dftf"]
+font_color = Color(1, 0, 0, 1)
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
 
 [node name="World" type="Node3D"]
 
@@ -31,83 +29,156 @@ shape = SubResource("ConvexPolygonShape3D_bcbcq")
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.79653, 0.604599, 0, -0.604599, 0.79653, 0.0365863, 16.2483, 14.1926)
 
-[node name="Control" type="Control" parent="."]
+[node name="HUD" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 3
-script = ExtResource("2_2dftf")
+script = ExtResource("3_js7pq")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+[node name="ConnectBox" type="VBoxContainer" parent="HUD"]
 layout_mode = 1
-offset_right = 332.0
-offset_bottom = 239.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
 
-[node name="Label" type="Label" parent="Control/VBoxContainer"]
+[node name="ConnectionUrlLabel" type="Label" parent="HUD/ConnectBox"]
 layout_mode = 2
-text = "Simulation Speed"
+size_flags_vertical = 1
+text = "Web Socket IP Adress"
+horizontal_alignment = 1
 
-[node name="HSlider" type="HSlider" parent="Control/VBoxContainer"]
+[node name="ConnectionUrl" type="TextEdit" parent="HUD/ConnectBox"]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-max_value = 10.0
+text = "ws://localhost:5000/ws/"
+placeholder_text = "..."
 
-[node name="HSeparator" type="HSeparator" parent="Control/VBoxContainer"]
+[node name="ConnectButton" type="Button" parent="HUD/ConnectBox"]
 layout_mode = 2
-theme_override_constants/separation = 30
+text = "Connect"
 
-[node name="Label2" type="Label" parent="Control/VBoxContainer"]
+[node name="ErrorInfoLabel" type="Label" parent="HUD/ConnectBox"]
+visible = false
 layout_mode = 2
-text = "amount Robots"
+text = "Error"
+label_settings = SubResource("LabelSettings_2dftf")
 
-[node name="HSlider2" type="HSlider" parent="Control/VBoxContainer"]
-layout_mode = 2
-max_value = 5.0
-rounded = true
+[node name="SimulationSettings" type="VBoxContainer" parent="HUD"]
+visible = false
+layout_mode = 0
+offset_right = 350.0
+offset_bottom = 400.0
 
-[node name="HSeparator2" type="HSeparator" parent="Control/VBoxContainer"]
+[node name="SimulationSpeedLabel" type="Label" parent="HUD/SimulationSettings"]
 layout_mode = 2
-theme_override_constants/separation = 30
+text = "Simulation speed"
 
-[node name="Label3" type="Label" parent="Control/VBoxContainer"]
+[node name="SimulationSpeedSlider" type="HSlider" parent="HUD/SimulationSettings"]
 layout_mode = 2
-text = "amount of packets per station"
-
-[node name="HSlider3" type="HSlider" parent="Control/VBoxContainer"]
-layout_mode = 2
-max_value = 10.0
-rounded = true
-
-[node name="HSeparator3" type="HSeparator" parent="Control/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 30
-
-[node name="Label4" type="Label" parent="Control/VBoxContainer"]
-layout_mode = 2
-text = "packet capacity robot"
-
-[node name="HSlider4" type="HSlider" parent="Control/VBoxContainer"]
-layout_mode = 2
-min_value = 1.0
 max_value = 10.0
 value = 1.0
-rounded = true
 
-[node name="HSeparator4" type="HSeparator" parent="Control/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="HUD/SimulationSettings"]
 layout_mode = 2
 theme_override_constants/separation = 30
 
-[node name="Label_Loadingstation" type="Label" parent="Control/VBoxContainer"]
+[node name="AmountRobotsLabel" type="Label" parent="HUD/SimulationSettings"]
 layout_mode = 2
-text = "Loadingstation"
+text = "Amount robots"
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="Control/VBoxContainer"]
+[node name="AmountRobotsSlider" type="HSlider" parent="HUD/SimulationSettings"]
 layout_mode = 2
+max_value = 50.0
+value = 2.0
+rounded = true
+ticks_on_borders = true
 
-[node name="AddButton" type="Button" parent="Control/VBoxContainer/VBoxContainer2"]
+[node name="HSeparator2" type="HSeparator" parent="HUD/SimulationSettings"]
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/normal = SubResource("StyleBoxFlat_2dftf")
+theme_override_constants/separation = 30
+
+[node name="AmountPacketsStationLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Amount packets per station"
+
+[node name="AmountPacketsStationSlider" type="HSlider" parent="HUD/SimulationSettings"]
+layout_mode = 2
+max_value = 30.0
+value = 10.0
+rounded = true
+
+[node name="HSeparator3" type="HSeparator" parent="HUD/SimulationSettings"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="CapacityRobotLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Amount packets per robot"
+
+[node name="CapacityRobotSlider" type="HSlider" parent="HUD/SimulationSettings"]
+layout_mode = 2
+max_value = 20.0
+value = 10.0
+rounded = true
+
+[node name="HSeparator4" type="HSeparator" parent="HUD/SimulationSettings"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="LoadingStationsLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Loading Stations"
+
+[node name="LoadingStationsAdd" type="Button" parent="HUD/SimulationSettings"]
+layout_mode = 2
 text = "+"
+
+[node name="LoadingStations" type="VBoxContainer" parent="HUD/SimulationSettings"]
+layout_mode = 2
+
+[node name="SimulationControl" type="VBoxContainer" parent="HUD"]
+visible = false
+layout_mode = 0
+offset_left = 350.0
+offset_right = 450.0
+offset_bottom = 40.0
+
+[node name="StartButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Start"
+
+[node name="PauseButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Pause"
+
+[node name="ResumeButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Resume"
+
+[node name="StopButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Stop"
+
+[node name="Camera1" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Camera 1"
+
+[node name="Camera2" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Camera 2"
+
+[node name="Camera3" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Camera 3"
