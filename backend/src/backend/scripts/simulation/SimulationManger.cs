@@ -4,6 +4,7 @@ using TrainLines;
 using System.Threading;
 using Trains;
 using Robots;
+using Packages;
 
 namespace Simulation
 {
@@ -59,7 +60,13 @@ namespace Simulation
                 RobotManager.updateAllRobots();
 
                 //TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
-                string test = RobotManager.getRobotDataJSON();
+                string packageData = PackageManager.getPackageDataJSON();
+                string robotData = RobotManager.getRobotDataJSON();
+                string trainGeoData = TrainManager.getTrainGeoDataJSON();
+                string trainLines = TrainManager.getTrainLinesJSON();
+                string trainPositions = TrainManager.getTrainPositionsJSON();
+                string trainStationInLine = TrainManager.getTrainStationsJSON();
+                string usedStations = TrainManager.getUsedStationsJSON();
                 RobotManager.debugRobot();
                 sleepTime();
             }

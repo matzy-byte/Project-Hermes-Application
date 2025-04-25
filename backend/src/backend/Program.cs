@@ -9,9 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Robots;
 using Packages;
+
 LineManager.initialize();
 TrainManager.initialize();
 PackageManager.initialize();
+PathfindingManager.initializePathFinding();
 RobotManager.initialize();
 
 // Create an instance of the WebSocketManager

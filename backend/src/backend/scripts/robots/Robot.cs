@@ -45,6 +45,18 @@ namespace Robots
 
         public void update()
         {
+
+            //Manage the packages
+            if (canRemovePackages())
+            {
+                removePackages();
+            }
+
+            if (canLoadPackages() && onPath)
+            {
+                addPackagesOnPath();
+            }
+
             //All debug to test robots
             //Check if robot has any packages left or is no longer on a path (should always be both true)
             if (onPath == false)
@@ -79,17 +91,6 @@ namespace Robots
                         isTrainAtEnterStation();
                     }
                 }
-            }
-
-            //Mange the packages
-            if (canRemovePackages())
-            {
-                removePackages();
-            }
-
-            if (canLoadPackages())
-            {
-                addPackagesOnPath();
             }
         }
 
