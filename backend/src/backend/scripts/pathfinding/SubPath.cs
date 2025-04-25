@@ -45,7 +45,7 @@ namespace Pathfinding
             List<Station> stations = LineManager.getBetweenStation(enterStation, exitStation, line);
 
             string str = "{\n";
-            str += "\"Train ID\" : " + TrainManager.getTrainFromLine(line).id + ",\n";
+            str += "\"TrainID\" : " + TrainManager.getTrainFromLine(line).id + ",\n";
             str += "\"Stations\" : [\n";
 
             //Loop over the stations used for this sub path

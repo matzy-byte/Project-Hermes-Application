@@ -2,6 +2,7 @@ using Simulation;
 using Trains;
 using TrainLines;
 using Pathfinding;
+using Packages;
 namespace Robots
 {
     public static class RobotManager
@@ -13,10 +14,13 @@ namespace Robots
         /// </summary>
         public static void initialize()
         {
+            List<Station> allStations = TrainManager.getAllUsedStations();
+            Random random = new Random();
             allRobots = new List<Robot>();
             for (int i = 0; i < SimulationSettings.numberOfRobots; i++)
             {
-                allRobots.Add(new Robot(i, getNewPath(null)));
+                //allRobots.Add(new Robot(i, getNewPath(null)));
+                allRobots.Add(new Robot(i, allStations[random.Next(0, allStations.Count)]));
             }
             Console.WriteLine("Number of Robots initialized: " + allRobots.Count);
         }
@@ -106,6 +110,46 @@ namespace Robots
 
                 return allPaths.First();
             }
+        }
+
+
+
+        public static string getRobotPackageJSON()
+        {
+            string str = "\"Robots\" : [\n";
+
+            foreach (Robot robot in allRobots)
+            {
+                if (robot.loadedPackages.Count > 0)
+                {
+                    str += "{\n";
+                    str += "\"RobotID\" : " + +robot.index + ",\n";
+                    str += "\"PackageDestinations\" : [\n";
+                    //Loop over the loaded packages
+                    foreach (KeyValuePair<Station, List<Package>> loadedPackaList in robot.loadedPackages)
+                    {
+                        foreach (Package package in loadedPackaList.Value)
+                        {
+                            str += "\"" + package.targetStation.triasID + "\"";
+                            if (package != robot.loadedPackages.Last().Value.Last())
+                            {
+                                str += ",";
+                            }
+                            str += "\n";
+                        }
+                    }
+                    str += "]\n";
+                    str += "},\n";
+                }
+            }
+            int lastCommaIndex = str.LastIndexOf(',');
+
+            if (lastCommaIndex != -1)
+            {
+                str = str.Remove(lastCommaIndex, 1);
+            }
+            str += "]\n";
+            return str;
         }
     }
 }

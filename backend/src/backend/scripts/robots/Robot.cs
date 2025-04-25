@@ -2,6 +2,7 @@ using Pathfinding;
 using Simulation;
 using TrainLines;
 using Trains;
+using Packages;
 
 namespace Robots
 {
@@ -14,10 +15,9 @@ namespace Robots
         public bool onStation;
         public Station currentStation;
         public Pathfinding.Path path;
-
-
         private Station nextExitStation;
 
+        public Dictionary<Station, List<Package>> loadedPackages;
         public Robot(int index, Pathfinding.Path path)
         {
             this.index = index;
@@ -28,18 +28,41 @@ namespace Robots
             onTrain = false;
             onStation = true;
             currentTrain = null;
+
+            loadedPackages = new Dictionary<Station, List<Package>>();
         }
 
+        public Robot(int index, Station startStation)
+        {
+            this.index = index;
+            currentStation = startStation;
+            onPath = false;
+            onTrain = false;
+            onStation = true;
+            currentTrain = null;
+            loadedPackages = new Dictionary<Station, List<Package>>();
+        }
 
         public void update()
         {
+
+            //Manage the packages
+            if (canRemovePackages())
+            {
+                removePackages();
+            }
+
+            if (canLoadPackages() && onPath)
+            {
+                addPackagesOnPath();
+            }
+
             //All debug to test robots
-            //Check if robot is currently on a path
+            //Check if robot has any packages left or is no longer on a path (should always be both true)
             if (onPath == false)
             {
-                //get the next path
-                path = RobotManager.getNewPath(currentStation);
-                onPath = true;
+                Console.WriteLine("Path Finished");
+                travelToNextLoadingStation();
             }
 
             if (onPath)
@@ -78,6 +101,65 @@ namespace Robots
         {
             onTrain = true;
             currentTrain = train;
+        }
+
+
+
+
+        /// <summary>
+        /// Returns true when robot is at a station and has packages for that station
+        /// </summary>
+        private bool canRemovePackages()
+        {
+            if (onStation)
+            {
+                if (loadedPackages.ContainsKey(currentStation))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Remove the packages that can be dropped of at station
+        /// </summary>
+        private void removePackages()
+        {
+            if (loadedPackages.ContainsKey(currentStation))
+            {
+                Console.WriteLine("Removed " + loadedPackages[currentStation].Count + " packages at station " + currentStation.name);
+                loadedPackages.Remove(currentStation);
+            }
+        }
+
+
+        /// <summary>
+        /// Checks if train is at a loading station (must be on the station and not just on the train)
+        /// </summary>
+        private bool canLoadPackages()
+        {
+            if (onTrain == false && onStation == true)
+            {
+                if (PackageManager.loadingStations.Contains(currentStation))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Add packages when robot is at a loading station and not on the train while still being on a path
+        /// Just to add more packages for the current path
+        /// </summary>
+        private void addPackagesOnPath()
+        {
+            //fill remaining space with packages that go to station that are on the way
+            PackageManager.fillRemainingSpace(this);
+            Console.WriteLine("Adds packages at station" + currentStation.name);
         }
 
         /// <summary>
@@ -221,11 +303,70 @@ namespace Robots
             {
                 str += "Current Train: " + currentTrain.line.name + "\n";
             }
-            str += "Final Station: " + path.endStation.name + "\n";
+            if (onPath)
+            {
+                str += "Final Station: " + path.endStation.name + "\n";
+            }
+            else
+            {
+                str += "Final Station: null\n";
+
+            }
             str += ".\n.\n.\n";
 
 
             return str;
+        }
+
+
+
+        /// <summary>
+        /// Sets to robot so it travels to the next loading station
+        /// </summary>
+        public void travelToNextLoadingStation()
+        {
+            //Check if robot is actually empty
+            if (loadedPackages.Count != 0)
+            {
+                throw new Exception("Robot is not empty");
+            }
+
+            //When robot is at loading station without a path 
+            if (PackageManager.loadingStations.Contains(currentStation))
+            {
+                addNewPackageRoute();
+                return;
+            }
+
+            //When robot is not at a loading station travel to the station where most packages are waiting
+            Station nextStation = PackageManager.getStationWithMostPackagesWaiting();
+            //get the next path
+            List<Pathfinding.Path> possiblePaths = PathfindingManager.getAllTravelPaths(currentStation, nextStation, SimulationManager.scaledTotalTime);
+            path = possiblePaths.First();
+            onPath = true;
+        }
+
+
+        /// <summary>
+        /// Adds a completly new package route to the robot
+        /// </summary>
+        public void addNewPackageRoute()
+        {
+            Console.WriteLine("Add packages at station: " + currentStation.name);
+
+            //Get the station that is the final station of the new path
+            Station targetStation = PackageManager.getNewRobotDestination(this);
+
+            //get the next path
+            List<Pathfinding.Path> possiblePaths = PathfindingManager.getAllTravelPaths(currentStation, targetStation, SimulationManager.scaledTotalTime);
+            path = possiblePaths.First();
+            //Fill the empty robot with packages that go to the final station
+            PackageManager.fillEmptyRobot(this);
+
+            //fill remaining space with packages that go to station that are on the way
+            PackageManager.fillRemainingSpace(this);
+
+            onPath = true;
         }
     }
 }

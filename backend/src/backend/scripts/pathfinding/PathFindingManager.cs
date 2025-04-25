@@ -1,14 +1,15 @@
 using System.Collections.Concurrent;
 using System.Net.NetworkInformation;
 using TrainLines;
+using Trains;
+using Newtonsoft;
+using Newtonsoft.Json;
 
 namespace Pathfinding
 {
     public static class PathfindingManager
     {
         private static Dictionary<Line, List<Line>> directConnectionTable = new Dictionary<Line, List<Line>>();
-        private static List<LinePath> allConnectionsTable = new List<LinePath>();
-        private static ConcurrentDictionary<(Station, Station), List<Path>> stationToStationPathTable = new ConcurrentDictionary<(Station, Station), List<Path>>();
 
         /// <summary>
         /// Initializes a table with connections between lines
@@ -22,114 +23,58 @@ namespace Pathfinding
                 directConnectionTable.Add(line, getLinesConnectedToLine(line));
             }
 
-            initializeAllConnectionsTable();
+            //   initializeAllConnectionsTable();
             //initializeStationToStationPathTable();
 
             Console.WriteLine("Path finding initialized");
         }
 
+
+
+        /// <summary>
+        /// Method to debug if all stations are connected
+        /// </summary>
         private static void initializeStationToStationPathTable()
         {
 
             List<(Station, Station)> stationPairs = new List<(Station, Station)>();
 
-            foreach (Line startLine in LineManager.usableLines)
+            foreach (Station startStation in TrainManager.getAllUsedStations())
             {
-                foreach (Line endLine in LineManager.usableLines)
+                foreach (Station endStation in TrainManager.getAllUsedStations())
                 {
-                    foreach (Station startStation in startLine.stations)
+                    if (startStation != endStation)
                     {
-                        foreach (Station endStation in endLine.stations)
-                        {
-                            if (startStation != endStation)
-                            {
-                                stationPairs.Add((startStation, endStation));
-                            }
-                        }
+                        stationPairs.Add((startStation, endStation));
                     }
                 }
             }
 
-            //Generate Path infomrations
-            Parallel.ForEach(stationPairs, pair =>
+            ConcurrentDictionary<(Station, Station), int> stationMap = new ConcurrentDictionary<(Station, Station), int>();
+
+
+            Parallel.For(0, stationPairs.Count, i =>
             {
-               // stationToStationPathTable.TryAdd((pair.Item1, pair.Item2), getAllTravelPaths(pair.Item1, pair.Item2));
+                var pair = stationPairs[i];
+                int count = getAllTravelPaths(pair.Item1, pair.Item2, 0).Count;
+                stationMap[(pair.Item1, pair.Item2)] = count;
+
+                // Optional: log progress every 100 iterations to avoid flooding the console
+                if (i % 100 == 0)
+                {
+                    Console.WriteLine($"Processed {stationMap.Count}/{stationPairs.Count}");
+                }
             });
+
+            string jsonString = JsonConvert.SerializeObject(stationMap);
+            Console.WriteLine(jsonString);
         }
+
 
 
         /// <summary>
-        /// initializs lookup of possible line paths for each line every other line 
+        /// Returns all posible paths between two station.
         /// </summary>
-        public static void initializeAllConnectionsTable()
-        {
-            allConnectionsTable.Clear();
-
-            foreach (Line startLine in LineManager.usableLines)
-            {
-                foreach (Line endLine in LineManager.usableLines)
-                {
-                    if (startLine != endLine)
-                    {
-                        allConnectionsTable.AddRange(getAllLinePaths(startLine, endLine));
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns all possible Line paths from a start to a end line
-        /// </summary>
-        private static List<LinePath> getAllLinePaths(Line startLine, Line endLine)
-        {
-            // List to store all the possible paths from startLine to endLine
-            List<LinePath> allPaths = new List<LinePath>();
-
-            // Queue for BFS that will hold paths and their associated visited lines
-            Queue<List<Line>> pathQueue = new Queue<List<Line>>();
-            pathQueue.Enqueue(new List<Line> { startLine });
-
-            // Set to track all visited lines across all paths
-            HashSet<Line> visitedLinesAcrossPaths = new HashSet<Line>();
-
-            // Start BFS
-            while (pathQueue.Count > 0)
-            {
-                // Get the current path from the queue
-                List<Line> currentPath = pathQueue.Dequeue();
-                Line currentLine = currentPath.Last();  // Last line in the current path
-
-                // If we reached the endLine, save the path
-                if (currentLine == endLine)
-                {
-                    allPaths.Add(new LinePath(startLine, endLine, new List<Line>(currentPath)));
-                    continue; // Continue with other potential paths
-                }
-
-                // Mark the current line as visited for this path
-                visitedLinesAcrossPaths.Add(currentLine);
-
-                // Explore all connected lines (direct connections)
-                if (directConnectionTable.ContainsKey(currentLine))
-                {
-                    foreach (var nextLine in directConnectionTable[currentLine])
-                    {
-                        // If the next line is not visited in any previous path, we can explore it
-                        if (!visitedLinesAcrossPaths.Contains(nextLine))
-                        {
-                            // Copy the current path to continue exploration
-                            List<Line> newPath = new List<Line>(currentPath) { nextLine };
-                            pathQueue.Enqueue(newPath);
-                        }
-                    }
-                }
-            }
-
-            // Return the list of all found paths
-            return allPaths;
-        }
-
-
         public static List<Path> getAllTravelPaths(Station startStation, Station endStation, float enterTime)
         {
             List<LinePath> linePaths = getRelavantLinePaths(startStation, endStation);
@@ -147,17 +92,14 @@ namespace Pathfinding
                 }
             }
 
-
             //Order the list by travel time
             return travelPaths.OrderBy(path => path.totalTavelTime).ToList();
         }
 
 
-
-
-
         /// <summary>
-        /// Get's all possible Linepaths from start to end station
+        /// Get's all possible Linepaths from a start to a end station. 
+        /// Without backtracking inside one Linepath
         /// </summary>
         public static List<LinePath> getRelavantLinePaths(Station startStation, Station endStation)
         {
@@ -166,7 +108,7 @@ namespace Pathfinding
             List<Line> startLines = LineManager.getLinesWithStation(startStation);
             List<Line> endLines = LineManager.getLinesWithStation(endStation);
 
-            //Get paths with same line
+            //Get paths with single line connection
             foreach (Line line in startLines)
             {
                 if (endLines.Contains(line))
@@ -175,20 +117,49 @@ namespace Pathfinding
                 }
             }
 
+
+            int maxLines = 3;
+
             //Search all not direct connections
             foreach (Line startLine in startLines)
             {
                 foreach (Line endLine in endLines)
                 {
-                    foreach (LinePath linePath in allConnectionsTable)
+                    if (startLine == endLine) continue;
+
+                    Queue<List<Line>> queue = new Queue<List<Line>>();
+                    queue.Enqueue(new List<Line> { startLine });
+
+                    while (queue.Count > 0)
                     {
-                        if (linePath.startLine == startLine && linePath.destinationLine == endLine)
+                        List<Line> currentPath = queue.Dequeue();
+                        Line lastLine = currentPath.Last();
+
+                        if (lastLine == endLine)
                         {
-                            relavantPaths.Add(linePath);
+                            relavantPaths.Add(new LinePath(startLine, endLine, new List<Line>(currentPath)));
+                            continue;
+                        }
+
+                        if (currentPath.Count >= maxLines)
+                        {
+                            continue; // Don't go deeper than maxLines
+                        }
+
+                        if (!directConnectionTable.TryGetValue(lastLine, out var connectedLines)) continue;
+
+                        foreach (var nextLine in connectedLines)
+                        {
+                            if (!currentPath.Contains(nextLine)) // avoid cycles
+                            {
+                                var newPath = new List<Line>(currentPath) { nextLine };
+                                queue.Enqueue(newPath);
+                            }
                         }
                     }
                 }
             }
+
 
             //Sort path by number of lines used
             return relavantPaths.OrderBy(lp => lp.path.Count).ToList();
@@ -240,6 +211,8 @@ namespace Pathfinding
 
             return new Path(startStation, endStation, subPaths.ToArray());
         }
+
+
 
         /// <summary>
         /// Finds the best (shortest) transfer station between each pair of lines
