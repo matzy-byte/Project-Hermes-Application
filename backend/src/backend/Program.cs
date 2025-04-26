@@ -19,7 +19,7 @@ RobotManager.initialize();
 // Create an instance of the WebSocketManager
 WS.WebSocketManager webSocketManager = new WS.WebSocketManager(SimulationSettings.webSocketURL);
 // Start the WebSocket server in a separate thread (asynchronous task)
-Task.Run(() => webSocketManager.Start());
+Task.Run(() => webSocketManager.start());
 Console.WriteLine("WebSocket server started on " + SimulationSettings.webSocketURL);
 
 SimulationManager.startSimulation();

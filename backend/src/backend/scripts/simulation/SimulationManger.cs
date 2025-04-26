@@ -12,7 +12,7 @@ namespace Simulation
     {
 
         public static bool isSimulationRunning = false;
-
+        public static bool isSimulationPaused = false;
 
         //Variables for timings
         public static float actualDeltaTime { get; private set; } = 0f;
@@ -27,24 +27,6 @@ namespace Simulation
         private static Random random = new Random();
         private static int debugTrainIndex = 5;
 
-        /// <summary>
-        /// Starts the simulation
-        /// </summary>
-        public static void startSimulation()
-        {
-            isSimulationRunning = true;
-            Console.WriteLine("Starting Simulation");
-            simulationLoop();
-        }
-
-
-        /// <summary>
-        /// Stops the simulation after current simulation loop is finished
-        /// </summary>
-        public static void stopSimulation()
-        {
-            isSimulationRunning = false;
-        }
 
         /// <summary>
         /// The loop in wich the main simulation is running
@@ -53,22 +35,25 @@ namespace Simulation
         {
             while (isSimulationRunning)
             {
-                stopTime();
+                if (isSimulationPaused != true)
+                {
+                    stopTime();
 
-                //Update train positions
-                TrainManager.updateAllTrains();
-                RobotManager.updateAllRobots();
+                    //Update train positions
+                    TrainManager.updateAllTrains();
+                    RobotManager.updateAllRobots();
 
-                //TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
-                string packageData = PackageManager.getPackageDataJSON();
-                string robotData = RobotManager.getRobotDataJSON();
-                string trainGeoData = TrainManager.getTrainGeoDataJSON();
-                string trainLines = TrainManager.getTrainLinesJSON();
-                string trainPositions = TrainManager.getTrainPositionsJSON();
-                string trainStationInLine = TrainManager.getTrainStationsJSON();
-                string usedStations = TrainManager.getUsedStationsJSON();
-                RobotManager.debugRobot();
-                sleepTime();
+                    //TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
+                    string packageData = PackageManager.getPackageDataJSON();
+                    string robotData = RobotManager.getRobotDataJSON();
+                    string trainGeoData = TrainManager.getTrainGeoDataJSON();
+                    string trainLines = TrainManager.getTrainLinesJSON();
+                    string trainPositions = TrainManager.getTrainPositionsJSON();
+                    string trainStationInLine = TrainManager.getTrainStationsJSON();
+                    string usedStations = TrainManager.getUsedStationsJSON();
+                    RobotManager.debugRobot();
+                    sleepTime();
+                }
             }
         }
 
@@ -97,5 +82,58 @@ namespace Simulation
                 Thread.Sleep((int)(remainingTime * 1000)); // Convert seconds to milliseconds
             }
         }
+
+
+        //Methods for starting/Stopping the simulation
+
+
+        /// <summary>
+        /// Starts the simulation
+        /// </summary>
+        public static void startSimulation()
+        {
+            isSimulationRunning = true;
+            Console.WriteLine("Starting Simulation");
+            simulationLoop();
+        }
+
+
+        /// <summary>
+        /// Stops the simulation after current simulation loop is finished
+        /// </summary>
+        public static void stopSimulation()
+        {
+            isSimulationRunning = false;
+        }
+
+
+
+        /// <summary>
+        /// Starts the simulation
+        /// </summary>
+        public static void pauseSimulation()
+        {
+            isSimulationPaused = true;
+        }
+
+
+        /// <summary>
+        /// Stops the simulation after current simulation loop is finished
+        /// </summary>
+        public static void continueSimulation()
+        {
+            isSimulationPaused = false;
+        }
+
+
+        /// <summary>
+        /// Returns the current settings and state of the simulation
+        /// </summary>
+        public static string getSimulationStateJSON()
+        {
+            string str = "{}";
+            return str;
+        }
+
     }
 }
