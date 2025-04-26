@@ -1,236 +1,182 @@
 ﻿using System;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-class Program
+namespace WebSocketClientTest
 {
-    private static ClientWebSocket clientWebSocket = new ClientWebSocket();
-    private static int requestId = 0;
-
-
-    /// <summary>
-    /// Program entry point
-    /// </summary>
-    static async Task Main(string[] args)
+    class Program
     {
-        string url = "ws://localhost:5000/ws/";
-        await StartWebSocketClient(url);
-    }
-
-
-    /// <summary>
-    /// connects client with server
-    /// </summary>
-    public static async Task StartWebSocketClient(string serverUri)
-    {
-        try
+        static async Task Main(string[] args)
         {
-            await clientWebSocket.ConnectAsync(new Uri(serverUri), CancellationToken.None);
-            Console.WriteLine("Connected to WebSocket server.");
+            Uri serverUri = new Uri("ws://localhost:5000/ws/"); // <- your server address
+            using var client = new ClientWebSocket();
 
-            //Start thread for streamed dat and requesting data
-            Task streamTask = Task.Run(() => StreamData());
-            Task requestDataTask = Task.Run(() => RequestDataLoop());
+            Console.WriteLine("Connecting to server...");
+            await client.ConnectAsync(serverUri, CancellationToken.None);
+            Console.WriteLine("Connected!");
 
-            await Task.WhenAll(streamTask, requestDataTask);
+            // Start receiving streamed messages in the background
+            _ = Task.Run(() => ReceiveMessages(client));
+
+            // Test all the Request MessageTypes
+            await SendRequest(client, 100, MessageType.TRAINLINES);
+            await Task.Delay(500);
+            await SendRequest(client, 101, MessageType.TRAINSTATIONSINLINE);
+            await Task.Delay(500);
+            await SendRequest(client, 102, MessageType.USEDSTATIONS);
+            await Task.Delay(500);
+            await SendRequest(client, 103, MessageType.TRAINGEODATA);
+            await Task.Delay(500);
+            await SendRequest(client, 104, MessageType.PACKAGEDATA);
+            await Task.Delay(500);
+            await SendRequest(client, 105, MessageType.SIMULATIONSTATE);
+            await Task.Delay(500);
+
+            // Also test simple control commands: Start, Pause, Continue, Stop
+            // await SendControlCommand(client, 200, MessageType.STARTSIMULATION);
+            await Task.Delay(1000); // Let some simulation happen
+                                    //  await SendControlCommand(client, 201, MessageType.PAUSESIMULATION);
+            await Task.Delay(1000);
+            //  await SendControlCommand(client, 202, MessageType.CONTINUESIMULATION);
+            await Task.Delay(1000);
+            //  await SendControlCommand(client, 203, MessageType.STOPSIMULATION);
+
+            Console.WriteLine("Testing done. Press any key to exit...");
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
 
-        //Close the connection
-        finally
+        static async Task SendRequest(ClientWebSocket client, int id, MessageType type)
         {
-            if (clientWebSocket.State == WebSocketState.Open)
+            var message = new WebSocketMessage
             {
-                await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-                Console.WriteLine("WebSocket connection closed.");
-            }
-        }
-    }
+                id = id,
+                messageType = type,
+                data = JsonDocument.Parse("{}").RootElement.Clone()
+            };
 
-
-    /// <summary>
-    /// Thread for working with streamed data
-    /// </summary>
-    private static async Task StreamData()
-    {
-        var buffer = new byte[1024];
-        StringBuilder messageBuilder = new StringBuilder(); // To accumulate the message as it arrives
-
-        while (clientWebSocket.State == WebSocketState.Open)
-        {
-            try
+            string json = JsonSerializer.Serialize(message, new JsonSerializerOptions
             {
-                WebSocketReceiveResult result = await clientWebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                Converters = { new JsonStringEnumConverter() }
+            });
 
-                messageBuilder.Append(Encoding.UTF8.GetString(buffer, 0, result.Count)); // Append the received data to the builder
+            var bytes = Encoding.UTF8.GetBytes(json);
+            await client.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
 
-                if (result.EndOfMessage) // If the message is complete
+            Console.WriteLine($"Sent request: {type}");
+        }
+
+        static async Task SendControlCommand(ClientWebSocket client, int id, MessageType type)
+        {
+            var message = new WebSocketMessage
+            {
+                id = id,
+                messageType = type,
+                data = JsonDocument.Parse("{}").RootElement.Clone()
+            };
+
+            string json = JsonSerializer.Serialize(message, new JsonSerializerOptions
+            {
+                Converters = { new JsonStringEnumConverter() }
+            });
+
+            var bytes = Encoding.UTF8.GetBytes(json);
+            await client.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
+
+            Console.WriteLine($"Sent control command: {type}");
+        }
+
+        static async Task ReceiveMessages(ClientWebSocket client)
+        {
+            var buffer = new byte[4096];
+
+            while (client.State == WebSocketState.Open)
+            {
+                try
                 {
-                    string completeMessage = messageBuilder.ToString();
-                    messageBuilder.Clear(); // Clear the builder for the next message
+                    var messageBuffer = new List<byte>();
 
-                    // Handle as streamed data
-                    if (completeMessage.Contains("TrainPositions"))
+                    WebSocketReceiveResult result;
+                    do
                     {
-                        //Streamed Train positions
-                        //Console.WriteLine("Streamed Train Positons \t Message Length: " + completeMessage.Length);
-                    }
-                    else if (completeMessage.Contains("TrainLines"))
+                        result = await client.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                        if (result.MessageType == WebSocketMessageType.Close)
+                        {
+                            Console.WriteLine("Server closed connection");
+                            await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None);
+                            return;
+                        }
+
+                        messageBuffer.AddRange(buffer.Take(result.Count));
+
+                    } while (!result.EndOfMessage);
+
+                    // Full message assembled
+                    string messageString = Encoding.UTF8.GetString(messageBuffer.ToArray());
+
+                    WebSocketMessage message = convertIncomingMessage(messageString);
+
+                    if (message.messageType != MessageType.TRAINDATA && message.messageType != MessageType.ROBOTDATA)
                     {
-                        //train line Request
-                        Console.WriteLine("Requested TrainLine \t Message Length: " + completeMessage.Length);
+
+                        Console.WriteLine($"Received complete message: {messageString}");
+
                     }
-                    else if (completeMessage.Contains("StationsInLine"))
-                    {
-                        //Stations in line
-                        Console.WriteLine("Requested StationInLine \t Message Length: " + completeMessage.Length);
-                    }
-                    else if (completeMessage.Contains("UsedStations"))
-                    {
-                        //Used Stations
-                        Console.WriteLine("Requested UsedStations \t Message Length: " + completeMessage.Length);
-                    }
-                    else if (completeMessage.Contains("TrainGeoData"))
-                    {
-                        //Geo Data
-                        Console.WriteLine("Requested TrainGeoData \t Message Length: " + completeMessage.Length);
-                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Receive error: {ex.Message}");
+                    break;
                 }
             }
-            catch (Exception ex)
+        }
+
+
+
+        private static WebSocketMessage convertIncomingMessage(string message)
+        {
+            var options = new JsonSerializerOptions
             {
-                Console.WriteLine($"Error in StreamData: {ex.Message}");
-            }
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
 
-            await Task.Delay(1); // Allow for other tasks to execute
+            return JsonSerializer.Deserialize<WebSocketMessage>(message, options);
         }
-    }
 
 
-
-
-    /// <summary>
-    /// Thread to request data 
-    /// </summary>
-    private static async Task RequestDataLoop()
-    {
-        while (clientWebSocket.State == WebSocketState.Open)
+        public enum MessageType
         {
-            try
-            {
-                switch (requestId)
-                {
-                    case 0:
-                        await RequestUsedStations();
-                        break;
-                    case 1:
-                        await RequestTrainLines();
-                        break;
-                    case 2:
-                        await RequestTrainStations();
-                        break;
-                    case 3:
-                        await RequestTrainGeoData();
-                        break;
-                }
+            //Streamed Data
+            ROBOTDATA,
+            TRAINDATA,
 
-                await Task.Delay(5000);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in RequestDataLoop: {ex.Message}");
-            }
+            //Requested Data
+            TRAINLINES,
+            TRAINSTATIONSINLINE,
+            USEDSTATIONS,
+            TRAINGEODATA,
+            PACKAGEDATA,
+            SIMULATIONSTATE,
 
-            requestId++;
-            requestId = requestId >= 5 ? 0 : requestId;
+            //Set Data
+            SETTINGS,
+            SETSIMULATIONSPEED,
+            STARTSIMULATION,
+            STOPSIMULATION,
+            PAUSESIMULATION,
+            CONTINUESIMULATION
         }
-    }
 
-
-
-    /// <summary>
-    /// Request usedStations
-    /// </summary>
-    private static async Task RequestUsedStations()
-    {
-        try
+        public class WebSocketMessage
         {
-            string requestMessage = "getUsedStations"; // Send only the command
-            byte[] messageBytes = Encoding.UTF8.GetBytes(requestMessage);
-
-            await clientWebSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            Console.WriteLine($"Sent request: {requestMessage}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in RequestUsedStations: {ex.Message}");
-        }
-    }
-
-
-
-
-    /// <summary>
-    /// Request Train Lines
-    /// </summary>
-    private static async Task RequestTrainLines()
-    {
-        try
-        {
-            string requestMessage = $"getTrainLines";
-            byte[] messageBytes = Encoding.UTF8.GetBytes(requestMessage);
-
-            await clientWebSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            Console.WriteLine($"Sent request: {requestMessage}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in RequestTrainLines: {ex.Message}");
-        }
-    }
-
-
-    /// <summary>
-    /// Request Train Stations
-    /// </summary>
-    private static async Task RequestTrainStations()
-    {
-        try
-        {
-            string requestMessage = $"getTrainStations";
-            byte[] messageBytes = Encoding.UTF8.GetBytes(requestMessage);
-
-            await clientWebSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            Console.WriteLine($"Sent request: {requestMessage}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in RequestTrainLines: {ex.Message}");
-        }
-    }
-
-
-    /// <summary>
-    /// Request Train geo data
-    /// </summary>
-    private static async Task RequestTrainGeoData()
-    {
-        try
-        {
-            string requestMessage = $"getTrainGeoData";
-            byte[] messageBytes = Encoding.UTF8.GetBytes(requestMessage);
-
-            await clientWebSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            Console.WriteLine($"Sent request: {requestMessage}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in RequestTrainLines: {ex.Message}");
+            public int id { get; set; }
+            public MessageType messageType { get; set; }
+            public JsonElement data { get; set; }
         }
     }
 }

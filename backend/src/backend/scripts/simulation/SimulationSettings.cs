@@ -25,5 +25,18 @@ namespace Simulation
         /// URL of the WebSocket
         /// </summary>
         public static string webSocketURL = "http://localhost:5000/ws/";
+
+
+
+        public static void updateSettings(string settingsJSONstring)
+        {
+            Console.WriteLine("Settings changed");
+        }
+
+
+        public static void updateSimulationSeed(string newSpeedJSONstring)
+        {
+            Console.WriteLine("Speed changed");
+        }
     }
 }
