@@ -1,13 +1,16 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public partial class SessionManager : Node
 {
     public static SessionManager Instance;
     private string connectionString = "ws://localhost:5000/ws/";
     private WebSocketPeer webSocket = new();
+    private bool connected = false;
 
     public override void _Ready()
     {
@@ -17,53 +20,63 @@ public partial class SessionManager : Node
     public override void _Process(double delta)
     {
         webSocket.Poll();
+        if (!connected)
+        {
+            
+            if (webSocket.GetReadyState() == WebSocketPeer.State.Open)
+            {
+                GD.Print("Connected to WebSocket: " + connectionString);
+                GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowSimmulationSettings();
+                Request(102, MessageType.USEDSTATIONS);
+                connected = true;
+            }
+            return;
+        }
+
         if (webSocket.GetReadyState() == WebSocketPeer.State.Open)
         {
             while (webSocket.GetAvailablePacketCount() > 0)
             {
                 var packet = webSocket.GetPacket();
-                string message = packet.GetStringFromUtf8();
+                string packetData = packet.GetStringFromUtf8();
 
-                if (message.Contains("TrainPositions"))
+                WebSocketMessage message = JsonSerializer.Deserialize<WebSocketMessage>(packetData, new JsonSerializerOptions{Converters = { new JsonStringEnumConverter() }});
+                Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(message.data);
+                switch (message.id)
                 {
-                    Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(message);
-                    Train[] trains = data["TrainPositions"].Deserialize<Train[]>();
-                    if (GameManager.Instance.trains.Count > 0)
+                    case 0:
                     {
-                        GameManager.Instance.UpdateTrains(trains);
+                        if (GameManager.Instance.stations.Count < 185) break;
+                        Train[] trains = data["TrainPositions"].Deserialize<Train[]>();
+                        if (GameManager.Instance.trains.Count <= 0)
+                        {
+                            GameManager.Instance.SpawnTrains(trains);
+                        }
+                        else {
+                            GameManager.Instance.UpdateTrains(trains);
+                        }
+                        break;
                     }
-                    else if (GameManager.Instance.stations.Count > 0)
+                    case 1:
                     {
-                        GameManager.Instance.SpawnTrains(trains);
+                        if (GameManager.Instance.trains.Count < 15) break;
+                        Robot[] robots = data["RobotData"].Deserialize<Robot[]>();
+                        if (GameManager.Instance.robots.Count <= 0)
+                        {
+                            GameManager.Instance.SpawnRobots(robots);
+                        }
+                        else
+                        {
+                            GameManager.Instance.UpdateRobots(robots);
+                        }
+                        break;
                     }
-                    //Streamed Train positions
-                    //GD.Print("Streamed Train Positons \t Message Length: " + message.Length);
-                }
-                else if (message.Contains("TrainLines"))
-                {
-                    //train line Request
-                    //GD.Print("Requested TrainLine \t Message Length: " + message.Length);
-                }
-                else if (message.Contains("StationsInLine"))
-                {
-                    //Stations in line
-                    //GD.Print("Requested StationInLine \t Message Length: " + message.Length);
-                }
-                else if (message.Contains("TrainGeoData"))
-                {
-                    //Geo Data
-                    //GD.Print("Requested TrainGeoData \t Message Length: " + message.Length);
-                }
-                else if (message.Contains("RobotData"))
-                {
-                    //Geo Data
-                    //GD.Print("Requested RobotData \t Message Length: " + message.Length);
-                }
-                else if (message.Contains("UsedStations"))
-                {
-                    Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(message);
-                    Station[] stations = data["UsedStations"].Deserialize<Station[]>();
-                    GameManager.Instance.SpawnStations(stations);
+                    case 102:
+                    {
+                        Station[] stations = data["UsedStations"].Deserialize<Station[]>();
+                        GameManager.Instance.SpawnStations(stations);
+                        break;
+                    }
                 }
             }
         }
@@ -83,16 +96,22 @@ public partial class SessionManager : Node
             GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowConnectionDebugInfo(error);
             return;
         }
-        else
-        {
-            GD.Print("Connected to WebSocket: " + connectionString);
-            GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowSimmulationSettings();
-        }
     }
     
-    public void Request(string message)
+    public void Request(int id, MessageType type)
     {
-        webSocket.SendText(message);
+        WebSocketMessage message = new()
+        {
+            id = id,
+            messageType = type,
+            data = JsonDocument.Parse("{}").RootElement.Clone()
+        };
+        string jsonMessage = JsonSerializer.Serialize(message, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        });
+        webSocket.SendText(jsonMessage);
     }
 }
 
