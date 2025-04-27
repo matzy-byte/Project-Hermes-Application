@@ -3,7 +3,7 @@ namespace Trains
 {
     public static class TrainManager
     {
-        public static Train[] allTrains;
+        public static List<Train> allTrains;
 
 
         /// <summary>
@@ -11,15 +11,13 @@ namespace Trains
         /// </summary>
         public static void initialize()
         {
-            List<Train> usableTrains = new List<Train>();
+            allTrains = new List<Train>();
 
             for (int i = 0; i < LineManager.usableLines.Length; i++)
             {
-                usableTrains.Add(new Train(LineManager.usableLines[i], i));
+                allTrains.Add(new Train(LineManager.usableLines[i], i));
             }
-
-            allTrains = usableTrains.ToArray();
-            Console.WriteLine("Number of Trains initialized: " + allTrains.Length);
+            Console.WriteLine("Number of Trains initialized: " + allTrains.Count);
         }
 
 

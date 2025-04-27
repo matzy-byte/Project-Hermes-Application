@@ -61,7 +61,6 @@ namespace Robots
             //Check if robot has any packages left or is no longer on a path (should always be both true)
             if (onPath == false)
             {
-                Console.WriteLine("Path Finished");
                 travelToNextLoadingStation();
             }
 
@@ -130,7 +129,7 @@ namespace Robots
         {
             if (loadedPackages.ContainsKey(currentStation))
             {
-                Console.WriteLine("Removed " + loadedPackages[currentStation].Count + " packages at station " + currentStation.name);
+                //Console.WriteLine("Removed " + loadedPackages[currentStation].Count + " packages at station " + currentStation.name);
                 loadedPackages.Remove(currentStation);
             }
         }
@@ -159,7 +158,7 @@ namespace Robots
         {
             //fill remaining space with packages that go to station that are on the way
             PackageManager.fillRemainingSpace(this);
-            Console.WriteLine("Adds packages at station" + currentStation.name);
+            //Console.WriteLine("Adds packages at station" + currentStation.name);
         }
 
         /// <summary>
@@ -352,7 +351,7 @@ namespace Robots
         /// </summary>
         public void addNewPackageRoute()
         {
-            Console.WriteLine("Add packages at station: " + currentStation.name);
+            Console.WriteLine("Robot: " + index + " added packages at station: " + currentStation.name);
 
             //Get the station that is the final station of the new path
             Station targetStation = PackageManager.getNewRobotDestination(this);
