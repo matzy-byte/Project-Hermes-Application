@@ -25,7 +25,7 @@ Request all packages that are currently in the Simulation. The JSON contains whe
 * Answer: PackageData.json
 
 ## Simulation State
-Not Implemented but does not Crash if called
+Request the current Simulation State. 
 * Request: requestSimulationState.json
 * Answer: SimulationState.json
 
@@ -33,16 +33,16 @@ Not Implemented but does not Crash if called
 # Set Requests
 Look at jsonData/WebSocketData/Setable 
 ## Set Settings
-Not implemened yet but does not crash simulation
+Resets the and Starts the simulation with new settings
 * Request: setStimulationSettings.json
 ## Set simulation Speed
-Not implemened yet but does not crash simulation
+Sets the simulation speed to a new speed. 
 * Request: changeSimulationSpeed.json
 ## Start Simulation
-Starts the simulation
+Starts the simulation from beginning
 * Request: startSimulation.json
 ## Stop Simulation
-Stops the simulation
+Stops the simulation and resets the Robots, Trains and Packages
 * Request: stopSimulation.json
 ## Pause Simulation
 Pauses the simulation

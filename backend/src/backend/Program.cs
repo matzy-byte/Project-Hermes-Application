@@ -1,26 +1,20 @@
-using json;
-using Microsoft.VisualBasic;
 using Pathfinding;
 using Simulation;
 using TrainLines;
-using Trains;
-using WS;
-using System.Threading;
-using System.Threading.Tasks;
-using Robots;
-using Packages;
+
 
 LineManager.initialize();
-TrainManager.initialize();
-PackageManager.initialize();
 PathfindingManager.initializePathFinding();
-RobotManager.initialize();
+Console.WriteLine("Simulation is Ready...");
 
 // Create an instance of the WebSocketManager
-WS.WebSocketManager webSocketManager = new WS.WebSocketManager(SimulationSettings.webSocketURL);
+WS.WebSocketManager webSocketManager = new WS.WebSocketManager(SimulationSettingsGlobal.webSocketURL);
 // Start the WebSocket server in a separate thread (asynchronous task)
 Task.Run(() => webSocketManager.start());
-Console.WriteLine("WebSocket server started on " + SimulationSettings.webSocketURL);
+Console.WriteLine("WebSocket server started on " + SimulationSettingsGlobal.webSocketURL);
 
+//Sets the simulation in the ready state
 SimulationManager.startSimulation();
-Console.WriteLine("Stop");
+
+//Starts the acutal simulation
+SimulationManager.simulationLoop();

@@ -109,7 +109,7 @@ namespace WS
                     {
                         //Send the data
                         await sendTrainData(socket);
-                        await Task.Delay(5);
+                        await Task.Delay(SimulationSettingsGlobal.streamDelayBetweenMessages);
                         await sendRobotData(socket);
                     }
                     catch (Exception ex)
@@ -119,7 +119,7 @@ namespace WS
                 }
 
                 //Delay between transmissions
-                await Task.Delay(SimulationSettings.dataStreamDelay);
+                await Task.Delay(SimulationSettingsGlobal.dataStreamDelay);
             }
         }
 
@@ -192,23 +192,24 @@ namespace WS
             {
                 case MessageType.SETTINGS:
                     SimulationSettings.updateSettings(incomingMessage.data.GetRawText());
-                    break;
+                    return;
                 case MessageType.SETSIMULATIONSPEED:
                     SimulationSettings.updateSimulationSeed(incomingMessage.data.GetRawText());
-                    break;
+                    return;
                 case MessageType.STARTSIMULATION:
                     SimulationManager.startSimulation();
-                    break;
+                    return;
                 case MessageType.STOPSIMULATION:
                     SimulationManager.stopSimulation();
-                    break;
+                    return;
                 case MessageType.PAUSESIMULATION:
                     SimulationManager.pauseSimulation();
-                    break;
+                    return;
                 case MessageType.CONTINUESIMULATION:
                     SimulationManager.continueSimulation();
-                    break;
+                    return;
             }
+            throw new Exception("Message not valid");
         }
 
 
@@ -398,9 +399,9 @@ namespace WS
 
         private class WebSocketMessage
         {
-            public int id{ get; set; }
-            public MessageType messageType{ get; set; }
-            public JsonElement data{ get; set; }
+            public int id { get; set; }
+            public MessageType messageType { get; set; }
+            public JsonElement data { get; set; }
         }
     }
 }

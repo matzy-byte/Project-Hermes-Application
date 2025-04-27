@@ -23,6 +23,7 @@ namespace WebSocketClientTest
             _ = Task.Run(() => ReceiveMessages(client));
 
             // Test all the Request MessageTypes
+            /*
             await SendRequest(client, 100, MessageType.TRAINLINES);
             await Task.Delay(500);
             await SendRequest(client, 101, MessageType.TRAINSTATIONSINLINE);
@@ -32,19 +33,30 @@ namespace WebSocketClientTest
             await SendRequest(client, 103, MessageType.TRAINGEODATA);
             await Task.Delay(500);
             await SendRequest(client, 104, MessageType.PACKAGEDATA);
+           
             await Task.Delay(500);
             await SendRequest(client, 105, MessageType.SIMULATIONSTATE);
             await Task.Delay(500);
-
+ */
             // Also test simple control commands: Start, Pause, Continue, Stop
-            // await SendControlCommand(client, 200, MessageType.STARTSIMULATION);
-            await Task.Delay(1000); // Let some simulation happen
-                                    //  await SendControlCommand(client, 201, MessageType.PAUSESIMULATION);
-            await Task.Delay(1000);
-            //  await SendControlCommand(client, 202, MessageType.CONTINUESIMULATION);
-            await Task.Delay(1000);
-            //  await SendControlCommand(client, 203, MessageType.STOPSIMULATION);
 
+            await Task.Delay(1000);
+            //await SendControlCommand(client, 203, MessageType.STARTSIMULATION);
+            /*
+            await Task.Delay(1000);
+            await SendControlCommand(client, 203, MessageType.SETTINGS);
+            await Task.Delay(1000);
+            await SendControlCommand(client, 200, MessageType.SETSIMULATIONSPEED);
+            await Task.Delay(1000); // Let some simulation happen
+         
+            await SendControlCommand(client, 201, MessageType.PAUSESIMULATION);
+            
+            await Task.Delay(1000);
+               */
+            await SendControlCommand(client, 202, MessageType.CONTINUESIMULATION);
+            /*await Task.Delay(1000);
+            await SendControlCommand(client, 203, MessageType.STOPSIMULATION);
+*/
             Console.WriteLine("Testing done. Press any key to exit...");
         }
 
@@ -56,6 +68,7 @@ namespace WebSocketClientTest
                 messageType = type,
                 data = JsonDocument.Parse("{}").RootElement.Clone()
             };
+
 
             string json = JsonSerializer.Serialize(message, new JsonSerializerOptions
             {
@@ -76,6 +89,30 @@ namespace WebSocketClientTest
                 messageType = type,
                 data = JsonDocument.Parse("{}").RootElement.Clone()
             };
+            if (type == MessageType.SETSIMULATIONSPEED)
+            {
+                string jsonString = @"{ ""SimulationSpeed"" : 30.0 }";
+                message.data = JsonDocument.Parse(jsonString).RootElement.Clone();
+            }
+            if (type == MessageType.SETTINGS)
+            {
+                string jsonString = @"{
+      ""SimulationSpeed"": 300,
+      ""TrainWaitingTimeAtStation"": 50,
+      ""LoadingStationIDs"": [
+        ""de:08215:12656"",
+        ""de:08212:98""
+      ],
+      ""ChargingStationsIDs"": [
+        ""de:08212:7"",
+        ""de:08212:1002""
+      ],
+      ""StartPackageCount"": 5000,
+      ""NumberOfPackagesInRobot"": 500,
+      ""NumberOfRobots"": 3
+    }";
+                message.data = JsonDocument.Parse(jsonString).RootElement.Clone();
+            }
 
             string json = JsonSerializer.Serialize(message, new JsonSerializerOptions
             {

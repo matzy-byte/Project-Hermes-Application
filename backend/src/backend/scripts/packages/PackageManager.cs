@@ -25,10 +25,16 @@ namespace Packages
         /// </summary>
         public static void initialize()
         {
+            List<Station> allStation = TrainManager.getAllUsedStations();
             //Initialize the loading stations
             foreach (string stationID in SimulationSettings.loadingStationIds)
             {
-                loadingStations.Add(LineManager.getStationFromId(stationID));
+                Station station = LineManager.getStationFromId(stationID);
+                if (allStation.Contains(station) == false)
+                {
+                    throw new Exception("Station to add does not exist in simulation");
+                }
+                loadingStations.Add(station);
             }
 
             initializeWaitingList();
@@ -41,7 +47,6 @@ namespace Packages
         /// </summary>
         private static void initializePackages()
         {
-
             foreach (Station station in loadingStations)
             {
                 //create the packages

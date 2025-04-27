@@ -255,6 +255,10 @@ namespace Trains
         }
 
 
+        /// <summary>
+        /// Generates the JSON string with the geodata for the train
+        /// </summary>
+        /// <returns></returns>
         public string getTrainGeoDataJSON()
         {
             string str = "{\n";
@@ -263,6 +267,10 @@ namespace Trains
             str += "}";
             return str;
         }
+
+        /// <summary>
+        /// Debug method
+        /// </summary>
         public void printTrainInfoDebug()
         {
             string str = line.name + " :";
@@ -302,7 +310,7 @@ namespace Trains
             Station startStation = stations.First();
             Station endStation = stations.Last();
 
-            for (int i = 0; i < SimulationSettings.preComputedStopTimes * 2; i++)
+            for (int i = 0; i < SimulationSettingsGlobal.preComputedStopTimes * 2; i++)
             {
                 float timeBetweenStations = calculateTimeBetweenStations(goingForward);
 
