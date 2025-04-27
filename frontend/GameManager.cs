@@ -51,7 +51,7 @@ public partial class GameManager : Node
             StationScript newStation = stationScene.Instantiate<StationScript>();
             newStation.Setup(station.StationID, station.StationName, station.Long, station.Lat);
             GetTree().CurrentScene.AddChild(newStation);
-            newStation.GlobalPosition = GeoMapper.LatLonToGameCoords(station.Lat / 1e13, station.Long / 1e14);
+            newStation.GlobalPosition = GeoMapper.LatLonToGameCoords(station.Lat, station.Long);
             this.stations.Add(newStation);
         }
     }

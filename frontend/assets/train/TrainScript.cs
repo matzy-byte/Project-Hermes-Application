@@ -40,6 +40,7 @@ public partial class TrainScript : StaticBody3D
         0,
         Mathf.Lerp(CurrentStation.GlobalPosition.Z, NextStation.GlobalPosition.Z, TravelDistance)
         );
-        LookAt(NextStation.GlobalPosition, Vector3.Up);
+        if (GlobalPosition != NextStation.GlobalPosition)
+            LookAt(NextStation.GlobalPosition, Vector3.Up);
     }
 }

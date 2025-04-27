@@ -26,17 +26,7 @@ public partial class SessionManager : Node
             {
                 GD.Print("Connected to WebSocket: " + connectionString);
                 GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowSimmulationSettings();
-                //Request(102, MessageType.USEDSTATIONS);
-
-                //TODO: SERVER FIX USED STATIONS
-                var file = FileAccess.Open("res://UsedStations.json", FileAccess.ModeFlags.Read);
-                string json = file.GetAsText();
-                file.Close();
-                WebSocketMessage message = JsonSerializer.Deserialize<WebSocketMessage>(json, new JsonSerializerOptions{Converters = { new JsonStringEnumConverter() }});
-                Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(message.data);
-                Station[] stations = data["UsedStations"].Deserialize<Station[]>();
-                GameManager.Instance.SpawnStations(stations);
-
+                Request(102, MessageType.USEDSTATIONS);
                 connected = true;
             }
             return;

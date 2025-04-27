@@ -9,10 +9,10 @@ public static class GeoMapper
     private const double MaxLat = 49.2;
 
     // Game space bounds (B)
-    private const float MinX = -500f;
-    private const float MaxX = 500f;
-    private const float MinZ = -500f;
-    private const float MaxZ = 500f;
+    private const float MinX = 600f;
+    private const float MaxX = -600f;
+    private const float MinZ = -600;
+    private const float MaxZ = 600;
 
     public static Vector3 LatLonToGameCoords(double lat, double lon)
     {
