@@ -1,7 +1,7 @@
 {
-    "id": 3,
+    "id": 200,
     "messageType": "SETSIMULATIONSPEED",
-    "Data": {
-        "Not Implemented": null
+    "data": {
+        "SimulationSpeed": 30.0
     }
 }

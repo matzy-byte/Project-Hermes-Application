@@ -23,36 +23,24 @@ namespace Simulation
 
 
 
-        //Variables for debugging
-        private static Random random = new Random();
-        private static int debugTrainIndex = 5;
-
-
         /// <summary>
         /// The loop in wich the main simulation is running
         /// </summary>
-        private static void simulationLoop()
+        public static void simulationLoop()
         {
-            while (isSimulationRunning)
+            while (true)
             {
-                if (isSimulationPaused != true)
+                while (isSimulationRunning)
                 {
-                    stopTime();
+                    if (isSimulationPaused != true)
+                    {
+                        stopTime();
 
-                    //Update train positions
-                    TrainManager.updateAllTrains();
-                    RobotManager.updateAllRobots();
-
-                    //TrainManager.allTrains[debugTrainIndex].printTrainInfoDebug();
-                    string packageData = PackageManager.getPackageDataJSON();
-                    string robotData = RobotManager.getRobotDataJSON();
-                    string trainGeoData = TrainManager.getTrainGeoDataJSON();
-                    string trainLines = TrainManager.getTrainLinesJSON();
-                    string trainPositions = TrainManager.getTrainPositionsJSON();
-                    string trainStationInLine = TrainManager.getTrainStationsJSON();
-                    string usedStations = TrainManager.getUsedStationsJSON();
-                    RobotManager.debugRobot();
-                    sleepTime();
+                        //Update train positions
+                        TrainManager.updateAllTrains();
+                        RobotManager.updateAllRobots();
+                        sleepTime();
+                    }
                 }
             }
         }
@@ -75,7 +63,7 @@ namespace Simulation
 
         private static void sleepTime()
         {
-            float cycleTime = 1f / SimulationSettings.simulationLoopsPerSecond;
+            float cycleTime = 1f / SimulationSettingsGlobal.simulationLoopsPerSecond;
             float remainingTime = cycleTime - actualDeltaTime;
             if (remainingTime > 0)
             {
@@ -92,9 +80,28 @@ namespace Simulation
         /// </summary>
         public static void startSimulation()
         {
+            //initalize all things that can change through settings
+            Console.WriteLine("Initialize Simulaion");
+            initializeSimulation();
+
+            //reset time
+            totalTime = 0;
+            scaledTotalTime = 0;
+
+
+            Console.WriteLine("Starting Simulation ...");
             isSimulationRunning = true;
-            Console.WriteLine("Starting Simulation");
-            simulationLoop();
+        }
+
+
+        /// <summary>
+        /// Initializes everthing that is changeable with settings
+        /// </summary>
+        private static void initializeSimulation()
+        {
+            TrainManager.initialize();
+            PackageManager.initialize();
+            RobotManager.initialize();
         }
 
 
@@ -103,7 +110,21 @@ namespace Simulation
         /// </summary>
         public static void stopSimulation()
         {
+            Console.WriteLine("Stoping Simulation ...");
             isSimulationRunning = false;
+            clearSimualtion();
+        }
+
+
+        /// <summary>
+        /// Clears the simulation for a new start
+        /// </summary>
+        private static void clearSimualtion()
+        {
+            Console.WriteLine("Clearing simulation ...");
+            TrainManager.allTrains.Clear();
+            RobotManager.allRobots.Clear();
+            PackageManager.waitingPackagesLists.Clear();
         }
 
 
@@ -113,6 +134,7 @@ namespace Simulation
         /// </summary>
         public static void pauseSimulation()
         {
+            Console.WriteLine("Pause Simulation");
             isSimulationPaused = true;
         }
 
@@ -122,6 +144,7 @@ namespace Simulation
         /// </summary>
         public static void continueSimulation()
         {
+            Console.WriteLine("Continue Simulation");
             isSimulationPaused = false;
         }
 
@@ -131,7 +154,47 @@ namespace Simulation
         /// </summary>
         public static string getSimulationStateJSON()
         {
-            string str = "{}";
+            string str = "{\n";
+            str += "\"SimulationState\" : {\n";
+            str += "\"SimulationRunning\" : " + isSimulationRunning.ToString().ToLower() + ",\n";
+            str += "\"SimulationPaused\" : " + isSimulationPaused.ToString().ToLower() + ",\n";
+            str += "\"SimulationTotalTime\" : " + totalTime.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+            str += "\"SimulationTotalTimeScaled\" : " + scaledTotalTime.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+            str += "\"SimulationSpeed\" : " + SimulationSettings.simulationSpeed.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+            str += "\"TrainWaitingTimeAtStation\" : " + SimulationSettings.trainWaitingTimeAtStation.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+
+            //Loading Stations
+            str += "\"LoadingStationIDs\" : [\n";
+            foreach (string id in SimulationSettings.loadingStationIds)
+            {
+                str += "\"" + id + "\"";
+                if (id != SimulationSettings.loadingStationIds.Last())
+                {
+                    str += ",";
+                }
+                str += "\n";
+            }
+            str += "],\n";
+
+            //Charging Stations
+            str += "\"ChargingStationIDs\" : [\n";
+            foreach (string id in SimulationSettings.chargingStationsIds)
+            {
+                str += "\"" + id + "\"";
+                if (id != SimulationSettings.chargingStationsIds.Last())
+                {
+                    str += ",";
+                }
+                str += "\n";
+            }
+            str += "],\n";
+
+            str += "\"StartPackageCount\" : " + SimulationSettings.startPackageCount.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+            str += "\"NumberOfPackagesInRobor\" : " + SimulationSettings.numberOfPackagesInRobot.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",\n";
+            str += "\"NumberOfRobots\" : " + SimulationSettings.numberOfRobots.ToString(System.Globalization.CultureInfo.InvariantCulture) + "\n";
+            str += "}\n";
+            str += "}\n";
+
             return str;
         }
 

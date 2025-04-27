@@ -1,5 +1,27 @@
 {
     "id": 105,
     "messageType": "SIMULATIONSTATE",
-    "data": {}
+    "data": {
+        "SimulationState": {
+            "SimulationRunning": true,
+            "SimulationPaused": false,
+            "SimulationTotalTime": 24.839,
+            "SimulationTotalTimeScaled": 3725.8494,
+            "SimulationSpeed": 150,
+            "TrainWaitingTimeAtStation": 30,
+            "LoadingStationIDs": [
+                "de:08212:1011",
+                "de:08212:302",
+                "de:08212:17"
+            ],
+            "ChargingStationIDs": [
+                "de:08212:1011",
+                "de:08212:302",
+                "de:08212:17"
+            ],
+            "StartPackageCount": 200,
+            "NumberOfPackagesInRobor": 15,
+            "NumberOfRobots": 5
+        }
+    }
 }

@@ -8,160 +8,160 @@
                 "Driving": true,
                 "InStation": false,
                 "DrivingForward": true,
-                "CurrentStation": "de:08212:11",
-                "NextStation": "de:08212:10",
-                "TravelDistance": 0.27444443,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08212:16",
+                "NextStation": "de:08212:11",
+                "TravelDistance": 0.8620371,
+                "WaitingTime": 1.055
             },
             {
                 "TrainID": 1,
                 "Driving": true,
                 "InStation": false,
                 "DrivingForward": true,
-                "CurrentStation": "de:08212:238",
-                "NextStation": "de:08212:239",
-                "TravelDistance": 0.28913793,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08212:37",
+                "NextStation": "de:08212:39",
+                "TravelDistance": 0.85073286,
+                "WaitingTime": 1.0649999
             },
             {
                 "TrainID": 2,
-                "Driving": true,
-                "InStation": false,
+                "Driving": false,
+                "InStation": true,
                 "DrivingForward": false,
-                "CurrentStation": "de:08212:3",
-                "NextStation": "de:08212:80",
-                "TravelDistance": 0.25469387,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08212:98",
+                "NextStation": "de:08212:89",
+                "TravelDistance": 0,
+                "WaitingTime": 0.90999997
             },
             {
                 "TrainID": 3,
-                "Driving": true,
-                "InStation": false,
-                "DrivingForward": false,
-                "CurrentStation": "de:08212:3",
-                "NextStation": "de:08212:85",
-                "TravelDistance": 0.29999998,
-                "WaitingTime": 1.775
+                "Driving": false,
+                "InStation": true,
+                "DrivingForward": true,
+                "CurrentStation": "de:08212:609",
+                "NextStation": "de:08212:608",
+                "TravelDistance": 0,
+                "WaitingTime": 0.45
             },
             {
                 "TrainID": 4,
                 "Driving": false,
                 "InStation": true,
-                "DrivingForward": true,
-                "CurrentStation": "de:08212:51",
-                "NextStation": "de:08212:503",
+                "DrivingForward": false,
+                "CurrentStation": "de:08212:58",
+                "NextStation": "de:08212:501",
                 "TravelDistance": 0,
-                "WaitingTime": 0.78
+                "WaitingTime": 0.3
             },
             {
                 "TrainID": 5,
                 "Driving": true,
                 "InStation": false,
                 "DrivingForward": true,
-                "CurrentStation": "de:08212:4492",
-                "NextStation": "de:08212:4496",
-                "TravelDistance": 0.30642855,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08212:4496",
+                "NextStation": "de:08212:4493",
+                "TravelDistance": 0.23571427,
+                "WaitingTime": 1.08
             },
             {
                 "TrainID": 6,
-                "Driving": true,
-                "InStation": false,
-                "DrivingForward": true,
-                "CurrentStation": "de:08212:1201",
-                "NextStation": "de:08212:1206",
-                "TravelDistance": 0.7665,
-                "WaitingTime": 1.185
+                "Driving": false,
+                "InStation": true,
+                "DrivingForward": false,
+                "CurrentStation": "de:08215:1133",
+                "NextStation": "de:08215:1140",
+                "TravelDistance": 0,
+                "WaitingTime": 0.755
             },
             {
                 "TrainID": 7,
-                "Driving": false,
-                "InStation": true,
-                "DrivingForward": true,
-                "CurrentStation": "de:08212:1207",
-                "NextStation": "de:08212:1208",
-                "TravelDistance": 0,
-                "WaitingTime": 0
-            },
-            {
-                "TrainID": 8,
                 "Driving": true,
                 "InStation": false,
                 "DrivingForward": true,
-                "CurrentStation": "de:08215:1303",
-                "NextStation": "de:08215:1304",
+                "CurrentStation": "de:08215:1120",
+                "NextStation": "de:08215:1124",
+                "TravelDistance": 0.5882143,
+                "WaitingTime": 1.075
+            },
+            {
+                "TrainID": 8,
+                "Driving": false,
+                "InStation": true,
+                "DrivingForward": true,
+                "CurrentStation": "de:08212:1201",
+                "NextStation": "de:08212:1206",
                 "TravelDistance": 0,
-                "WaitingTime": 1.65
+                "WaitingTime": 0.45
             },
             {
                 "TrainID": 9,
                 "Driving": false,
                 "InStation": true,
                 "DrivingForward": false,
-                "CurrentStation": "de:08212:1209",
-                "NextStation": "de:08212:1208",
+                "CurrentStation": "de:08212:1012",
+                "NextStation": "de:08212:1011",
                 "TravelDistance": 0,
-                "WaitingTime": 0
+                "WaitingTime": 0.3
             },
             {
                 "TrainID": 10,
-                "Driving": true,
-                "InStation": false,
+                "Driving": false,
+                "InStation": true,
                 "DrivingForward": true,
-                "CurrentStation": "de:08215:1903",
-                "NextStation": "de:08215:32030",
-                "TravelDistance": 0.26366198,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08212:205",
+                "NextStation": "de:08212:204",
+                "TravelDistance": 0,
+                "WaitingTime": 0.45
             },
             {
                 "TrainID": 11,
                 "Driving": true,
                 "InStation": false,
                 "DrivingForward": true,
-                "CurrentStation": "de:08215:32030",
-                "NextStation": "de:08215:32031",
-                "TravelDistance": 0.27491802,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08212:6",
+                "NextStation": "de:08212:7",
+                "TravelDistance": 0.9163935,
+                "WaitingTime": 1.06
             },
             {
                 "TrainID": 12,
-                "Driving": true,
-                "InStation": false,
+                "Driving": false,
+                "InStation": true,
                 "DrivingForward": false,
                 "CurrentStation": "de:08212:231",
                 "NextStation": "de:08212:404",
-                "TravelDistance": 0.28294116,
-                "WaitingTime": 1.775
+                "TravelDistance": 0,
+                "WaitingTime": 0
             },
             {
                 "TrainID": 13,
                 "Driving": true,
                 "InStation": false,
                 "DrivingForward": false,
-                "CurrentStation": "de:08215:33079",
-                "NextStation": "de:08215:32743",
-                "TravelDistance": 0.26,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08215:32052",
+                "NextStation": "de:08215:33079",
+                "TravelDistance": 0.15,
+                "WaitingTime": 1.075
             },
             {
                 "TrainID": 14,
                 "Driving": true,
                 "InStation": false,
                 "DrivingForward": false,
-                "CurrentStation": "de:08212:3102",
-                "NextStation": "de:08212:231",
-                "TravelDistance": 0.2747727,
-                "WaitingTime": 1.775
+                "CurrentStation": "de:08212:1004",
+                "NextStation": "de:08212:39",
+                "TravelDistance": 0.9159092,
+                "WaitingTime": 1.06
             },
             {
                 "TrainID": 15,
                 "Driving": true,
                 "InStation": false,
-                "DrivingForward": false,
-                "CurrentStation": "de:08212:41",
-                "NextStation": "de:08212:44",
-                "TravelDistance": 0.2867647,
-                "WaitingTime": 1.775
+                "DrivingForward": true,
+                "CurrentStation": "de:08212:403",
+                "NextStation": "de:08212:404",
+                "TravelDistance": 0.22058824,
+                "WaitingTime": 1.08
             }
         ]
     }
