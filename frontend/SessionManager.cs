@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -27,7 +26,17 @@ public partial class SessionManager : Node
             {
                 GD.Print("Connected to WebSocket: " + connectionString);
                 GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowSimmulationSettings();
-                Request(102, MessageType.USEDSTATIONS);
+                //Request(102, MessageType.USEDSTATIONS);
+
+                //TODO: SERVER FIX USED STATIONS
+                var file = FileAccess.Open("res://UsedStations.json", FileAccess.ModeFlags.Read);
+                string json = file.GetAsText();
+                file.Close();
+                WebSocketMessage message = JsonSerializer.Deserialize<WebSocketMessage>(json, new JsonSerializerOptions{Converters = { new JsonStringEnumConverter() }});
+                Dictionary<string, JsonElement> data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(message.data);
+                Station[] stations = data["UsedStations"].Deserialize<Station[]>();
+                GameManager.Instance.SpawnStations(stations);
+
                 connected = true;
             }
             return;
@@ -59,7 +68,7 @@ public partial class SessionManager : Node
                     }
                     case 1:
                     {
-                        if (GameManager.Instance.trains.Count < 15) break;
+                        if (GameManager.Instance.trains.Count < 16) break;
                         Robot[] robots = data["RobotData"].Deserialize<Robot[]>();
                         if (GameManager.Instance.robots.Count <= 0)
                         {

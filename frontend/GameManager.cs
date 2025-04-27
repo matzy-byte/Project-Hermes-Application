@@ -21,12 +21,6 @@ public partial class GameManager : Node
         Instance = this;
     }
 
-    public override void _PhysicsProcess(double delta)
-    {
-        GD.Print($"stations: {stations.Count}, trains: {trains.Count}, robots: {robots.Count}");
-    }
-
-
     public void UpdateSimulationSettings()
     {}
 

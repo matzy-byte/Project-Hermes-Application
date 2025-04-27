@@ -12,6 +12,7 @@ public partial class TrainScript : StaticBody3D
     public void Setup(int trainID, StationScript currentStation, StationScript nextStation, float travelDistance, float waitingTime)
     {
         TrainID = trainID;
+        GetNode<Label>("%Label").Text = trainID.ToString();
         CurrentStation = currentStation;
         NextStation = nextStation;
         TravelDistance = travelDistance;
@@ -34,20 +35,11 @@ public partial class TrainScript : StaticBody3D
 
     public override void _PhysicsProcess(double delta)
     {
-        try
-        {
-            Position = new Vector3(
-            Mathf.Lerp(CurrentStation.GlobalPosition.X, NextStation.GlobalPosition.X, TravelDistance),
-            0,
-            Mathf.Lerp(CurrentStation.GlobalPosition.Z, NextStation.GlobalPosition.Z, TravelDistance)
-            );
-            LookAt(NextStation.GlobalPosition, Vector3.Up);
-        }
-        catch
-        {
-            GD.Print("NO VALID STATION");
-        }
-        
+        Position = new Vector3(
+        Mathf.Lerp(CurrentStation.GlobalPosition.X, NextStation.GlobalPosition.X, TravelDistance),
+        0,
+        Mathf.Lerp(CurrentStation.GlobalPosition.Z, NextStation.GlobalPosition.Z, TravelDistance)
+        );
+        LookAt(NextStation.GlobalPosition, Vector3.Up);
     }
-
 }
