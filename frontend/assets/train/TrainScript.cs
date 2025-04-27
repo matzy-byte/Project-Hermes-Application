@@ -4,20 +4,15 @@ using System;
 public partial class TrainScript : StaticBody3D
 {
     public int TrainID;
-    public bool Driving;
-    public bool InStation;
-    public bool DrivingForward;
     public StationScript CurrentStation;
     public StationScript NextStation;
     public float TravelDistance;
     public float WaitingTime;
 
-    public void Setup(int trainID, bool driving, bool inStation, bool drivingForward, StationScript currentStation, StationScript nextStation, float travelDistance, float waitingTime)
+    public void Setup(int trainID, StationScript currentStation, StationScript nextStation, float travelDistance, float waitingTime)
     {
         TrainID = trainID;
-        Driving = driving;
-        InStation = inStation;
-        DrivingForward = drivingForward;
+        GetNode<Label>("%Label").Text = trainID.ToString();
         CurrentStation = currentStation;
         NextStation = nextStation;
         TravelDistance = travelDistance;
@@ -30,11 +25,8 @@ public partial class TrainScript : StaticBody3D
         WaitingTime = waitingTime;
     }
 
-    public void UpdateRoute(bool driving, bool inStation, bool drivingForward, StationScript currentStation, StationScript nextStation, float travelDistance, float waitingTime)
+    public void UpdateRoute(StationScript currentStation, StationScript nextStation, float travelDistance, float waitingTime)
     {
-        Driving = driving;
-        InStation = inStation;
-        DrivingForward = drivingForward;
         CurrentStation = currentStation;
         NextStation = nextStation;
         TravelDistance = travelDistance;
@@ -44,11 +36,11 @@ public partial class TrainScript : StaticBody3D
     public override void _PhysicsProcess(double delta)
     {
         Position = new Vector3(
-            Mathf.Lerp(CurrentStation.Position.X, NextStation.Position.X, TravelDistance),
-            0,
-            Mathf.Lerp(CurrentStation.Position.Z, NextStation.Position.Z, TravelDistance)
-            );
-        LookAt(NextStation.Position, Vector3.Up);
+        Mathf.Lerp(CurrentStation.GlobalPosition.X, NextStation.GlobalPosition.X, TravelDistance),
+        0,
+        Mathf.Lerp(CurrentStation.GlobalPosition.Z, NextStation.GlobalPosition.Z, TravelDistance)
+        );
+        if (GlobalPosition != NextStation.GlobalPosition)
+            LookAt(NextStation.GlobalPosition, Vector3.Up);
     }
-
 }

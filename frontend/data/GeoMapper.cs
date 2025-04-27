@@ -2,17 +2,17 @@ using Godot;
 
 public static class GeoMapper
 {
-    // Geographic bounds (A)
-    private const double MinLon = 8.0;
-    private const double MaxLon = 8.6;
+    // Geographic bounds (A) // Measured: MinLon: 8,28327, MaxLon: 8,50511, MinLat: 48,80172, MaxLat: 49,13373
+    private const double MinLon = 8.2;
+    private const double MaxLon = 8.7;
     private const double MinLat = 48.7;
-    private const double MaxLat = 49.3;
+    private const double MaxLat = 49.2;
 
     // Game space bounds (B)
-    private const float MinX = -1000f;
-    private const float MaxX = 1000f;
-    private const float MinZ = -750f;
-    private const float MaxZ = 750f;
+    private const float MinX = 600f;
+    private const float MaxX = -600f;
+    private const float MinZ = -600;
+    private const float MaxZ = 600;
 
     public static Vector3 LatLonToGameCoords(double lat, double lon)
     {

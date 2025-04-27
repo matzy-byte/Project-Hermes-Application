@@ -1,6 +1,5 @@
-[gd_scene load_steps=9 format=3 uid="uid://bbxpgeqy0x68g"]
+[gd_scene load_steps=8 format=3 uid="uid://bbxpgeqy0x68g"]
 
-[ext_resource type="PackedScene" uid="uid://enjkpxce74v3" path="res://assets/robot/Robot.tscn" id="1_c6gwx"]
 [ext_resource type="Script" uid="uid://dvk6g3i67ksul" path="res://HUDScript.cs" id="3_js7pq"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_2dftf"]
@@ -20,7 +19,7 @@ glow_enabled = true
 points = PackedVector3Array(50.7837, 0.793495, 50.7837, -50.7837, -0.793495, -50.7837, -50.7837, 0.793495, -50.7837, 50.7837, -0.793495, -50.7837, -50.7837, -0.793495, 50.7837, -50.7837, 0.793495, 50.7837, 50.7837, 0.793495, -50.7837, 50.7837, -0.793495, 50.7837)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_2dftf"]
-size = Vector2(1000, 750)
+size = Vector2(1000, 1000)
 
 [sub_resource type="LabelSettings" id="LabelSettings_2dftf"]
 font_color = Color(1, 0, 0, 1)
@@ -35,8 +34,6 @@ environment = SubResource("Environment_js7pq")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
 shadow_enabled = true
-
-[node name="Robot" parent="." instance=ExtResource("1_c6gwx")]
 
 [node name="Map" type="StaticBody3D" parent="."]
 
