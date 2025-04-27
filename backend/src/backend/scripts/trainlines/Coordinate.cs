@@ -7,8 +7,8 @@ public class Coordinate()
 
     public Coordinate(CoordPositionWGS84Wrapper coordPositionWGS84Wrapper) : this()
     {
-        latitude = float.Parse(coordPositionWGS84Wrapper.Lat);
-        longetude = float.Parse(coordPositionWGS84Wrapper.Long);
+        latitude = float.Parse(coordPositionWGS84Wrapper.Lat, System.Globalization.CultureInfo.InvariantCulture);
+        longetude = float.Parse(coordPositionWGS84Wrapper.Long, System.Globalization.CultureInfo.InvariantCulture);
     }
 
     public Coordinate(float latitude, float longetude) : this()
