@@ -1,5 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://bbxpgeqy0x68g"]
+[gd_scene load_steps=9 format=3 uid="uid://bbxpgeqy0x68g"]
 
+[ext_resource type="Script" uid="uid://cx46xpeeaq22k" path="res://CameraControlScript.cs" id="2_2dftf"]
 [ext_resource type="Script" uid="uid://dvk6g3i67ksul" path="res://HUDScript.cs" id="3_js7pq"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_2dftf"]
@@ -42,9 +43,6 @@ shape = SubResource("ConvexPolygonShape3D_bcbcq")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Map"]
 mesh = SubResource("PlaneMesh_2dftf")
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.79653, 0.604599, 0, -0.604599, 0.79653, 0.0365863, 16.2483, 14.1926)
 
 [node name="HUD" type="Control" parent="."]
 layout_mode = 3
@@ -199,3 +197,17 @@ text = "Camera 2"
 [node name="Camera3" type="Button" parent="HUD/SimulationControl"]
 layout_mode = 2
 text = "Camera 3"
+
+[node name="Cameras" type="Node3D" parent="."]
+
+[node name="StaticCam" type="Camera3D" parent="Cameras"]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 307.703, 488.501)
+current = true
+
+[node name="MoveableCam" type="Camera3D" parent="Cameras"]
+transform = Transform3D(1, 0, 0, 0, 0.766044, 0.642788, 0, -0.642788, 0.766044, 0, 86.529, 246.35)
+script = ExtResource("2_2dftf")
+
+[node name="FreeCam" type="Camera3D" parent="Cameras"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.2286, 186.297)
+script = ExtResource("2_2dftf")

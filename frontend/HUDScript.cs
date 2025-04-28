@@ -12,6 +12,12 @@ public partial class HUDScript : Control
         GetNode<Button>("SimulationSettings/LoadingStationsAdd").Pressed += LoadingStationsAdd;
         GetNode<Button>("ConnectBox/ConnectButton").Pressed += ConnectToUrl;
         GetNode<Button>("SimulationControl/StartButton").Pressed += StartSimulation;
+        GetNode<Button>("SimulationControl/PauseButton").Pressed += PauseSimulation;
+        GetNode<Button>("SimulationControl/ResumeButton").Pressed += ContinueSimulation;
+        GetNode<Button>("SimulationControl/StopButton").Pressed += StopSimulation;
+        GetNode<Button>("SimulationControl/Camera1").Pressed += OnCameraOneButtonPressed;
+        GetNode<Button>("SimulationControl/Camera2").Pressed += OnCameraTwoButtonPressed;
+        GetNode<Button>("SimulationControl/Camera3").Pressed += OnCameraThreeButtonPressed;
     }
 
     public void SetConnectionURL(string url)
@@ -41,6 +47,39 @@ public partial class HUDScript : Control
     {
         GetNode<VBoxContainer>("SimulationSettings").Visible = false;
         GetNode<VBoxContainer>("SimulationControl").Position = new();
+        SessionManager.Instance.Request(3, MessageType.STARTSIMULATION);
+    }
+
+    public void PauseSimulation()
+    {
+        SessionManager.Instance.Request(3, MessageType.PAUSESIMULATION);
+    }
+
+    public void ContinueSimulation()
+    {
+        GetNode<VBoxContainer>("SimulationSettings").Visible = false;
+        GetNode<VBoxContainer>("SimulationControl").Position = new();
+        SessionManager.Instance.Request(3, MessageType.CONTINUESIMULATION);
+    }
+
+    public void StopSimulation()
+    {
+        SessionManager.Instance.Request(3, MessageType.STOPSIMULATION);
+    }
+
+    public void OnCameraOneButtonPressed()
+    {
+        GetParent().GetNode<Camera3D>("Cameras/StaticCam").Current = true;
+    }
+
+    public void OnCameraTwoButtonPressed()
+    {
+        GetParent().GetNode<Camera3D>("Cameras/MoveableCam").Current = true;
+    }
+
+    public void OnCameraThreeButtonPressed()
+    {
+        GetParent().GetNode<Camera3D>("Cameras/FreeCam").Current = true;
     }
 
     public void RemoveLoadingStationEntry(LoadingStationEntryScript entry)
