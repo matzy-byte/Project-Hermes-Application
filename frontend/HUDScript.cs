@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 public partial class HUDScript : Control
 {
@@ -9,6 +10,7 @@ public partial class HUDScript : Control
 
     public override void _Ready()
     {
+        GetNode<HSlider>("SimulationSettings/SimulationSpeedSlider").ValueChanged += OnSimulationSpeedChanged;
         GetNode<Button>("SimulationSettings/LoadingStationsAdd").Pressed += LoadingStationsAdd;
         GetNode<Button>("ConnectBox/ConnectButton").Pressed += ConnectToUrl;
         GetNode<Button>("SimulationControl/StartButton").Pressed += StartSimulation;
@@ -43,6 +45,17 @@ public partial class HUDScript : Control
         GetNode<VBoxContainer>("ConnectBox").Visible = false;
     }
 
+    public void OnSimulationSpeedChanged(double value)
+    {
+        WebSocketMessage message = new()
+        {
+            id = 200,
+            messageType = MessageType.SETSIMULATIONSPEED,
+            data = JsonDocument.Parse($"{{ \"SimulationSpeed\" : {(float) value} }}").RootElement.Clone()
+        };
+        SessionManager.Instance.RequestSpecific(message);
+    }
+
     public void StartSimulation()
     {
         GetNode<VBoxContainer>("SimulationSettings").Visible = false;
@@ -57,8 +70,8 @@ public partial class HUDScript : Control
 
     public void ContinueSimulation()
     {
-        GetNode<VBoxContainer>("SimulationSettings").Visible = false;
-        GetNode<VBoxContainer>("SimulationControl").Position = new();
+        //GetNode<VBoxContainer>("SimulationSettings").Visible = false;
+        //GetNode<VBoxContainer>("SimulationControl").Position = new();
         SessionManager.Instance.Request(3, MessageType.CONTINUESIMULATION);
     }
 

@@ -102,8 +102,9 @@ text = "Simulation speed"
 
 [node name="SimulationSpeedSlider" type="HSlider" parent="HUD/SimulationSettings"]
 layout_mode = 2
-max_value = 10.0
-value = 1.0
+min_value = 1.0
+max_value = 150.0
+value = 30.0
 
 [node name="HSeparator" type="HSeparator" parent="HUD/SimulationSettings"]
 layout_mode = 2

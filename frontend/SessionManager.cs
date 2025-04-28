@@ -113,6 +113,16 @@ public partial class SessionManager : Node
         });
         webSocket.SendText(jsonMessage);
     }
+
+    public void RequestSpecific(WebSocketMessage message)
+    {
+        string jsonMessage = JsonSerializer.Serialize(message, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        });
+        webSocket.SendText(jsonMessage);
+    }
 }
 
 
