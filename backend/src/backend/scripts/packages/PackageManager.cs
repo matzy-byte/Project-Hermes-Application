@@ -242,7 +242,7 @@ namespace Packages
             int remainingSpace = SimulationSettings.numberOfPackagesInRobot - robot.loadedPackages.Values.Sum(packageList => packageList.Count);
             if (remainingSpace <= 0)
             {
-                Console.WriteLine("Robot is already full");
+                //Console.WriteLine("Robot is already full");
                 return;
             }
 

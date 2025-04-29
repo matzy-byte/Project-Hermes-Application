@@ -53,10 +53,13 @@ namespace WebSocketClientTest
             
             await Task.Delay(1000);
                */
-            await SendControlCommand(client, 202, MessageType.CONTINUESIMULATION);
+            //await SendControlCommand(client, 202, MessageType.CONTINUESIMULATION);
             /*await Task.Delay(1000);
+            */
             await SendControlCommand(client, 203, MessageType.STOPSIMULATION);
-*/
+            await Task.Delay(10000);
+            await SendControlCommand(client, 203, MessageType.STARTSIMULATION);
+
             Console.WriteLine("Testing done. Press any key to exit...");
         }
 

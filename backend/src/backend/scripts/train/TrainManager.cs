@@ -3,7 +3,7 @@ namespace Trains
 {
     public static class TrainManager
     {
-        public static List<Train> allTrains;
+        public static List<Train> allTrains = new List<Train>();
 
 
         /// <summary>

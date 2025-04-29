@@ -26,7 +26,7 @@ public partial class SessionManager : Node
             {
                 GD.Print("Connected to WebSocket: " + connectionString);
                 GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowSimmulationSettings();
-                Request(3, MessageType.PAUSESIMULATION);
+               // Request(3, MessageType.PAUSESIMULATION);
                 Request(102, MessageType.USEDSTATIONS);
                 connected = true;
             }

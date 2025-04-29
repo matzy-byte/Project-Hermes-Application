@@ -5,6 +5,7 @@ using System.Threading;
 using Trains;
 using Robots;
 using Packages;
+using System.Threading.Tasks;
 
 namespace Simulation
 {
@@ -21,6 +22,7 @@ namespace Simulation
         public static float totalTime { get; private set; } = 0f;
         private static Stopwatch stopwatch = new Stopwatch();
 
+        private static bool stopSimulationAtLoopEnd = false;
 
 
         /// <summary>
@@ -41,6 +43,16 @@ namespace Simulation
                         RobotManager.updateAllRobots();
                         sleepTime();
                     }
+                    if (stopSimulationAtLoopEnd)
+                    {
+                        clearSimualtion();
+                    }
+                }
+
+                //Check if simulation must be cleared while no simulation is running
+                if (stopSimulationAtLoopEnd)
+                {
+                    clearSimualtion();
                 }
             }
         }
@@ -80,6 +92,11 @@ namespace Simulation
         /// </summary>
         public static void startSimulation()
         {
+            //Simulation is already running
+            if (isSimulationRunning)
+            {
+                return;
+            }
             //initalize all things that can change through settings
             Console.WriteLine("Initialize Simulaion");
             initializeSimulation();
@@ -108,23 +125,32 @@ namespace Simulation
         /// <summary>
         /// Stops the simulation after current simulation loop is finished
         /// </summary>
-        public static void stopSimulation()
+        public static async Task stopSimulation()
         {
             Console.WriteLine("Stoping Simulation ...");
-            isSimulationRunning = false;
-            clearSimualtion();
-        }
+            stopSimulationAtLoopEnd = true;
 
+            //Wait till simulation stopped
+            while (isSimulationRunning)
+            {
+                await Task.Delay(1);
+            }
+            Console.WriteLine("Simulation Stopped: ");
+        }
 
         /// <summary>
         /// Clears the simulation for a new start
         /// </summary>
         private static void clearSimualtion()
         {
+            isSimulationRunning = false;
+            stopSimulationAtLoopEnd = false;
+
             Console.WriteLine("Clearing simulation ...");
             TrainManager.allTrains.Clear();
             RobotManager.allRobots.Clear();
             PackageManager.waitingPackagesLists.Clear();
+            PackageManager.loadingStations.Clear();
         }
 
 

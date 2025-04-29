@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TrainLines;
 namespace Simulation
@@ -41,10 +42,13 @@ namespace Simulation
 
 
 
-        public static void updateSettings(string settingsJSONstring)
+        public static async Task updateSettings(string settingsJSONstring)
         {
-            //Stop the simulation 
-            SimulationManager.stopSimulation();
+            if (SimulationManager.isSimulationRunning)
+            {
+                //Stop the simulation 
+                SimulationManager.stopSimulation();
+            }
 
             //update the settings
             try
