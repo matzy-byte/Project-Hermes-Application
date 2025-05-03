@@ -1,0 +1,215 @@
+[gd_scene load_steps=9 format=3 uid="uid://bbxpgeqy0x68g"]
+
+[ext_resource type="Script" uid="uid://cx46xpeeaq22k" path="res://CameraControlScript.cs" id="2_2dftf"]
+[ext_resource type="Script" uid="uid://dvk6g3i67ksul" path="res://HUDScript.cs" id="3_js7pq"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_2dftf"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_bcbcq"]
+sky_material = SubResource("ProceduralSkyMaterial_2dftf")
+
+[sub_resource type="Environment" id="Environment_js7pq"]
+background_mode = 2
+sky = SubResource("Sky_bcbcq")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_bcbcq"]
+points = PackedVector3Array(50.7837, 0.793495, 50.7837, -50.7837, -0.793495, -50.7837, -50.7837, 0.793495, -50.7837, 50.7837, -0.793495, -50.7837, -50.7837, -0.793495, 50.7837, -50.7837, 0.793495, 50.7837, 50.7837, 0.793495, -50.7837, 50.7837, -0.793495, 50.7837)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2dftf"]
+size = Vector2(1000, 1000)
+
+[sub_resource type="LabelSettings" id="LabelSettings_2dftf"]
+font_color = Color(1, 0, 0, 1)
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
+
+[node name="World" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_js7pq")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Map" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map"]
+shape = SubResource("ConvexPolygonShape3D_bcbcq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Map"]
+mesh = SubResource("PlaneMesh_2dftf")
+
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_js7pq")
+
+[node name="ConnectBox" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="ConnectionUrlLabel" type="Label" parent="HUD/ConnectBox"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Web Socket IP Adress"
+horizontal_alignment = 1
+
+[node name="ConnectionUrl" type="TextEdit" parent="HUD/ConnectBox"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "ws://localhost:5000/ws/"
+placeholder_text = "..."
+
+[node name="ConnectButton" type="Button" parent="HUD/ConnectBox"]
+layout_mode = 2
+text = "Connect"
+
+[node name="ErrorInfoLabel" type="Label" parent="HUD/ConnectBox"]
+visible = false
+layout_mode = 2
+text = "Error"
+label_settings = SubResource("LabelSettings_2dftf")
+
+[node name="SimulationSettings" type="VBoxContainer" parent="HUD"]
+visible = false
+layout_mode = 0
+offset_right = 350.0
+offset_bottom = 400.0
+
+[node name="SimulationSpeedLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Simulation speed"
+
+[node name="SimulationSpeedSlider" type="HSlider" parent="HUD/SimulationSettings"]
+layout_mode = 2
+min_value = 1.0
+max_value = 150.0
+value = 30.0
+
+[node name="HSeparator" type="HSeparator" parent="HUD/SimulationSettings"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="AmountRobotsLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Amount robots"
+
+[node name="AmountRobotsSlider" type="HSlider" parent="HUD/SimulationSettings"]
+layout_mode = 2
+max_value = 50.0
+value = 2.0
+rounded = true
+ticks_on_borders = true
+
+[node name="HSeparator2" type="HSeparator" parent="HUD/SimulationSettings"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="AmountPacketsStationLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Amount packets per station"
+
+[node name="AmountPacketsStationSlider" type="HSlider" parent="HUD/SimulationSettings"]
+layout_mode = 2
+max_value = 30.0
+value = 10.0
+rounded = true
+
+[node name="HSeparator3" type="HSeparator" parent="HUD/SimulationSettings"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="CapacityRobotLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Amount packets per robot"
+
+[node name="CapacityRobotSlider" type="HSlider" parent="HUD/SimulationSettings"]
+layout_mode = 2
+max_value = 20.0
+value = 10.0
+rounded = true
+
+[node name="HSeparator4" type="HSeparator" parent="HUD/SimulationSettings"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="LoadingStationsLabel" type="Label" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "Loading Stations"
+
+[node name="LoadingStationsAdd" type="Button" parent="HUD/SimulationSettings"]
+layout_mode = 2
+text = "+"
+
+[node name="LoadingStations" type="VBoxContainer" parent="HUD/SimulationSettings"]
+layout_mode = 2
+
+[node name="SimulationControl" type="VBoxContainer" parent="HUD"]
+visible = false
+layout_mode = 0
+offset_left = 350.0
+offset_right = 450.0
+offset_bottom = 40.0
+
+[node name="StartButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Start"
+
+[node name="PauseButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Pause"
+
+[node name="ResumeButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Resume"
+
+[node name="StopButton" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Stop"
+
+[node name="Camera1" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Camera 1"
+
+[node name="Camera2" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Camera 2"
+
+[node name="Camera3" type="Button" parent="HUD/SimulationControl"]
+layout_mode = 2
+text = "Camera 3"
+
+[node name="Cameras" type="Node3D" parent="."]
+
+[node name="StaticCam" type="Camera3D" parent="Cameras"]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 307.703, 488.501)
+current = true
+
+[node name="MoveableCam" type="Camera3D" parent="Cameras"]
+transform = Transform3D(1, 0, 0, 0, 0.766044, 0.642788, 0, -0.642788, 0.766044, 0, 86.529, 246.35)
+script = ExtResource("2_2dftf")
+
+[node name="FreeCam" type="Camera3D" parent="Cameras"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 21.2286, 186.297)
+script = ExtResource("2_2dftf")
