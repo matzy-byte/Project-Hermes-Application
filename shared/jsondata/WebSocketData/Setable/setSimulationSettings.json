@@ -1,0 +1,19 @@
+{
+    "id": 203,
+    "messageType": "SETTINGS",
+    "data": {
+        "SimulationSpeed": 300,
+        "TrainWaitingTimeAtStation": 50,
+        "LoadingStationIDs": [
+            "de:08215:12656",
+            "de:08212:98"
+        ],
+        "ChargingStationsIDs": [
+            "de:08212:7",
+            "de:08212:1002"
+        ],
+        "StartPackageCount": 5000,
+        "NumberOfPackagesInRobot": 500,
+        "NumberOfRobots": 3
+    }
+}

@@ -4,10 +4,10 @@ namespace TrainLines
     public static class LineManager
     {
         //Paths to the json files
-        const string PATHSTATIONJSON = "jsondata\\haltestellen_v2.json";
-        const string PATHLINEJSON = "jsondata\\lines_v2.json";
-        const string PATHGEODATA = "jsondata\\KVVLinesGeoJSON.json";
-        const string TRANSITINFOPATH = "jsondata\\KVV_Transit_Information.json";
+        const string PATHSTATIONJSON = "shared\\jsondata\\haltestellen_v2.json";
+        const string PATHLINEJSON = "shared\\jsondata\\lines_v2.json";
+        const string PATHGEODATA = "shared\\jsondata\\KVVLinesGeoJSON.json";
+        const string TRANSITINFOPATH = "shared\\jsondata\\KVV_Transit_Information.json";
 
 
         //Array with all stations that have all informations needed

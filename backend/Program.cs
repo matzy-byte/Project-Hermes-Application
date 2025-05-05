@@ -2,7 +2,7 @@ using Pathfinding;
 using Simulation;
 using TrainLines;
 using Trains;
-
+using WS;
 
 LineManager.initialize();
 TrainManager.initialize();
