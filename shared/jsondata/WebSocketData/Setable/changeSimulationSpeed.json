@@ -1,0 +1,7 @@
+{
+    "id": 200,
+    "messageType": "SETSIMULATIONSPEED",
+    "data": {
+        "SimulationSpeed": 30.0
+    }
+}
