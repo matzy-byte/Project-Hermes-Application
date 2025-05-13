@@ -15,7 +15,7 @@ namespace Simulation
         /// <summary>
         /// Time between streamed Data transmisions in ms
         /// </summary>
-        public static readonly int dataStreamDelay = 120;
+        public static readonly int dataStreamDelay = 5;
 
         /// <summary>
         /// Time between train data and robotData in the stream loop in ms

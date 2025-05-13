@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
@@ -99,7 +100,6 @@ namespace WS
         /// </summary>
         private async Task streamLoop(WebSocket socket)
         {
-
             while (socket.State == WebSocketState.Open)
             {
                 //Check if simulation is running

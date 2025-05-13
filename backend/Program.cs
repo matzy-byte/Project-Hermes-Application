@@ -16,7 +16,7 @@ Task.Run(() => webSocketManager.start());
 Console.WriteLine("WebSocket server started on " + SimulationSettingsGlobal.webSocketURL);
 
 //Sets the simulation in the ready state
-//SimulationManager.startSimulation();
+SimulationManager.startSimulation();
 
 //Starts the actual simulation
 SimulationManager.simulationLoop();

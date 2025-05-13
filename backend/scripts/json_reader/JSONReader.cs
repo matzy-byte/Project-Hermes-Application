@@ -1,9 +1,5 @@
 
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
 using Newtonsoft.Json;
 using TrainLines;
 namespace json
@@ -112,7 +108,24 @@ namespace json
 
         private static string getFullJsonPath(string path)
         {
-            string fullPath = Path.GetFullPath(path);
+            string startPath = AppContext.BaseDirectory;
+
+            DirectoryInfo directory = new DirectoryInfo(startPath);
+
+            while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, ".git")))
+            {
+                directory = directory.Parent;
+            }
+
+            if (directory == null)
+            {
+                throw new Exception("Cant find git folder");
+            }
+
+
+            //Finds the git root folder
+            string fullPath = directory.FullName;
+            fullPath = Path.Combine(fullPath, path);
             return fullPath.Replace('\\', '/');
         }
     }
