@@ -1,8 +1,22 @@
-using shared;
+using Pathfinding;
+using Simulation;
+using TrainLines;
+using Trains;
+using WS;
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+LineManager.initialize();
+TrainManager.initialize();
+PathfindingManager.initializePathFinding();
+Console.WriteLine("Simulation is Ready...");
 
-app.MapGet("/", () => "Hello World!");
-Class1 x = new Class1();
-app.Run();
+// Create an instance of the WebSocketManager
+WS.WebSocketManager webSocketManager = new WS.WebSocketManager(SimulationSettingsGlobal.webSocketURL);
+// Start the WebSocket server in a separate thread (asynchronous task)
+Task.Run(() => webSocketManager.start());
+Console.WriteLine("WebSocket server started on " + SimulationSettingsGlobal.webSocketURL);
+
+//Sets the simulation in the ready state
+SimulationManager.startSimulation();
+
+//Starts the actual simulation
+SimulationManager.simulationLoop();
