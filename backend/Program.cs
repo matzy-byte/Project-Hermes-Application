@@ -23,4 +23,5 @@ SimulationManager.startSimulation();
 SimulationManager.simulationLoop();*/
 
 DataManager.LoadDataFromJson();
-Z.TrainManager.Initialize();
+Z.SimulationManager.StartSimulation();
+Z.SimulationManager.SimulationLoop();

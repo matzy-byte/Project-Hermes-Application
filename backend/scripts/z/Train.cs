@@ -1,21 +1,26 @@
 using shared;
-using Simulation;
 
 namespace Z;
 
 public class Train : TrainData
 {
-    public Transit Transit { get; set; }
+    public string LineName { get; set; }
+    public List<string> StationIds { get; set; }
+    public float TravelTime { get; set; }
+    public float TravelTimeReverse { get; set; }
 
     //Timer to manage timings of driving and standing
     private float inStationTimer = 0f;
     private float drivingTimer = 0f;
     private float timeBetweenStations;
 
-    public Train(Transit transit, int id)
+    public Train(string lineName, List<string> stationids, float travelTime, float travelTimeReverse, int id)
     {
         TrainId = id;
-        Transit = transit;
+        LineName = lineName;
+        StationIds = stationids;
+        TravelTime = travelTime;
+        TravelTimeReverse = travelTimeReverse;
         InitializeTrain();
     }
 
@@ -24,14 +29,14 @@ public class Train : TrainData
         InStation = true;
         DrivingForward = true;
         TravelDistance = 0f;
-        CurrentStationId = Transit.StartStationId;
+        CurrentStationId = StationIds.First();
         NextStationId = FindNextStation();
         timeBetweenStations = GetTimeBetweenStations();
     }
 
     public void TrainUpdate()
     {
-        if (InStation == false)
+        if (!InStation)
         {
             UpdateDriving();
             return;
@@ -43,26 +48,32 @@ public class Train : TrainData
     {
         if (DrivingForward)
         {
-            if (CurrentStationId == Transit.DestinationStationId)
-                throw new Exception("Cant find station --> Train is at end station with wrong driving direction TrainLine:" + Transit.LineName);
+            if (CurrentStationId == StationIds.Last())
+            {
+                throw new Exception("Cant find station --> Train is at end station with wrong driving direction TrainLine:" + LineName);
+            }
 
-            return Transit.Line.Stations[Transit.Line.Stations.IndexOf(CurrentStationId) + 1];
+            return StationIds[StationIds.IndexOf(CurrentStationId) + 1];
         }
 
-        if (CurrentStationId == Transit.StartStationId)
-            throw new Exception("Cant find station --> Train is at end station with wrong driving direction TrainLine:" + Transit.LineName);
+        if (CurrentStationId == StationIds.First())
+        {
+            throw new Exception("Cant find station --> Train is at end station with wrong driving direction TrainLine:" + LineName);
+        }
 
-        return Transit.Line.Stations[Transit.Line.Stations.IndexOf(CurrentStationId) - 1];
+        return StationIds[StationIds.IndexOf(CurrentStationId) - 1];
     }
 
     private float GetTimeBetweenStations()
     {
-        float totalTime = Transit.TravelTime;
+        float totalTime = TravelTime;
         if (!DrivingForward)
-            totalTime = Transit.TravelTimeReverse;
+        {
+            totalTime = TravelTimeReverse;
+        }
 
         //Get's travel time between stations in seconds (all stations have the same travel time)
-        return totalTime * 60 / Transit.Line.Stations.Count;
+        return totalTime * 60 / StationIds.Count;
     }
 
     private void UpdateDriving()
@@ -78,7 +89,7 @@ public class Train : TrainData
     private void UpdateInStation()
     {
         inStationTimer += SimulationManager.scaledDeltaTime;
-        WaitingTime = inStationTimer / SimulationSettings.trainWaitingTimeAtStation;
+        WaitingTime = inStationTimer / SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
 
         // Update when time is over
         if (WaitingTime >= 1)
@@ -92,12 +103,12 @@ public class Train : TrainData
         CurrentStationId = NextStationId;
 
         //Flip driving direction if station is at end
-        if (DrivingForward && CurrentStationId == Transit.DestinationStationId)
+        if (DrivingForward && CurrentStationId == StationIds.Last())
         {
             DrivingForward = false;
         }
         //Flip driving direction if station is at Start
-        else if (DrivingForward == false && CurrentStationId == Transit.StartStationId)
+        else if (DrivingForward == false && CurrentStationId == StationIds.First())
         {
             DrivingForward = true;
         }
@@ -106,11 +117,80 @@ public class Train : TrainData
         timeBetweenStations = GetTimeBetweenStations();
         inStationTimer = 0;
     }
-    
+
     public void ExitStation()
     {
         InStation = false;
         drivingTimer = 0;
     }
-        
+
+    public List<string> GetBetweenStation(string startStationId, string destinationId)
+    {
+        int enterStationIndex = StationIds.IndexOf(startStationId);
+        int exitStationIndex = StationIds.IndexOf(destinationId);
+        bool drivingForward = enterStationIndex < exitStationIndex;
+
+        List<string> stations = [];
+        if (drivingForward)
+        {
+            for (int i = enterStationIndex; i < exitStationIndex + 1; i++)
+            {
+                stations.Add(StationIds[i]);
+            }
+            return stations;
+        }
+
+        for (int i = enterStationIndex; i >= exitStationIndex; i--)
+        {
+            stations.Add(StationIds[i]);
+        }
+        return stations;
+    }
+
+    public float NextPickupTime(string stationId, bool drivingForward, float time)
+    {
+        var timeTable = drivingForward ? TrainManager.TimeTableForward : TrainManager.TimeTableBackwards;
+        foreach (float pickupTime in timeTable[TrainId][stationId])
+        {
+            if (pickupTime >= time)
+            {
+                return pickupTime;
+            }
+        }
+        return float.PositiveInfinity;
+    }
+
+    public float GetTravelTime(string enterStationId, string exitStationId, bool drivingForward)
+    {
+        float exitTime;
+        float enterTime;
+        if (drivingForward)
+        {
+            //Edge cases where exit station is last station
+            if (exitStationId == StationIds.Last())
+            {
+                exitTime = TrainManager.TimeTableBackwards[TrainId][exitStationId].First();
+            }
+            else
+            {
+                exitTime = TrainManager.TimeTableForward[TrainId][exitStationId].First();
+            }
+            enterTime = TrainManager.TimeTableForward[TrainId][enterStationId].First();
+        }
+        else
+        {
+            //edge case where exit station is first station
+            if (exitStationId == StationIds.First())
+            {
+                exitTime = TrainManager.TimeTableForward[TrainId][exitStationId][1];
+            }
+            else
+            {
+                exitTime = TrainManager.TimeTableBackwards[TrainId][exitStationId].First();
+            }
+            enterTime = TrainManager.TimeTableBackwards[TrainId][enterStationId].First();
+        }
+        return exitTime - enterTime - SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
+
+    }
 }

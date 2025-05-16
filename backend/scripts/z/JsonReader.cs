@@ -4,6 +4,14 @@ namespace Z;
 
 public static class JsonReader
 {
+    public static T LoadData<T>(string path)
+    {
+        // Read the json file into a string
+        string jsonPath = GetFullJsonPath(path);
+        string jsonString = File.ReadAllText(jsonPath);
+        return JsonConvert.DeserializeObject<T>(jsonString) ?? throw new Exception("Failed to load data from: " + jsonPath);
+    }
+
     public static List<T> LoadListedData<T, TWrapper>(string path, Func<TWrapper, T> factory)
     {
         // Read the json file into a string
@@ -26,7 +34,7 @@ public static class JsonReader
         return objects;
     }
 
-    public static List<T> LoadNestedListData<T, TRoot, TItem>(string path, Func<TRoot, List<TItem>> extractList, Func<TItem, T> factory)
+    public static List<T> LoadNestedListData<TRoot, T>(string path, Func<TRoot, List<T>> extractList)
     {
         // Read the json file into a string
         string jsonPath = GetFullJsonPath(path);
@@ -34,13 +42,12 @@ public static class JsonReader
 
         // Deserialize the root wrapper
         TRoot root = JsonConvert.DeserializeObject<TRoot>(jsonString) ?? throw new Exception("Failed to load data from: " + jsonPath);
-        List<TItem> items = extractList(root);
+        List<T> items = extractList(root);
 
         if (items == null || items.Count == 0)
             throw new Exception("No nested list items found in: " + jsonPath);
 
-        List<T> result = [.. items.Select(factory)];
-        return result;
+        return items;
     }
 
     private static string GetFullJsonPath(string path)
