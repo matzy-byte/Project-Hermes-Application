@@ -3,7 +3,6 @@ namespace shared;
 public class RobotData
 {
     public int RobotId { get; set; }
-    public bool OnPath { get; set; }
     public bool OnTrain { get; set; }
     public bool OnStation { get; set; }
     public int TrainId { get; set; }

@@ -3,7 +3,8 @@ using Simulation;
 using TrainLines;
 using Trains;
 using WS;
-
+using Z;
+/*
 LineManager.initialize();
 TrainManager.initialize();
 PathfindingManager.initializePathFinding();
@@ -19,4 +20,7 @@ Console.WriteLine("WebSocket server started on " + SimulationSettingsGlobal.webS
 SimulationManager.startSimulation();
 
 //Starts the actual simulation
-SimulationManager.simulationLoop();
+SimulationManager.simulationLoop();*/
+
+DataManager.LoadDataFromJson();
+Z.TrainManager.Initialize();
