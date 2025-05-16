@@ -68,6 +68,7 @@ public static class SimulationManager
     private static void InitializeSimulation()
     {
         TrainManager.Initialize();
+        Pathfinder.Initialize();
         PackageManager.Initialize();
         RobotManager.Initialize();
     }
@@ -91,7 +92,7 @@ public static class SimulationManager
             return;
         }
         //initalize all things that can change through settings
-        Console.WriteLine("Initialize Simulaion");
+        Console.WriteLine("Initialize Simulation ...");
         InitializeSimulation();
 
         //reset time

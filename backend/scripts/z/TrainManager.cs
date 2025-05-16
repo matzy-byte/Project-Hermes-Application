@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Z;
 
 public static class TrainManager
@@ -19,6 +21,7 @@ public static class TrainManager
         }
         LoadAllUsedStations();
         GenerateTimeTables();
+        Console.WriteLine($"Number Of Trains Initialized: {AllTrains.Count}");
     }
 
     public static void UpdateAllTrains()

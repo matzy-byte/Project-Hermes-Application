@@ -15,12 +15,12 @@ public static class DataManager
 
     public static void LoadDataFromJson()
     {
+        Console.WriteLine("Start Extracting Data from JSON Files ...");
         allStations = JsonReader.LoadListedData<Station, StationWrapper>(PATHSTATIONJSON, x => new Station(x));
         AllLines = JsonReader.LoadNestedListData<RootObjectWrapper, LineWrapper>(PATHLINEJSON, x => x.Lines);
         AllTransits = JsonReader.LoadData<List<TransitInfoWrapper>>(PATHTRANSITINFO);
-
-        //RearangeLines();
-        //Console.WriteLine($"{allStations.Count}, {allLines.Count}, {AllTransits.Count}");
-        //Console.WriteLine(JsonConvert.SerializeObject(allLines[0]));
+        Console.WriteLine($"Number Of Stations: {allStations.Count}");
+        Console.WriteLine($"Number Of Lines: {AllLines.Count}");
+        Console.WriteLine($"Number Of Trains: {AllTransits.Count}");
     }
 }

@@ -2,7 +2,7 @@ namespace Z;
 
 public static class Pathfinder
 {
-    private static Dictionary<Train, List<Train>> directConnectionTable = [];
+    private static Dictionary<int, List<Train>> directConnectionTable = [];
 
     public static void Initialize()
     {
@@ -10,7 +10,7 @@ public static class Pathfinder
 
         foreach (Train train in TrainManager.AllTrains)
         {
-            directConnectionTable.Add(train, GetConnectedTrains(train));
+            directConnectionTable.Add(train.TrainId, GetConnectedTrains(train));
         }
     }
 
@@ -98,6 +98,7 @@ public static class Pathfinder
 
             List<string> stations = train.GetBetweenStation(enter, exit);
             transfers.Add(new Transfer(train.TrainId, stations));
+            index++;
         }
 
         return transfers;
@@ -105,7 +106,7 @@ public static class Pathfinder
 
     private static List<string> GetTransferStations(List<Train> trains, string startStationId, string destinationStationId)
     {
-        List<string> transferStations = [];
+        List<string> transferStations = [startStationId];
 
         for (int i = 0; i < trains.Count - 1; i++)
         {
@@ -159,7 +160,7 @@ public static class Pathfinder
 
         foreach (Train train in startTrains)
         {
-            if (destinationTrains.Contains(train))
+            if (destinationTrains.Any(x => x.TrainId == train.TrainId))
                 relevantTrains.Add([train]);
         }
 
@@ -169,7 +170,7 @@ public static class Pathfinder
         {
             foreach (Train destinationTrain in destinationTrains)
             {
-                if (startTrain == destinationTrain)
+                if (startTrain.TrainId == destinationTrain.TrainId)
                     continue;
 
                 Queue<List<Train>> queue = new();
@@ -180,7 +181,7 @@ public static class Pathfinder
                     List<Train> currentTrains = queue.Dequeue();
                     Train lastTrain = currentTrains.Last();
 
-                    if (lastTrain == destinationTrain)
+                    if (lastTrain.TrainId == destinationTrain.TrainId)
                     {
                         relevantTrains.Add(currentTrains);
                         continue;
@@ -191,7 +192,7 @@ public static class Pathfinder
                         continue;
                     }
 
-                    if (!directConnectionTable.TryGetValue(lastTrain, out List<Train>? connectedTrains))
+                    if (!directConnectionTable.TryGetValue(lastTrain.TrainId, out List<Train> connectedTrains))
                     {
                         continue;
                     }
@@ -200,8 +201,8 @@ public static class Pathfinder
                     {
                         if (!currentTrains.Contains(nextTrain))
                         {
-                            currentTrains.Add(nextTrain);
-                            queue.Enqueue(currentTrains);
+                            var newPath = new List<Train>(currentTrains) { nextTrain };
+                            queue.Enqueue(newPath);
                         }
                     }
                 }

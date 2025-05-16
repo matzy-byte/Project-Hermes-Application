@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Z;
 
 public static class RobotManager
@@ -12,6 +14,7 @@ public static class RobotManager
         {
             AllRobots.Add(new Robot(i, currentStationId));
         }
+        Console.WriteLine($"Number Of Robots Initialized: {AllRobots.Count}");
     }
 
     public static void UpdateAllRobots()

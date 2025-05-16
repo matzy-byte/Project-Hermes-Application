@@ -70,7 +70,6 @@ public static class PackageManager
         int remainingSpace = SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot - robot.LoadedPackages.Values.Sum(packageList => packageList.Count);
         if (remainingSpace <= 0)
         {
-            //Console.WriteLine("Robot is already full");
             return;
         }
 
@@ -96,7 +95,15 @@ public static class PackageManager
         foreach (KeyValuePair<string, List<Package>> entry in packagesForRobot)
         {
             //Copy to robot
-            robot.LoadedPackages.Add(entry.Key, [.. entry.Value]);
+            if (robot.LoadedPackages.ContainsKey(entry.Key))
+            {
+                robot.LoadedPackages[entry.Key].Concat([.. entry.Value]);
+            }
+            else
+            {
+                robot.LoadedPackages.Add(entry.Key, [.. entry.Value]);
+            }
+            
             //remove from waiting list
             foreach (Package package in entry.Value.ToList())
             {
@@ -108,7 +115,7 @@ public static class PackageManager
     public static void FillEmptyRobot(Robot robot)
     {
         string destinationStationId = robot.TotalPath.Last().StationIds.Last();
-        List<Package> waitingPackagesInStation = WaitingTable[robot.CurrentStationId][destinationStationId];
+        List<Package> waitingPackagesInStation = [.. WaitingTable[robot.CurrentStationId][destinationStationId]];
 
         if (waitingPackagesInStation.Count > SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot)
         {

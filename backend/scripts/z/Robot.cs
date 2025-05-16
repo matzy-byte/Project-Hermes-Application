@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using shared;
 
 namespace Z;
@@ -18,10 +19,12 @@ public class Robot : RobotData
     public void Initialize()
     {
         OnTrain = false;
-        OnStation = false;
+        OnStation = true;
         TrainId = -1;
         TotalPath = [];
 
+        OnPath = false;
+        NextExitStationId = "";
         LoadedPackages = [];
     }
 
@@ -82,7 +85,7 @@ public class Robot : RobotData
 
         //check if train is traveling at the right direciton
         int enterStationIndex = train.StationIds.IndexOf(CurrentStationId);
-        int exitStationIndex = train.StationIds.IndexOf(CurrentStationId);
+        int exitStationIndex = train.StationIds.IndexOf(exitStation);
         bool drivingForward = enterStationIndex < exitStationIndex;
 
         if (train.DrivingForward == drivingForward)
@@ -165,7 +168,7 @@ public class Robot : RobotData
     {
         if (LoadedPackages.ContainsKey(CurrentStationId))
         {
-            //Console.WriteLine("Removed " + loadedPackages[currentStation].Count + " packages at station " + currentStation.name);
+            Console.WriteLine("Delivered " + LoadedPackages[CurrentStationId].Count + " Packages At Station " + CurrentStationId);
             LoadedPackages.Remove(CurrentStationId);
         }
     }

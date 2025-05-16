@@ -23,5 +23,6 @@ SimulationManager.startSimulation();
 SimulationManager.simulationLoop();*/
 
 DataManager.LoadDataFromJson();
+Z.SimulationSettings.Initialize();
 Z.SimulationManager.StartSimulation();
 Z.SimulationManager.SimulationLoop();
