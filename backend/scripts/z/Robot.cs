@@ -168,7 +168,7 @@ public class Robot : RobotData
     {
         if (LoadedPackages.ContainsKey(CurrentStationId))
         {
-            Console.WriteLine("Delivered " + LoadedPackages[CurrentStationId].Count + " Packages At Station " + CurrentStationId);
+            Console.WriteLine("Robot " + RobotId +  " Delivered " + LoadedPackages[CurrentStationId].Count + " Packages At Station " + CurrentStationId);
             LoadedPackages.Remove(CurrentStationId);
         }
     }

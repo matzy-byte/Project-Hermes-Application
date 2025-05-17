@@ -81,7 +81,7 @@ public static class PackageManager
         Dictionary<string, List<Package>> packagesOnPath = [];
         foreach (KeyValuePair<string, List<Package>> entry in waitingPackagesInStation)
         {
-            if (stationIdsToPass.Contains(entry.Key))
+            if (stationIdsToPass.Contains(entry.Key) && entry.Value.Count > 0)
             {
                 packagesOnPath.Add(entry.Key, entry.Value);
             }
@@ -90,6 +90,9 @@ public static class PackageManager
         packagesOnPath = packagesOnPath.OrderByDescending(kvp => kvp.Value.Count).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         Dictionary<string, List<Package>> packagesForRobot = GetPackagesThatFitInRobot(packagesOnPath, remainingSpace);
+
+        //Updae Package Info
+        packagesForRobot.Values.SelectMany(list => list).ToList().ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
 
         //Copy the packages to the robot
         foreach (KeyValuePair<string, List<Package>> entry in packagesForRobot)
@@ -103,7 +106,7 @@ public static class PackageManager
             {
                 robot.LoadedPackages.Add(entry.Key, [.. entry.Value]);
             }
-            
+
             //remove from waiting list
             foreach (Package package in entry.Value.ToList())
             {
@@ -126,6 +129,8 @@ public static class PackageManager
                 packagesForRobot.Add(waitingPackagesInStation[i]);
             }
 
+            //Update package info
+            packagesForRobot.ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
             //Copy the packages to the robot
             robot.LoadedPackages.Add(destinationStationId, [.. packagesForRobot]);
 
@@ -138,6 +143,8 @@ public static class PackageManager
         //All packages fit into the robot
         else
         {
+            //Update package info
+            waitingPackagesInStation.ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
             //Copy the packages to the robot
             robot.LoadedPackages.Add(destinationStationId, waitingPackagesInStation);
             foreach (Package package in waitingPackagesInStation)

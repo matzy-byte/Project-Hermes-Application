@@ -126,7 +126,7 @@ namespace TrainLines
         /// </summary>
         private static Station[] getRelevantStations(Line line, TransitInfo transitInfo)
         {
-            Station startStation = findStationWithIdInLine(transitInfo.startStationId, line);
+                Station startStation = findStationWithIdInLine(transitInfo.startStationId, line);
             int startStationIndex = Array.IndexOf(line.stations, startStation);
             Station endStation = findStationWithIdInLine(transitInfo.destinationStartionId, line);
             int endStationIndex = Array.IndexOf(line.stations, endStation);

@@ -10,7 +10,7 @@ public static class SimulationSettings
 
     public static void Initialize()
     {
-        SimulationSettingsParameters.SimulationSpeed = 150f;
+        SimulationSettingsParameters.SimulationSpeed = 300f;
         SimulationSettingsParameters.TrainWaitingTimeAtStation = 30f;
         SimulationSettingsParameters.LoadingStationIds = ["de:08212:1011", "de:08212:302", "de:08212:17"];
         SimulationSettingsParameters.ChargingStationIds = ["de:08212:1011", "de:08212:302", "de:08212:17"];

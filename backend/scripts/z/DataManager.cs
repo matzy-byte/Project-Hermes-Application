@@ -11,15 +11,15 @@ public static class DataManager
     private const string PATHGEODATA = "shared\\jsondata\\KVVLinesGeoJSON.json";
     private const string PATHTRANSITINFO = "shared\\jsondata\\KVV_Transit_Information.json";
 
-    private static List<Station> allStations = [];
+    public static List<Station> AllStations = [];
 
     public static void LoadDataFromJson()
     {
         Console.WriteLine("Start Extracting Data from JSON Files ...");
-        allStations = JsonReader.LoadListedData<Station, StationWrapper>(PATHSTATIONJSON, x => new Station(x));
+        AllStations = JsonReader.LoadListedData<Station, StationWrapper>(PATHSTATIONJSON, x => new Station(x));
         AllLines = JsonReader.LoadNestedListData<RootObjectWrapper, LineWrapper>(PATHLINEJSON, x => x.Lines);
         AllTransits = JsonReader.LoadData<List<TransitInfoWrapper>>(PATHTRANSITINFO);
-        Console.WriteLine($"Number Of Stations: {allStations.Count}");
+        Console.WriteLine($"Number Of Stations: {AllStations.Count}");
         Console.WriteLine($"Number Of Lines: {AllLines.Count}");
         Console.WriteLine($"Number Of Trains: {AllTransits.Count}");
     }
