@@ -50,6 +50,9 @@ public static class PackageManager
                 Package package = new(destinationId, entry.Key);
                 entry.Value[package.DestinationId].Add(package);
             }
+
+            //Add log File
+            DataLogger.AddLog("Added " + SimulationSettings.SimulationSettingsParameters.StartPackagesCount + "Packages to Station: " + entry.Key);
         }
     }
 
@@ -98,6 +101,12 @@ public static class PackageManager
 
         //Updae Package Info
         packagesForRobot.Values.SelectMany(list => list).ToList().ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
+
+        int packageSum = packagesForRobot.Sum(kvp => kvp.Value.Count);
+        if (packageSum > 0)
+        {
+            DataLogger.AddLog("Robot " + robot.RobotId + " Added " + packageSum + " Packages At Station " + robot.CurrentStationId);
+        }
 
         //Copy the packages to the robot
         foreach (KeyValuePair<string, List<Package>> entry in packagesForRobot)
@@ -157,6 +166,9 @@ public static class PackageManager
                 RemovePackage(package, robot.CurrentStationId);
             }
         }
+
+
+        DataLogger.AddLog("Empty Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " Packages At Station " + robot.CurrentStationId);
     }
 
     private static Dictionary<string, List<Package>> GetPackagesThatFitInRobot(Dictionary<string, List<Package>> packagesOnPath, int remainingSpace)
@@ -165,12 +177,17 @@ public static class PackageManager
 
         foreach (KeyValuePair<string, List<Package>> entry in packagesOnPath)
         {
+            if (entry.Value.Count <= 0)
+            {
+                continue;
+            }
+
             if (remainingSpace <= 0)
             {
                 break;
             }
 
-            if (remainingSpace - entry.Value.Count >= 0)
+            if (remainingSpace - entry.Value.Count >= 0 && entry.Value.Count > 0)
             {
                 packagesForRobot.Add(entry.Key, entry.Value);
                 remainingSpace -= entry.Value.Count;

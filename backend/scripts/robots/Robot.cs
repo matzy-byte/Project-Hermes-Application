@@ -109,6 +109,8 @@ public class Robot : RobotData
     {
         OnTrain = true;
         TrainId = trainId;
+
+        DataLogger.AddLog("Robot  " + RobotId + " enterd Train " + TrainId + " at Station " + CurrentStationId);
     }
 
     private void TravelWithTrain()
@@ -128,6 +130,9 @@ public class Robot : RobotData
         {
             //robot leaves train
             OnTrain = false;
+
+            DataLogger.AddLog("Robot  " + RobotId + " exit Train " + TrainId + " at Station " + CurrentStationId);
+
             TrainId = -1;
         }
     }
@@ -143,15 +148,19 @@ public class Robot : RobotData
         //When robot is at loading station without a path 
         if (PackageManager.WaitingTable.ContainsKey(CurrentStationId))
         {
+            DataLogger.AddLog("Robot " + RobotId + " At Loading Station " + CurrentStationId);
             AddNewPackageRoute();
             return;
         }
+
 
         //When robot is not at a loading station travel to the station where most packages are waiting
         string nextStationId = PackageManager.GetStationWithMostPackagesWaiting();
         //get the next path
         TotalPath = [.. Pathfinder.GetTransfers(CurrentStationId, nextStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
         OnPath = true;
+
+        DataLogger.AddLog("Robot " + RobotId + " At Destination. New Loading Station " + TotalPath.Last().StationIds.Last());
     }
 
     private bool CanRemovePackages()
@@ -171,6 +180,7 @@ public class Robot : RobotData
     {
         if (LoadedPackages.ContainsKey(CurrentStationId))
         {
+            DataLogger.AddLog("Robot " + RobotId + " Delivered " + LoadedPackages[CurrentStationId].Count + " Packages At Station " + CurrentStationId);
             Console.WriteLine("Robot " + RobotId + " Delivered " + LoadedPackages[CurrentStationId].Count + " Packages At Station " + CurrentStationId);
             LoadedPackages.Remove(CurrentStationId);
         }
@@ -197,13 +207,13 @@ public class Robot : RobotData
 
     private void AddNewPackageRoute()
     {
-        Console.WriteLine("Robot: " + RobotId + " added packages at station: " + CurrentStationId);
-
         //Get the station that is the final station of the new path
         string targetStationId = PackageManager.GetDestinationStationWithMostPackagesWaiting(CurrentStationId);
 
         //get the next path
         TotalPath = [.. Pathfinder.GetTransfers(CurrentStationId, targetStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
+        DataLogger.AddLog("Robot " + RobotId + " new Destiantion from Loading Station " + TotalPath.Last().StationIds.Last());
+
         //Fill the empty robot with packages that go to the final station
         PackageManager.FillEmptyRobot(this);
 

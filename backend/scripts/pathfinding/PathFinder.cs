@@ -14,6 +14,9 @@ public static class Pathfinder
         {
             directConnectionTable.Add(train.TrainId, GetConnectedTrains(train));
         }
+
+        DataLogger.AddLog("Created Direct Connection Table for Pathfinder");
+
     }
 
     public static List<Transfer> GetTransfers(string startStationId, string destinationStationId, float enterTime)

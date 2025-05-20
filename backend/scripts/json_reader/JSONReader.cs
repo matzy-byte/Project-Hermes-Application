@@ -7,7 +7,7 @@ public static class JsonReader
     public static T LoadData<T>(string path)
     {
         // Read the json file into a string
-        string jsonPath = GetFullJsonPath(path);
+        string jsonPath = GetFullPath(path);
         string jsonString = File.ReadAllText(jsonPath);
         return JsonConvert.DeserializeObject<T>(jsonString) ?? throw new Exception("Failed to load data from: " + jsonPath);
     }
@@ -15,7 +15,7 @@ public static class JsonReader
     public static List<T> LoadListedData<T, TWrapper>(string path, Func<TWrapper, T> factory)
     {
         // Read the json file into a string
-        string jsonPath = GetFullJsonPath(path);
+        string jsonPath = GetFullPath(path);
         string jsonString = File.ReadAllText(jsonPath);
         // Load data in wrapper list
         List<TWrapper> wrappers = JsonConvert.DeserializeObject<List<TWrapper>>(jsonString) ?? throw new Exception("Failed to load data from: " + jsonPath);
@@ -37,7 +37,7 @@ public static class JsonReader
     public static List<T> LoadNestedListData<TRoot, T>(string path, Func<TRoot, List<T>> extractList)
     {
         // Read the json file into a string
-        string jsonPath = GetFullJsonPath(path);
+        string jsonPath = GetFullPath(path);
         string jsonString = File.ReadAllText(jsonPath);
 
         // Deserialize the root wrapper
@@ -50,7 +50,7 @@ public static class JsonReader
         return items;
     }
 
-    private static string GetFullJsonPath(string path)
+    public static string GetFullPath(string path)
     {
         string startPath = AppContext.BaseDirectory;
         DirectoryInfo directory = new(startPath);

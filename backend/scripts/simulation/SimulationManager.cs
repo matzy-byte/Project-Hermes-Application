@@ -72,9 +72,19 @@ public static class SimulationManager
     private static void InitializeSimulation()
     {
         TrainManager.Initialize();
+        DataLogger.AddLog("Simulation Initialized Trains");
+
         Pathfinder.Initialize();
+        DataLogger.AddLog("Simulation Initialized Pathfinding");
+
         PackageManager.Initialize();
+        DataLogger.AddLog("Simulation Initialized Packages");
+
         RobotManager.Initialize();
+        DataLogger.AddLog("Simulation Initialized Robots");
+
+        DataLogger.AddLog("Simulation Initialized");
+
     }
 
     private static void ClearSimualtion()
@@ -84,8 +94,15 @@ public static class SimulationManager
 
         Console.WriteLine("Clearing simulation ...");
         TrainManager.AllTrains.Clear();
+        DataLogger.AddLog("Simulaiton cleared Trains");
+
         RobotManager.AllRobots.Clear();
+        DataLogger.AddLog("Simulaiton cleared Robots");
+
         PackageManager.WaitingTable.Clear();
+        DataLogger.AddLog("Simulaiton cleared Packages");
+
+        DataLogger.AddLog("Simulation Cleared");
     }
 
     public static void StartSimulation()
@@ -97,6 +114,7 @@ public static class SimulationManager
         }
         //initalize all things that can change through settings
         Console.WriteLine("Initialize Simulation ...");
+
         InitializeSimulation();
 
         //reset time
@@ -106,6 +124,8 @@ public static class SimulationManager
 
         Console.WriteLine("Starting Simulation ...");
         SimulationState.SimulationRunning = true;
+
+        DataLogger.AddLog("Simulation Started");
     }
 
     public static async Task StopSimulation()
@@ -119,17 +139,23 @@ public static class SimulationManager
             await Task.Delay(1);
         }
         Console.WriteLine("Simulation Stopped: ");
+
+        DataLogger.AddLog("Simulation Stopped");
+
     }
 
     public static void PauseSimulation()
     {
         Console.WriteLine("Pause Simulation");
         SimulationState.SimulationPaused = true;
+        DataLogger.AddLog("Simulation Paused");
+
     }
 
     public static void ContinueSimulation()
     {
         Console.WriteLine("Continue Simulation");
         SimulationState.SimulationPaused = false;
+        DataLogger.AddLog("Simulation Contiued");
     }
 }

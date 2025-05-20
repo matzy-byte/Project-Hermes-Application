@@ -34,6 +34,8 @@ public class WebSocketManager
             var context = await _listener.GetContextAsync();
             if (context.Request.IsWebSocketRequest)
             {
+                DataLogger.AddLog("Client Connected to WebSocket");
+
                 var wsContext = await context.AcceptWebSocketAsync(null);
                 _ = HandleClient(wsContext.WebSocket); // Fire-and-forget
             }
@@ -184,11 +186,15 @@ public class WebSocketManager
     /// </summary>
     private async Task HandleRequestMessage(WebSocket webSocket, WebSocketMessage incomingMessage)
     {
+        DataLogger.AddLog("Websocket Received REQUEST Message MessageId: " + incomingMessage.Id + " Message Type" + incomingMessage.MessageType);
+
         //Get the response data
         WebSocketMessage resoponse = WebSocketMessageGenerator.GetResponseMessage(incomingMessage);
 
         //Send the Answer
         await SendMessage(webSocket, resoponse);
+        DataLogger.AddLog("Websocket Send Message MessageId: " + resoponse.Id + " Message Type" + resoponse.MessageType);
+
     }
 
     /// <summary>
@@ -196,6 +202,9 @@ public class WebSocketManager
     /// </summary>
     private static async Task HandleSetMessage(WebSocketMessage incomingMessage)
     {
+
+        DataLogger.AddLog("Websocket Received SET Message MessageId: " + incomingMessage.Id + " Message Type" + incomingMessage.MessageType);
+
         //Check the message type
         switch (incomingMessage.MessageType)
         {
