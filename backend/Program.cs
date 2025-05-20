@@ -1,28 +1,15 @@
-using Pathfinding;
 using Simulation;
-using TrainLines;
-using Trains;
-using WS;
-using Z;
-/*
-LineManager.initialize();
-TrainManager.initialize();
-PathfindingManager.initializePathFinding();
-Console.WriteLine("Simulation is Ready...");
+using Json;
 
 // Create an instance of the WebSocketManager
-WS.WebSocketManager webSocketManager = new WS.WebSocketManager(SimulationSettingsGlobal.webSocketURL);
+Websocket.WebSocketManager webSocketManager = new Websocket.WebSocketManager(SimulationSettingsGlobal.WebSocketURL);
 // Start the WebSocket server in a separate thread (asynchronous task)
-Task.Run(() => webSocketManager.start());
-Console.WriteLine("WebSocket server started on " + SimulationSettingsGlobal.webSocketURL);
+Task.Run(() => webSocketManager.Start());
+Console.WriteLine("WebSocket server started on " + SimulationSettingsGlobal.WebSocketURL);
 
-//Sets the simulation in the ready state
-SimulationManager.startSimulation();
 
-//Starts the actual simulation
-SimulationManager.simulationLoop();*/
 
 DataManager.LoadDataFromJson();
-Z.SimulationSettings.Initialize();
-Z.SimulationManager.StartSimulation();
-Z.SimulationManager.SimulationLoop();
+SimulationSettings.Initialize();
+SimulationManager.StartSimulation();
+SimulationManager.SimulationLoop();

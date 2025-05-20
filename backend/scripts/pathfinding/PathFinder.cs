@@ -1,4 +1,6 @@
-namespace Z;
+using Trains;
+
+namespace Pathfinding;
 
 public static class Pathfinder
 {

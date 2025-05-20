@@ -1,6 +1,6 @@
 using shared;
 
-namespace Z;
+namespace Helper;
 
 public class Coordinate : CoordinateData
 {

@@ -1,7 +1,11 @@
 using System.Diagnostics;
 using shared;
+using Robots;
+using Trains;
+using Pathfinding;
+using Packages;
 
-namespace Z;
+namespace Simulation;
 
 public static class SimulationManager
 {

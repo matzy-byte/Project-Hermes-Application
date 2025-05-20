@@ -1,18 +1,13 @@
-using TrainLines;
-//Test
-namespace Packages
-{
-    public class Package
-    {
-        public Station targetStation;
-        public Station sourceStation;
-        public float weight;
+using shared;
 
-        public Package(Station sourceStation, Station targetStation, float weight)
-        {
-            this.targetStation = targetStation;
-            this.sourceStation = sourceStation;
-            this.weight = weight;
-        }
+namespace Packages;
+
+public class Package : PackageData
+{
+    public Package(string destinationId, string stationId)
+    {
+        DestinationId = destinationId;
+        RobotId = -1;
+        StationId = stationId;
     }
 }

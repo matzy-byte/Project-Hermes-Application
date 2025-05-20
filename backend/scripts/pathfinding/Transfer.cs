@@ -1,6 +1,6 @@
 using shared;
 
-namespace Z;
+namespace Pathfinding;
 
 public class Transfer : TransferData
 {

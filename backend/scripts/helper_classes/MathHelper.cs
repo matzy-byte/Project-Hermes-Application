@@ -1,10 +1,9 @@
-namespace Helper
+namespace Helper;
+
+public static class MathHelper
 {
-    public static class MathHelper
+    public static float linearInterpolation(float a, float b, float t)
     {
-        public static float linearInterpolation(float a, float b, float t)
-        {
-            return a + (b - a) * t;
-        }
+        return a + (b - a) * t;
     }
 }
