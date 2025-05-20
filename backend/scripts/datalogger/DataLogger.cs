@@ -10,6 +10,14 @@ public static class DataLogger
         //Get the full path
         FullPath = JsonReader.GetFullPath(PathLoggingFolder);
 
+        //Check if folder exists and create one if not
+        // Check if folder exists and create it if not
+        if (!Directory.Exists(FullPath))
+        {
+            Directory.CreateDirectory(FullPath);
+        }
+
+        
         //Add the File Name
         string time = GetTimeStamp();
         string fileName = $"{time}.log";
