@@ -1,370 +1,199 @@
-using System.Net.Http.Headers;
-using System.Reflection.Metadata.Ecma335;
+using Trains;
 using Robots;
 using Simulation;
-using TrainLines;
-using Trains;
-//Test
-namespace Packages
+
+namespace Packages;
+
+using PackageTable = Dictionary<string, Dictionary<string, List<Package>>>;
+
+
+public static class PackageManager
 {
-    public static class PackageManager
+    public static PackageTable WaitingTable = [];
+    private static Random random = new();
+
+    public static void Initialize()
     {
-        /// <summary>
-        /// List with all stations that can load a package to the robot
-        /// </summary>
-        public static List<Station> loadingStations = new List<Station>();
+        WaitingTable = [];
 
-        /// <summary>
-        /// List with all package waiting  lists for each loading station
-        /// </summary>
-        public static List<PackageWaitingList> waitingPackagesLists = new List<PackageWaitingList>();
-
-        private static Random random = new Random();
-        /// <summary>
-        /// Initializes the Loading Stations and adds some random packages
-        /// </summary>
-        public static void initialize()
+        List<string> allStation = TrainManager.AllStations;
+        //Initialize the loading stations
+        foreach (string stationId in SimulationSettings.SimulationSettingsParameters.LoadingStationIds)
         {
-            List<Station> allStation = TrainManager.getAllUsedStations();
-            //Initialize the loading stations
-            foreach (string stationID in SimulationSettings.loadingStationIds)
+            if (allStation.Contains(stationId) == false)
             {
-                Station station = LineManager.getStationFromId(stationID);
-                if (allStation.Contains(station) == false)
-                {
-                    throw new Exception("Station to add does not exist in simulation");
-                }
-                loadingStations.Add(station);
+                throw new Exception("Station to add does not exist in simulation");
             }
-
-            initializeWaitingList();
-            initializePackages();
+            WaitingTable.Add(stationId, []);
         }
 
+        InitializeWaitingList();
+        InitializePackages();
+    }
 
-        /// <summary>
-        /// Initializes the packeges waiting at the loading stations
-        /// </summary>
-        private static void initializePackages()
+    private static void InitializeWaitingList()
+    {
+        foreach (KeyValuePair<string, Dictionary<string, List<Package>>> entry in WaitingTable)
         {
-            foreach (Station station in loadingStations)
+            TrainManager.AllStations.Where(id => id != entry.Key).ToList().ForEach(id => entry.Value[id] = []);
+        }
+    }
+
+    private static void InitializePackages()
+    {
+        foreach (KeyValuePair<string, Dictionary<string, List<Package>>> entry in WaitingTable)
+        {
+            for (int i = 0; i < SimulationSettings.SimulationSettingsParameters.StartPackagesCount; i++)
             {
-                //create the packages
-                for (int i = 0; i < SimulationSettings.startPackageCount; i++)
-                {
-                    Package newPackage = generateNewPackage(station);
-                    addPackageToWaitingList(newPackage);
-                }
+                List<string> stations = [.. TrainManager.AllStations.Where(id => id != entry.Key)];
+                string destinationId = stations[random.Next(0, stations.Count)];
+                Package package = new(destinationId, entry.Key);
+                entry.Value[package.DestinationId].Add(package);
             }
         }
+    }
 
-        /// <summary>
-        /// Initializes a waiting list for each possible target from each loading station
-        /// </summary>
-        private static void initializeWaitingList()
+    public static string GetStationWithMostPackagesWaiting()
+    {
+        int numberOfPackages = WaitingTable.SelectMany(x => x.Value.Values).Sum(packageList => packageList.Count);
+        if (numberOfPackages == 0)
         {
-            waitingPackagesLists = new List<PackageWaitingList>();
-
-            foreach (Station station in loadingStations)
-            {
-                waitingPackagesLists.Add(new PackageWaitingList(station));
-            }
+            throw new Exception("No packages are waiting");
         }
 
+        string stationId = WaitingTable.OrderByDescending(kvp => kvp.Value.Values.Sum(packages => packages.Count)).First().Key;
+        return stationId;
+    }
 
-        /// <summary>
-        /// Generates a new package from a starting station with a random target station
-        /// </summary>
-        private static Package generateNewPackage(Station startStation)
+    public static string GetDestinationStationWithMostPackagesWaiting(string currentStation)
+    {
+        return WaitingTable[currentStation].OrderByDescending(kvp => kvp.Value.Count).First().Key;
+    }
+
+    public static void FillRemainingSpace(Robot robot)
+    {
+        int remainingSpace = SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot - robot.LoadedPackages.Values.Sum(packageList => packageList.Count);
+        if (remainingSpace <= 0)
         {
-            List<Station> allStations = TrainManager.getAllUsedStations();
-            int endStationIndex = random.Next(0, allStations.Count);
-            Station endStation = allStations[endStationIndex];
-            while (startStation == endStation)
-            {
-                endStationIndex = random.Next(0, allStations.Count);
-                endStation = allStations[endStationIndex];
-            }
-
-            return new Package(startStation, endStation, (float)random.NextDouble() * 24.9f + 0.1f);
+            return;
         }
 
+        Dictionary<string, List<Package>> waitingPackagesInStation = WaitingTable[robot.CurrentStationId];
+        List<string> stationIdsToPass = [.. robot.TotalPath.SelectMany(x => x.StationIds).Distinct()];
+        int currentStationIndex = stationIdsToPass.IndexOf(robot.CurrentStationId);
+        stationIdsToPass.RemoveRange(0, currentStationIndex);
 
-
-        /// <summary>
-        /// Adds a package to one of the waiting lists
-        /// </summary>
-        private static void addPackageToWaitingList(Package package)
+        Dictionary<string, List<Package>> packagesOnPath = [];
+        foreach (KeyValuePair<string, List<Package>> entry in waitingPackagesInStation)
         {
-            //Add the package to the correct waiting list
-            foreach (PackageWaitingList waitingList in waitingPackagesLists)
+            if (stationIdsToPass.Contains(entry.Key) && entry.Value.Count > 0)
             {
-                if (waitingList.loadingStation == package.sourceStation)
-                {
-                    bool addedPackage = waitingList.addPackageToList(package);
-                    if (addedPackage == false)
-                    {
-                        throw new Exception("Error when adding the package");
-                    }
-                    break;
-                }
+                packagesOnPath.Add(entry.Key, entry.Value);
             }
         }
 
+        packagesOnPath = packagesOnPath.OrderByDescending(kvp => kvp.Value.Count).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        /// <summary>
-        /// Returns a dictionary with <Station, int> with the number of packages waiting at each loading station
-        /// </summary>
-        public static int getNumberOfPackagesWaiting()
+        Dictionary<string, List<Package>> packagesForRobot = GetPackagesThatFitInRobot(packagesOnPath, remainingSpace);
+
+        //Updae Package Info
+        packagesForRobot.Values.SelectMany(list => list).ToList().ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
+
+        //Copy the packages to the robot
+        foreach (KeyValuePair<string, List<Package>> entry in packagesForRobot)
         {
-            int totalPackagesWaiting = 0;
-            foreach (PackageWaitingList packageWaitingList in waitingPackagesLists)
+            //Copy to robot
+            if (robot.LoadedPackages.ContainsKey(entry.Key))
             {
-                totalPackagesWaiting += packageWaitingList.getNumberOfPackagesWaiting();
+                robot.LoadedPackages[entry.Key].Concat([.. entry.Value]);
             }
-            return totalPackagesWaiting;
-        }
-
-
-        /// <summary>
-        /// Gets a dictionary where the loading station is the key and the value is the number of packages waiting
-        /// </summary>
-        public static Dictionary<Station, int> getWaitingPackagesPerStation()
-        {
-            Dictionary<Station, int> waitingPackagesPerStation = new Dictionary<Station, int>();
-            foreach (PackageWaitingList packageWaitingList in waitingPackagesLists)
-            {
-                waitingPackagesPerStation.Add(packageWaitingList.loadingStation, packageWaitingList.getNumberOfPackagesWaiting());
-            }
-            return waitingPackagesPerStation;
-        }
-
-        public static Station getStationWithMostPackagesWaiting()
-        {
-            if (getNumberOfPackagesWaiting() == 0)
-            {
-                throw new Exception("No packages are waiting");
-            }
-
-
-            //Robot rides to the loading station with the most packages waiting
-            Dictionary<Station, int> waitingPackagesCount = getWaitingPackagesPerStation();
-
-            //Get the station where the most packages are waiting
-            Station stationWithMostPackages = waitingPackagesCount.OrderByDescending(kvp => kvp.Value).First().Key;
-            return stationWithMostPackages;
-        }
-
-        private static PackageWaitingList getPackageWaitingListFromLoadingStation(Station station)
-        {
-            PackageWaitingList packageWaitingList = null;
-
-            foreach (PackageWaitingList packageWaitingListToCheck in waitingPackagesLists)
-            {
-                if (packageWaitingListToCheck.loadingStation == station)
-                {
-                    packageWaitingList = packageWaitingListToCheck;
-                    break;
-                }
-            }
-
-            //Check if actual list is found
-            if (packageWaitingList == null)
-            {
-                throw new Exception("No Matching package waiting list for robots station");
-            }
-
-            return packageWaitingList;
-        }
-
-        /// <summary>
-        /// Returns a list with packages to which the robot should drive
-        /// </summary>
-        public static Station getNewRobotDestination(Robot robot)
-        {
-            //Station where the robot is
-            Station loadingStation = robot.currentStation;
-
-            //Package Waiting list of the current station
-            PackageWaitingList packageWaitingList = getPackageWaitingListFromLoadingStation(loadingStation);
-
-
-            //Get the target station where most packages must go
-            return packageWaitingList.targetStationWithMostPackagesWaiting();
-        }
-
-
-        /// <summary>
-        /// Fills a empty robot with packages for the destination
-        /// </summary>
-        public static void fillEmptyRobot(Robot robot)
-        {
-            Station endStation = robot.path.endStation;
-            Station loadingStation = robot.currentStation;
-            PackageWaitingList packageWaitingList = getPackageWaitingListFromLoadingStation(loadingStation);
-
-            //Number of packages for end station
-            int waitingPackagesCount = packageWaitingList.waitingPackages[endStation].Count;
-
-
-            if (waitingPackagesCount > SimulationSettings.numberOfPackagesInRobot)
-            {
-                //Copy the packages from the waiting list
-                List<Package> packagesForRobot = new List<Package>();
-                for (int i = 0; i < SimulationSettings.numberOfPackagesInRobot; i++)
-                {
-                    packagesForRobot.Add(packageWaitingList.waitingPackages[endStation][i]);
-                }
-
-                //Copy the packages to the robot
-                robot.loadedPackages.Add(endStation, packagesForRobot.ToList());
-
-                //Remove the packages from the waiting list
-                packageWaitingList.removePackageRange(packagesForRobot.ToList());
-            }
-            //All packages fit into the robot
             else
             {
-                //Copy the packages to the robot
-                robot.loadedPackages.Add(endStation, packageWaitingList.waitingPackages[endStation].ToList());
-                //Remove the packages from the waiting list
-                packageWaitingList.removePackageRange(packageWaitingList.waitingPackages[endStation].ToList());
+                robot.LoadedPackages.Add(entry.Key, [.. entry.Value]);
+            }
+
+            //remove from waiting list
+            foreach (Package package in entry.Value.ToList())
+            {
+                RemovePackage(package, robot.CurrentStationId);
             }
         }
+    }
 
+    public static void FillEmptyRobot(Robot robot)
+    {
+        string destinationStationId = robot.TotalPath.Last().StationIds.Last();
+        List<Package> waitingPackagesInStation = [.. WaitingTable[robot.CurrentStationId][destinationStationId]];
 
-        /// <summary>
-        /// fills a robot with packages that go to station that are on the path
-        /// </summary>
-        public static void fillRemainingSpace(Robot robot)
+        if (waitingPackagesInStation.Count > SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot)
         {
-            //Check if the robot still has space 
-            int remainingSpace = SimulationSettings.numberOfPackagesInRobot - robot.loadedPackages.Values.Sum(packageList => packageList.Count);
+            //Copy the packages from the waiting list
+            List<Package> packagesForRobot = [];
+            for (int i = 0; i < SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot; i++)
+            {
+                packagesForRobot.Add(waitingPackagesInStation[i]);
+            }
+
+            //Update package info
+            packagesForRobot.ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
+            //Copy the packages to the robot
+            robot.LoadedPackages.Add(destinationStationId, [.. packagesForRobot]);
+
+            //Remove the packages from the waiting list
+            foreach (Package package in packagesForRobot)
+            {
+                RemovePackage(package, robot.CurrentStationId);
+            }
+        }
+        //All packages fit into the robot
+        else
+        {
+            //Update package info
+            waitingPackagesInStation.ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
+            //Copy the packages to the robot
+            robot.LoadedPackages.Add(destinationStationId, waitingPackagesInStation);
+            foreach (Package package in waitingPackagesInStation)
+            {
+                RemovePackage(package, robot.CurrentStationId);
+            }
+        }
+    }
+
+    private static Dictionary<string, List<Package>> GetPackagesThatFitInRobot(Dictionary<string, List<Package>> packagesOnPath, int remainingSpace)
+    {
+        Dictionary<string, List<Package>> packagesForRobot = [];
+
+        foreach (KeyValuePair<string, List<Package>> entry in packagesOnPath)
+        {
             if (remainingSpace <= 0)
             {
-                //Console.WriteLine("Robot is already full");
-                return;
+                break;
             }
 
-            Station loadingStation = robot.currentStation;
-            PackageWaitingList packageWaitingList = getPackageWaitingListFromLoadingStation(loadingStation);
-            List<Station> stationsToPass = robot.path.passedStaions;
-            int currentStationIndex = stationsToPass.IndexOf(loadingStation);
-
-            //Remove station the robot already passed on the path
-            stationsToPass.RemoveRange(0, currentStationIndex);
-
-            //Get the Lists of packages that are on the path
-            Dictionary<Station, List<Package>> packagesForStationsOnPath = new Dictionary<Station, List<Package>>();
-            foreach (Station station in stationsToPass)
+            if (remainingSpace - entry.Value.Count >= 0)
             {
-                if (packageWaitingList.waitingPackages.ContainsKey(station))
-                {
-                    packagesForStationsOnPath.Add(station, packageWaitingList.waitingPackages[station]);
-                }
+                packagesForRobot.Add(entry.Key, entry.Value);
+                remainingSpace -= entry.Value.Count;
+                continue;
             }
-            //order the dictionary by number of packages waiting
-            packagesForStationsOnPath = packagesForStationsOnPath.OrderByDescending(kvp => kvp.Value.Count).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            //Get the packages that can go into the robot
-            Dictionary<Station, List<Package>> packagesForRobot = getPackagesThatFitInRobot(packagesForStationsOnPath, remainingSpace);
+            List<Package> lastPackages = [];
 
-            //Copy the packages to the robot
-            foreach (KeyValuePair<Station, List<Package>> entry in packagesForRobot)
+            for (int i = 0; i < remainingSpace; i++)
             {
-                //Copy to robot
-                robot.loadedPackages.Add(entry.Key, entry.Value.ToList());
-                //remove from waiting list
-                packageWaitingList.removePackageRange(entry.Value.ToList());
+                lastPackages.Add(entry.Value[i]);
             }
+
+            packagesForRobot.Add(entry.Key, lastPackages);
+            remainingSpace -= lastPackages.Count;
+            break;
         }
 
-        /// <summary>
-        /// Returns a dictioary with packages that can go into the robot
-        /// </summary>
-        private static Dictionary<Station, List<Package>> getPackagesThatFitInRobot(Dictionary<Station, List<Package>> packagesOnPath, int remainingSpace)
-        {
-            Dictionary<Station, List<Package>> packagesForRobot = new Dictionary<Station, List<Package>>();
+        return packagesForRobot;
+    }
 
-            //Loop over the dictionary
-            foreach (KeyValuePair<Station, List<Package>> entry in packagesOnPath)
-            {
-                //Check if robot is full
-                if (remainingSpace <= 0)
-                {
-                    break;
-                }
-
-                //Check if all packages fit into the robot
-                if (remainingSpace - entry.Value.Count < 0)
-                {
-                    //Copy the packages from the waiting list
-                    List<Package> packagesFitInRobot = new List<Package>();
-
-                    for (int i = 0; i < remainingSpace; i++)
-                    {
-                        packagesFitInRobot.Add(entry.Value[i]);
-                    }
-
-                    //Save only the packages that fit into the robot
-                    packagesForRobot.Add(entry.Key, packagesFitInRobot);
-                    remainingSpace -= packagesFitInRobot.Count;
-                }
-                //All packages fit into the robot
-                else
-                {
-                    packagesForRobot.Add(entry.Key, entry.Value);
-                    remainingSpace -= entry.Value.Count;
-                }
-            }
-
-            return packagesForRobot;
-        }
-
-
-
-        /// <summary>
-        /// Returns json string of all packages in the simulation
-        /// </summary>
-        public static string getPackageDataJSON()
-        {
-            string str = "{\n";
-            str += "\"PackageData\" : {\n";
-            str += RobotManager.getRobotPackageJSON();
-            str += ",";
-            str += getPackageAtSationsJSON();
-            str += "\n}\n}";
-
-            return str;
-        }
-
-        /// <summary>
-        /// gets a json string for packages waiting at a station
-        /// </summary>
-        private static string getPackageAtSationsJSON()
-        {
-            string str = "\"Stations\" : [\n";
-
-            foreach (Station station in loadingStations)
-            {
-                str += "{\n";
-                str += "\"StationID\" : " + "\"" + station.triasID + "\",\n";
-                str += "\"PackageDestinations\" : [\n";
-                str += getPackageWaitingListFromLoadingStation(station).getPackageDestinationListJSON();
-                str += "]\n";
-                str += "}";
-
-                if (station != loadingStations.Last())
-                {
-                    str += ",";
-                }
-
-                str += "\n";
-            }
-
-            str += "]";
-            return str;
-        }
-
+    private static void RemovePackage(Package package, string loadingStationId)
+    {
+        WaitingTable[loadingStationId][package.DestinationId].Remove(package);
     }
 }

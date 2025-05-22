@@ -1,371 +1,215 @@
-using Pathfinding;
-using Simulation;
-using TrainLines;
-using Trains;
+using shared;
 using Packages;
+using Pathfinding;
+using Trains;
+using Simulation;
 
-namespace Robots
+namespace Robots;
+
+public class Robot : RobotData
 {
-    public class Robot
+    public bool OnPath { get; set; }
+    public string NextExitStationId { get; set; }
+    public Dictionary<string, List<Package>> LoadedPackages { get; set; }
+
+    public Robot(int robotId, string currentStationId)
     {
-        public int index;
-        public Train currentTrain;
-        public bool onPath;
-        public bool onTrain;
-        public bool onStation;
-        public Station currentStation;
-        public Pathfinding.Path path;
-        private Station nextExitStation;
+        RobotId = robotId;
+        CurrentStationId = currentStationId;
+        Initialize();
+    }
 
-        public Dictionary<Station, List<Package>> loadedPackages;
-        public Robot(int index, Pathfinding.Path path)
+    public void Initialize()
+    {
+        OnTrain = false;
+        OnStation = true;
+        TrainId = -1;
+        TotalPath = [];
+
+        OnPath = false;
+        NextExitStationId = "";
+        LoadedPackages = [];
+    }
+
+    public void Update()
+    {
+        //Manage the packages
+        if (CanRemovePackages())
         {
-            this.index = index;
-            currentStation = path.startStation;
-
-            onPath = true;
-            this.path = path;
-            onTrain = false;
-            onStation = true;
-            currentTrain = null;
-
-            loadedPackages = new Dictionary<Station, List<Package>>();
+            RemovePackages();
         }
 
-        public Robot(int index, Station startStation)
+        if (CanLoadPackages() && OnPath)
         {
-            this.index = index;
-            currentStation = startStation;
-            onPath = false;
-            onTrain = false;
-            onStation = true;
-            currentTrain = null;
-            loadedPackages = new Dictionary<Station, List<Package>>();
+            AddPackagesOnPath();
         }
 
-        public void update()
+        //All debug to test robots
+        //Check if robot has any packages left or is no longer on a path (should always be both true)
+        if (!OnPath)
         {
+            TravelToNextLoadingStation();
+        }
 
-            //Manage the packages
-            if (canRemovePackages())
+        if (OnPath)
+        {
+            //when on train travel with the train
+            if (OnTrain)
             {
-                removePackages();
+                TravelWithTrain();
             }
-
-            if (canLoadPackages() && onPath)
+            if (!OnTrain)
             {
-                addPackagesOnPath();
-            }
-
-            //All debug to test robots
-            //Check if robot has any packages left or is no longer on a path (should always be both true)
-            if (onPath == false)
-            {
-                travelToNextLoadingStation();
-            }
-
-            if (onPath)
-            {
-                //when on train travel with the train
-                if (onTrain == true)
+                //When waiting at station
+                if (OnStation)
                 {
-                    travelWithTrain();
-                }
-                if (onTrain == false)
-                {
-                    //When waiting at station
-                    if (onStation)
+                    //Check if at final staion
+                    if (CurrentStationId == TotalPath.Last().StationIds.Last())
                     {
-                        //Check if at final staion
-                        if (isAtFinalExit())
-                        {
-                            onPath = false;
-                            onTrain = false;
-                            onStation = true;
-                            Console.WriteLine("Robot " + index + " at Final Station");
-                            return;
-                        }
-
-                        //when not on train check if train is entering the current station
-                        isTrainAtEnterStation();
+                        OnPath = false;
+                        OnTrain = false;
+                        OnStation = true;
+                        Console.WriteLine("Robot " + RobotId + " at Final Station");
+                        return;
                     }
+
+                    //when not on train check if train is entering the current station
+                    IsTrainAtEnterStation();
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// Robot enters a train
-        /// </summary>
-        private void enterTrain(Train train)
+    private void IsTrainAtEnterStation()
+    {
+        Transfer transfer = (Transfer)TotalPath.Find(x => x.StationIds.First() == CurrentStationId);
+        string exitStation = transfer.StationIds.Last();
+        Train train = TrainManager.AllTrains[transfer.TrainId];
+
+        //check if train is traveling at the right direciton
+        int enterStationIndex = train.StationIds.IndexOf(CurrentStationId);
+        int exitStationIndex = train.StationIds.IndexOf(exitStation);
+        bool drivingForward = enterStationIndex < exitStationIndex;
+
+        if (train.DrivingForward == drivingForward)
         {
-            onTrain = true;
-            currentTrain = train;
-        }
-
-
-
-
-        /// <summary>
-        /// Returns true when robot is at a station and has packages for that station
-        /// </summary>
-        private bool canRemovePackages()
-        {
-            if (onStation)
+            //check if train is at the right staion
+            if (train.InStation && train.CurrentStationId == CurrentStationId)
             {
-                if (loadedPackages.ContainsKey(currentStation))
-                {
-                    return true;
-                }
-            }
+                //Robot enters train
+                EnterTrain(train.TrainId);
 
-            return false;
-        }
-
-
-        /// <summary>
-        /// Remove the packages that can be dropped of at station
-        /// </summary>
-        private void removePackages()
-        {
-            if (loadedPackages.ContainsKey(currentStation))
-            {
-                //Console.WriteLine("Removed " + loadedPackages[currentStation].Count + " packages at station " + currentStation.name);
-                loadedPackages.Remove(currentStation);
+                //Save the exit station
+                NextExitStationId = exitStation;
             }
         }
+    }
 
+    private void EnterTrain(int trainId)
+    {
+        OnTrain = true;
+        TrainId = trainId;
+    }
 
-        /// <summary>
-        /// Checks if train is at a loading station (must be on the station and not just on the train)
-        /// </summary>
-        private bool canLoadPackages()
+    private void TravelWithTrain()
+    {
+        Train train = TrainManager.AllTrains[TrainId];
+        //Update the current station when train is waiting at station
+        if (!train.InStation)
         {
-            if (onTrain == false && onStation == true)
+            OnStation = false;
+            return;
+        }
+        CurrentStationId = train.CurrentStationId;
+        OnStation = true;
+
+        //When train is at the exit station
+        if (CurrentStationId == NextExitStationId)
+        {
+            //robot leaves train
+            OnTrain = false;
+            TrainId = -1;
+        }
+    }
+
+    public void TravelToNextLoadingStation()
+    {
+        //Check if robot is actually empty
+        if (LoadedPackages.Count != 0)
+        {
+            throw new Exception("Robot is not empty");
+        }
+
+        //When robot is at loading station without a path 
+        if (PackageManager.WaitingTable.ContainsKey(CurrentStationId))
+        {
+            AddNewPackageRoute();
+            return;
+        }
+
+        //When robot is not at a loading station travel to the station where most packages are waiting
+        string nextStationId = PackageManager.GetStationWithMostPackagesWaiting();
+        //get the next path
+        TotalPath = [.. Pathfinder.GetTransfers(CurrentStationId, nextStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
+        OnPath = true;
+    }
+
+    private bool CanRemovePackages()
+    {
+        if (OnStation)
+        {
+            if (LoadedPackages.ContainsKey(CurrentStationId))
             {
-                if (PackageManager.loadingStations.Contains(currentStation))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Add packages when robot is at a loading station and not on the train while still being on a path
-        /// Just to add more packages for the current path
-        /// </summary>
-        private void addPackagesOnPath()
-        {
-            //fill remaining space with packages that go to station that are on the way
-            PackageManager.fillRemainingSpace(this);
-            //Console.WriteLine("Adds packages at station" + currentStation.name);
-        }
-
-        /// <summary>
-        /// Robot enters a train
-        /// </summary>
-        private void exitTrain()
-        {
-            onTrain = false;
-            currentTrain = null;
-        }
-
-
-        /// <summary>
-        /// Checks if the train that the robot is taking on the station and driving in the right direciton
-        /// </summary>
-        private void isTrainAtEnterStation()
-        {
-            Station startStation = currentStation;
-            Station endStation = path.getNextExit(startStation);
-            Train train = path.getTrainFromStartStation(currentStation);
-
-            //check if train is traveling at the right direciton
-            int enterStationIndex = Array.IndexOf(train.line.stations, startStation);
-            int exitStationIndex = Array.IndexOf(train.line.stations, endStation);
-            bool drivingForward = enterStationIndex < exitStationIndex;
-
-            if (train.drivingForward == drivingForward)
-            {
-                //check if train is at the right staion
-                if (train.inStation && train.currentStation == startStation)
-                {
-                    //Robot enters train
-                    enterTrain(train);
-
-                    //Save the exit station
-                    nextExitStation = endStation;
-                }
+                return true;
             }
         }
 
+        return false;
+    }
 
-        /// <summary>
-        /// Manages robot when traveling on a train
-        /// </summary>
-        private void travelWithTrain()
+    private void RemovePackages()
+    {
+        if (LoadedPackages.ContainsKey(CurrentStationId))
         {
-            //Update the current station when train is waiting at station
-            if (currentTrain.inStation)
-            {
-                currentStation = currentTrain.currentStation;
-                onStation = true;
+            Console.WriteLine("Robot " + RobotId + " Delivered " + LoadedPackages[CurrentStationId].Count + " Packages At Station " + CurrentStationId);
+            LoadedPackages.Remove(CurrentStationId);
+        }
+    }
 
-                //Check if robot is at the exit station
-                isTrainAtExitStation();
-            }
-            else
+    private bool CanLoadPackages()
+    {
+        if (!OnTrain && OnStation)
+        {
+            if (PackageManager.WaitingTable.ContainsKey(CurrentStationId))
             {
-                onStation = false;
+                return true;
             }
         }
+        return false;
+    }
 
+    private void AddPackagesOnPath()
+    {
+        //fill remaining space with packages that go to station that are on the way
+        PackageManager.FillRemainingSpace(this);
+        //Console.WriteLine("Adds packages at station" + currentStation.name);
+    }
 
-        /// <summary>
-        /// Checks if the train is at exitStation and leaves the train when true
-        /// </summary>
-        private void isTrainAtExitStation()
-        {
-            if (currentTrain.inStation)
-            {
-                //When train is at the exit station
-                if (currentTrain.currentStation == nextExitStation)
-                {
-                    //robot leaves train
-                    exitTrain();
-                }
-            }
-        }
+    private void AddNewPackageRoute()
+    {
+        Console.WriteLine("Robot: " + RobotId + " added packages at station: " + CurrentStationId);
 
-        /// <summary>
-        /// Checks if the robot is at it's path end station
-        /// </summary>
-        private bool isAtFinalExit()
-        {
-            return currentStation == path.endStation;
-        }
+        //Get the station that is the final station of the new path
+        string targetStationId = PackageManager.GetDestinationStationWithMostPackagesWaiting(CurrentStationId);
 
+        //get the next path
+        TotalPath = [.. Pathfinder.GetTransfers(CurrentStationId, targetStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
+        //Fill the empty robot with packages that go to the final station
+        PackageManager.FillEmptyRobot(this);
 
-        /// <summary>
-        /// Generates the json string for a robot
-        /// </summary>
-        public string getRobotJSON()
-        {
-            string str = "{\n";
-            str += "\"RobotID\" : " + index + ",\n";
-            str += "\"OnPath\" : " + onPath.ToString().ToLower() + ",\n";
-            str += "\"OnTrain\" : " + onTrain.ToString().ToLower() + ",\n";
-            str += "\"OnStation\" : " + onStation.ToString().ToLower() + ",\n";
-            if (onTrain && currentTrain != null)
-            {
-                str += "\"TrainID\" : " + currentTrain.id + ",\n";
-            }
-            else
-            {
-                str += "\"TrainID\" : null,\n";
-            }
+        //fill remaining space with packages that go to station that are on the way
+        PackageManager.FillRemainingSpace(this);
 
-            if (onTrain == false || (onTrain && currentTrain != null && currentTrain.inStation))
-            {
-                str += "\"CurrentStationID\" : " + "\"" + currentStation.triasID + "\"" + ",\n";
-            }
-            else
-            {
-                str += "\"CurrentStationID\" : null, \n";
-            }
-
-            if (onPath)
-            {
-                str += "\"TotalPath\" : \n";
-                str += path.getPathJSON();
-                str += "\n";
-            }
-            else
-            {
-                str += "\"TotalPath\" : null\n";
-            }
-
-            str += "}\n";
-
-            return str;
-        }
-
-
-        public string debugRobotString()
-        {
-            string str = "Index: " + index + "\n";
-            str += "In Station: " + onStation + "\n";
-            str += "On Train: " + onTrain + "\n";
-            str += "On Path:" + onPath + "\n";
-            str += "Current Station: " + currentStation.name + "\n";
-            if (currentTrain != null)
-            {
-                str += "Current Train: " + currentTrain.line.name + "\n";
-            }
-            if (onPath)
-            {
-                str += "Final Station: " + path.endStation.name + "\n";
-            }
-            else
-            {
-                str += "Final Station: null\n";
-
-            }
-            str += ".\n.\n.\n";
-
-
-            return str;
-        }
-
-
-
-        /// <summary>
-        /// Sets to robot so it travels to the next loading station
-        /// </summary>
-        public void travelToNextLoadingStation()
-        {
-            //Check if robot is actually empty
-            if (loadedPackages.Count != 0)
-            {
-                throw new Exception("Robot is not empty");
-            }
-
-            //When robot is at loading station without a path 
-            if (PackageManager.loadingStations.Contains(currentStation))
-            {
-                addNewPackageRoute();
-                return;
-            }
-
-            //When robot is not at a loading station travel to the station where most packages are waiting
-            Station nextStation = PackageManager.getStationWithMostPackagesWaiting();
-            //get the next path
-            List<Pathfinding.Path> possiblePaths = PathfindingManager.getAllTravelPaths(currentStation, nextStation, SimulationManager.scaledTotalTime);
-            path = possiblePaths.First();
-            onPath = true;
-        }
-
-
-        /// <summary>
-        /// Adds a completly new package route to the robot
-        /// </summary>
-        public void addNewPackageRoute()
-        {
-            Console.WriteLine("Robot: " + index + " added packages at station: " + currentStation.name);
-
-            //Get the station that is the final station of the new path
-            Station targetStation = PackageManager.getNewRobotDestination(this);
-
-            //get the next path
-            List<Pathfinding.Path> possiblePaths = PathfindingManager.getAllTravelPaths(currentStation, targetStation, SimulationManager.scaledTotalTime);
-            path = possiblePaths.First();
-            //Fill the empty robot with packages that go to the final station
-            PackageManager.fillEmptyRobot(this);
-
-            //fill remaining space with packages that go to station that are on the way
-            PackageManager.fillRemainingSpace(this);
-
-            onPath = true;
-        }
+        OnPath = true;
     }
 }

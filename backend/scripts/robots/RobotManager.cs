@@ -1,155 +1,28 @@
-using Simulation;
 using Trains;
-using TrainLines;
-using Pathfinding;
-using Packages;
-namespace Robots
+using Simulation;
+
+namespace Robots;
+
+public static class RobotManager
 {
-    public static class RobotManager
+    public static List<Robot> AllRobots { get; set; } = [];
+
+    public static void Initialize()
     {
-        public static List<Robot> allRobots = new List<Robot>();
-
-        /// <summary>
-        /// Initializes all robots at a random start station
-        /// </summary>
-        public static void initialize()
+        AllRobots = [];
+        string currentStationId = TrainManager.AllTrains[0].StationIds[0];
+        for (int i = 0; i < SimulationSettings.SimulationSettingsParameters.NumberOfRobots; i++)
         {
-            List<Station> allStations = TrainManager.getAllUsedStations();
-            Random random = new Random();
-            allRobots = new List<Robot>();
-            for (int i = 0; i < SimulationSettings.numberOfRobots; i++)
-            {
-                //allRobots.Add(new Robot(i, getNewPath(null)));
-                allRobots.Add(new Robot(i, allStations[random.Next(0, allStations.Count)]));
-            }
-            Console.WriteLine("Number of Robots initialized: " + allRobots.Count);
+            AllRobots.Add(new Robot(i, currentStationId));
         }
+        Console.WriteLine($"Number Of Robots Initialized: {AllRobots.Count}");
+    }
 
-        /// <summary>
-        /// Updates all robots
-        /// </summary>
-        public static void updateAllRobots()
+    public static void UpdateAllRobots()
+    {
+        foreach (Robot robot in AllRobots)
         {
-            foreach (Robot robot in allRobots)
-            {
-                robot.update();
-            }
-        }
-
-        public static void debugRobot()
-        {
-            Console.WriteLine(allRobots[0].debugRobotString());
-        }
-
-        /// <summary>
-        /// Generates the json string for all robots
-        /// </summary>
-        /// <returns></returns>
-        public static string getRobotDataJSON()
-        {
-            string str = "{\n";
-            str += "\"RobotData\" : [\n";
-            foreach (Robot robot in allRobots)
-            {
-                str += robot.getRobotJSON();
-                if (robot != allRobots.Last())
-                {
-                    str += ",";
-                }
-                str += "\n";
-            }
-
-            str += "]\n";
-            str += "}";
-
-            return str;
-        }
-
-        /// <summary>
-        /// Debug method to generate new Paths
-        /// </summary>
-        public static Pathfinding.Path getNewPath(Station lastEndStation)
-        {
-            if (lastEndStation == null)
-            {
-                List<Station> allStations = TrainManager.getAllUsedStations();
-                Random random = new Random();
-                List<Pathfinding.Path> allPaths = new List<Pathfinding.Path>();
-                Station startStation;
-                Station endStation;
-
-                do
-                {
-                    startStation = allStations[random.Next(0, allStations.Count)];
-                    endStation = allStations[random.Next(0, allStations.Count)];
-
-                    if (startStation != endStation)
-                    {
-                        allPaths = PathfindingManager.getAllTravelPaths(startStation, endStation, SimulationManager.scaledTotalTime);
-                    }
-                }
-                while (allPaths.Count < 1);
-
-                return allPaths.First();
-            }
-            else
-            {
-                List<Station> allStations = TrainManager.getAllUsedStations();
-                Random random = new Random();
-                List<Pathfinding.Path> allPaths = new List<Pathfinding.Path>();
-                Station endStation;
-
-                do
-                {
-                    endStation = allStations[random.Next(0, allStations.Count)];
-
-                    allPaths = PathfindingManager.getAllTravelPaths(lastEndStation, endStation, SimulationManager.scaledTotalTime);
-
-                }
-                while (allPaths.Count < 1 && lastEndStation != endStation);
-
-                return allPaths.First();
-            }
-        }
-
-
-
-        public static string getRobotPackageJSON()
-        {
-            string str = "\"Robots\" : [\n";
-
-            foreach (Robot robot in allRobots)
-            {
-                if (robot.loadedPackages.Count > 0)
-                {
-                    str += "{\n";
-                    str += "\"RobotID\" : " + +robot.index + ",\n";
-                    str += "\"PackageDestinations\" : [\n";
-                    //Loop over the loaded packages
-                    foreach (KeyValuePair<Station, List<Package>> loadedPackaList in robot.loadedPackages)
-                    {
-                        foreach (Package package in loadedPackaList.Value)
-                        {
-                            str += "\"" + package.targetStation.triasID + "\"";
-                            if (package != robot.loadedPackages.Last().Value.Last())
-                            {
-                                str += ",";
-                            }
-                            str += "\n";
-                        }
-                    }
-                    str += "]\n";
-                    str += "},\n";
-                }
-            }
-            int lastCommaIndex = str.LastIndexOf(',');
-
-            if (lastCommaIndex != -1)
-            {
-                str = str.Remove(lastCommaIndex, 1);
-            }
-            str += "]\n";
-            return str;
+            robot.Update();
         }
     }
 }

@@ -1,134 +1,68 @@
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TrainLines;
-namespace Simulation
+using shared;
+
+namespace Simulation;
+
+public static class SimulationSettings
 {
-    public static class SimulationSettings
+    public static SimulationSettingsData SimulationSettingsParameters { get; set; } = new();
+
+    public static void Initialize()
     {
-        /// <summary>
-        /// How fast is the simulation Running
-        /// </summary>
-        public static float simulationSpeed { get; private set; } = 150f;
+        SimulationSettingsParameters.SimulationSpeed = 300f;
+        SimulationSettingsParameters.TrainWaitingTimeAtStation = 30f;
+        SimulationSettingsParameters.LoadingStationIds = ["de:08212:1011", "de:08212:302", "de:08212:17"];
+        SimulationSettingsParameters.ChargingStationIds = ["de:08212:1011", "de:08212:302", "de:08212:17"];
+        SimulationSettingsParameters.StartPackagesCount = 200;
+        SimulationSettingsParameters.NumberOfPackagesInRobot = 15;
+        SimulationSettingsParameters.NumberOfRobots = 5;
+    }
 
-        /// <summary>
-        /// How many seconds is a train waiting at a station
-        /// </summary>
-        public static float trainWaitingTimeAtStation { get; private set; } = 30f;
-
-        /// <summary>
-        /// What stations are loading stations
-        /// </summary>
-        public static string[] loadingStationIds { get; private set; } = { "de:08212:1011", "de:08212:302", "de:08212:17" };
-
-        /// <summary>
-        /// What stations are loading stations
-        /// </summary>
-        public static string[] chargingStationsIds { get; private set; } = { "de:08212:1011", "de:08212:302", "de:08212:17" };
-
-        /// <summary>
-        /// How many packages are at each loading station at the begin of the simulation
-        /// </summary>
-        public static int startPackageCount { get; private set; } = 200;
-
-        /// <summary>
-        /// How many packages fit in each robot
-        /// </summary>
-        public static int numberOfPackagesInRobot { get; private set; } = 15;
-
-        /// <summary>
-        /// How many robots are there
-        /// </summary>
-        public static int numberOfRobots { get; private set; } = 5;
-
-
-
-        public static async Task updateSettings(string settingsJSONstring)
+    public static async Task UpdateSettings(string settingsJSONstring)
+    {
+        if (SimulationManager.SimulationState.SimulationRunning)
         {
-            if (SimulationManager.isSimulationRunning)
-            {
-                //Stop the simulation 
-                SimulationManager.stopSimulation();
-            }
-
-            //update the settings
-            try
-            {
-                updateSettingsFromJSON(settingsJSONstring);
-            }
-            catch (Exception e)
-            {
-                return;
-            }
-
-            //Restart the simulation
-            SimulationManager.startSimulation();
+            //Stop the simulation 
+            await SimulationManager.StopSimulation();
         }
 
-
-        /// <summary>
-        /// Method for changing the speed of the simulation
-        /// </summary>
-        public static void updateSimulationSeed(string newSpeedJSONstring)
+        //update the settings
+        try
         {
-            try
+            SimulationSettingsData data = JsonConvert.DeserializeObject<SimulationSettingsData>(settingsJSONstring);
+            if (data != null)
             {
-                SimulationSpeed speedSettings = JsonConvert.DeserializeObject<SimulationSpeed>(newSpeedJSONstring);
-
-                simulationSpeed = speedSettings.simulationSpeed;
-            }
-            catch (Exception e)
-            {
-                return;
+                SimulationSettingsParameters = data;
             }
         }
-
-
-        /// <summary>
-        /// Method for updating the settings in the simulation from a json string
-        /// </summary>
-        private static void updateSettingsFromJSON(string settingsJSON)
+        catch (Exception e)
         {
-            try
-            {
-                Settings settings = JsonConvert.DeserializeObject<Settings>(settingsJSON);
-
-                //update the settings
-                simulationSpeed = settings.simulationSpeed;
-                trainWaitingTimeAtStation = settings.trainWaitingTimeAtStation;
-                loadingStationIds = settings.loadingStationIds;
-                chargingStationsIds = settings.chargingStationsIds;
-                startPackageCount = settings.startPackageCount;
-                numberOfPackagesInRobot = settings.numberOfPackagesInRobot;
-                numberOfRobots = settings.numberOfRobots;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Cant deserialize the json string");
-            }
+            return;
         }
 
+        //Restart the simulation
+        SimulationManager.StartSimulation();
+    }
 
-        /// <summary>
-        /// Wrapper to load the json string into a struct
-        /// </summary>
-        private struct Settings
+    public static void UpdateSimulationSeed(string newSpeedJSONstring)
+    {
+        try
         {
-            public float simulationSpeed { get; set; }
-            public float trainWaitingTimeAtStation { get; set; }
-            public string[] loadingStationIds { get; set; }
-            public string[] chargingStationsIds { get; set; }
-            public int startPackageCount { get; set; }
-            public int numberOfPackagesInRobot { get; set; }
-            public int numberOfRobots { get; set; }
+            SimulationSpeed speedSettings = JsonConvert.DeserializeObject<SimulationSpeed>(newSpeedJSONstring);
+
+            SimulationSettingsParameters.SimulationSpeed = speedSettings.SimulationSpeedParameter;
         }
-
-
-        /// <summary>
-        /// Wrapper for changing simulation speed
-        /// </summary>
-        private struct SimulationSpeed
+        catch (Exception e)
         {
-            public float simulationSpeed { get; set; }
+            return;
         }
+    }
+
+    /// <summary>
+    /// Wrapper for changing simulation speed
+    /// </summary>
+    private struct SimulationSpeed
+    {
+        public float SimulationSpeedParameter { get; set; }
     }
 }

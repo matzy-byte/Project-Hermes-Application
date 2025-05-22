@@ -1,184 +1,140 @@
-using TrainLines;
-namespace Trains
+using Helper;
+using Json;
+using Simulation;
+
+namespace Trains;
+
+public static class TrainManager
 {
-    public static class TrainManager
+    public static List<Train> AllTrains { get; set; } = [];
+    public static List<string> AllStations { get; set; } = [];
+
+    public static Dictionary<int, Dictionary<string, List<float>>> TimeTableForward = [];
+    public static Dictionary<int, Dictionary<string, List<float>>> TimeTableBackwards = [];
+
+    public static void Initialize()
     {
-        public static List<Train> allTrains = new List<Train>();
-
-
-        /// <summary>
-        /// Initializes all trains
-        /// </summary>
-        public static void initialize()
+        AllTrains = [];
+        int trainIndex = 0;
+        foreach (TransitInfoWrapper transit in DataManager.AllTransits)
         {
-            allTrains = new List<Train>();
+            AllTrains.Add(new Train(transit.LineName, GetStationIds(transit), transit.TravelTime, transit.TravelTimeReverse, trainIndex));
+            trainIndex++;
+        }
+        LoadAllUsedStations();
+        GenerateTimeTables();
+        Console.WriteLine($"Number Of Trains Initialized: {AllTrains.Count}");
+    }
 
-            for (int i = 0; i < LineManager.usableLines.Length; i++)
-            {
-                allTrains.Add(new Train(LineManager.usableLines[i], i));
-            }
-            Console.WriteLine("Number of Trains initialized: " + allTrains.Count);
+    public static void UpdateAllTrains()
+    {
+        foreach (Train train in AllTrains)
+        {
+            train.TrainUpdate();
+        }
+    }
+
+    private static List<string> GetStationIds(TransitInfoWrapper transit)
+    {
+        LineWrapper line = DataManager.AllLines.Find(x => x.Name == transit.LineName);
+
+        // Remove looping stations
+        if (line.Stations.First() == line.Stations.Last())
+        {
+            line.Stations = [.. line.Stations.Distinct()];
         }
 
+        int startStationIndex = line.Stations.IndexOf(transit.StartStationID);
+        int destinationStationIndex = line.Stations.IndexOf(transit.DestinationID);
 
-        /// <summary>
-        /// Updates all trains
-        /// </summary>
-        public static void updateAllTrains()
+        bool forward = startStationIndex < destinationStationIndex;
+        List<string> stationIds = [];
+        if (!forward)
         {
-            foreach (Train train in allTrains)
-            {
-                train.trainUpdate();
-            }
+            line.Stations.Reverse();
+            startStationIndex = line.Stations.IndexOf(transit.StartStationID);
+            destinationStationIndex = line.Stations.IndexOf(transit.DestinationID);
         }
 
-
-        /// <summary>
-        /// Generates a json string that stores the positions of the trains
-        /// </summary>
-        public static string getTrainPositionsJSON()
+        for (int i = startStationIndex; i < destinationStationIndex + 1; i++)
         {
-            string str = "{\n";
-            str += "\"TrainPositions\" : [";
-            foreach (Train train in allTrains)
+            stationIds.Add(line.Stations[i]);
+        }
+        return stationIds;
+    }
+
+    private static void LoadAllUsedStations()
+    {
+        AllStations = [.. AllTrains.SelectMany(train => train.StationIds).Distinct()];
+    }
+
+    private static void GenerateTimeTables()
+    {
+        // Clear and initialize dictionaries
+        TimeTableForward.Clear();
+        TimeTableBackwards.Clear();
+
+        foreach (Train train in AllTrains)
+        {
+            int trainId = train.TrainId;
+            List<string> stations = train.StationIds;
+            string startStation = stations.First();
+            string endStation = stations.Last();
+            bool goingForward = true;
+
+            TimeTableForward[trainId] = stations.ToDictionary(s => s, _ => new List<float>());
+            TimeTableBackwards[trainId] = stations.ToDictionary(s => s, _ => new List<float>());
+
+            for (int i = 0; i < SimulationSettingsGlobal.PreComputedStopTimes * 2; i++)
             {
-                str += "\n";
-                str += train.getTrainPostionJson();
-                if (train != allTrains.Last())
+                float timeBetweenStations = (goingForward ? train.TravelTime : train.TravelTimeReverse) * 60 / stations.Count;
+
+                for (int j = 0; j < stations.Count; j++)
                 {
-                    str += ",";
-                }
-            }
-            str += "\n]\n}";
+                    //Get the correct station
+                    string station = goingForward ? stations[j] : stations[stations.Count - 1 - j];
+                    var timeTable = goingForward ? TimeTableForward : TimeTableBackwards;
 
-            return str;
-        }
-
-
-        /// <summary>
-        /// gets all stations that are used in the train lines
-        /// </summary>
-        public static List<Station> getAllUsedStations()
-        {
-            List<Station> usedStations = new List<Station>();
-            foreach (Train train in allTrains)
-            {
-                foreach (Station station in train.line.stations)
-                {
-                    if (usedStations.Contains(station) == false)
+                    bool isTerminal = goingForward ? station == endStation : station == startStation;
+                    if (isTerminal)
                     {
-                        usedStations.Add(station);
+                        continue;
                     }
+
+                    float exitTime;
+
+                    if (i == 0 && j == 0 && goingForward)
+                    {
+                        exitTime = SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
+                    }
+                    else
+                    {
+                        float previousExit;
+
+                        if (j == 0)
+                        {
+                            // Coming from other direction
+                            string otherStation = goingForward ? stations[1] : stations[stations.Count - 2];
+                            previousExit = (goingForward ? TimeTableBackwards : TimeTableForward)[trainId][otherStation].Last();
+                        }
+                        else
+                        {
+                            int previousIndex = goingForward ? j - 1 : j - 1;
+                            string previousStation = goingForward
+                                ? stations[previousIndex]
+                                : stations[stations.Count - 1 - previousIndex];
+
+                            previousExit = timeTable[trainId][previousStation].Last();
+                        }
+
+                        float entryTime = previousExit + timeBetweenStations;
+                        exitTime = entryTime + SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
+                    }
+                    timeTable[trainId][station].Add(exitTime);
                 }
+                // Switch direction
+                goingForward = !goingForward;
             }
-
-            return usedStations;
-        }
-
-        /// <summary>
-        /// Generates a json string with index and line name of all used train lines
-        /// </summary>
-        public static string getTrainLinesJSON()
-        {
-            string str = "{\n";
-            str += "\"TrainLines\" : [\n";
-
-            foreach (Train train in allTrains)
-            {
-                str += "{\n";
-                str += "\"TrainID\" : " + train.id.ToString() + ",\n";
-                str += "\"LineName\" : " + "\"" + train.line.name.ToString() + "\"" + "\n";
-                str += "}";
-                if (train != allTrains.Last())
-                {
-                    str += ",";
-                }
-                str += "\n";
-            }
-            str += "]\n";
-            str += "}";
-            return str;
-        }
-
-        /// <summary>
-        /// Generates a json string that stores the used stations of the lines
-        /// </summary>
-        public static string getTrainStationsJSON()
-        {
-            string str = "{\n";
-            str += "\"StationsInLine\" : [";
-            foreach (Train train in allTrains)
-            {
-                str += "\n";
-                str += train.getTrainStationsJSON();
-                if (train != allTrains.Last())
-                {
-                    str += ",";
-                }
-            }
-            str += "\n]\n}";
-            return str;
-        }
-
-
-        /// <summary>
-        /// generates a json string that stores the geo data of the used lines
-        /// </summary>
-        public static string getTrainGeoDataJSON()
-        {
-            string str = "{\n";
-            str += "\"TrainGeoData\" : [";
-            foreach (Train train in allTrains)
-            {
-                str += "\n";
-                str += train.getTrainGeoDataJSON();
-                if (train != allTrains.Last())
-                {
-                    str += ",";
-                }
-            }
-            str += "\n]\n}";
-            return str;
-        }
-
-
-        /// <summary>
-        /// generates a json string with all used stations ids
-        /// </summary>
-        public static string getUsedStationsJSON()
-        {
-            //Find all used Stations
-            List<Station> usedStations = getAllUsedStations();
-
-            string str = "{\n";
-            str += "\"UsedStations\" : [\n";
-            foreach (Station station in usedStations)
-            {
-                str += "\n";
-                str += station.getStationJSON();
-                if (station != usedStations.Last())
-                {
-                    str += ",";
-                }
-            }
-            str += "\n]\n}";
-            return str;
-        }
-
-
-        /// <summary>
-        /// returns a train object that uses the line object
-        /// </summary>
-        public static Train getTrainFromLine(Line line)
-        {
-            foreach (Train train in allTrains)
-            {
-                if (train.line == line)
-                {
-                    return train;
-                }
-            }
-            throw new Exception("Cant Find Train with Line: " + line.name);
         }
     }
 }

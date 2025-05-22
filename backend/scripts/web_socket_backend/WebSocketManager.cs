@@ -1,407 +1,269 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Packages;
-using Robots;
+using shared;
 using Simulation;
-using Trains;
-namespace WS
+
+namespace Websocket;
+
+public class WebSocketManager
 {
-    public class WebSocketManager
+    private readonly HttpListener _listener = new HttpListener();
+
+    public WebSocketManager(string url)
     {
-        private readonly HttpListener _listener = new HttpListener();
+        _listener.Prefixes.Add(url); // e.g. "http://localhost:5000/ws/"
+    }
 
-        public WebSocketManager(string url)
+    public void Start()
+    {
+        _listener.Start();
+        Task.Run(() => AcceptLoop());
+    }
+
+
+    /// <summary>
+    /// Background task to manage connecting clients
+    /// </summary>
+    private async Task AcceptLoop()
+    {
+        while (true)
         {
-            _listener.Prefixes.Add(url); // e.g. "http://localhost:5000/ws/"
-        }
-
-        public void start()
-        {
-            _listener.Start();
-            Task.Run(() => acceptLoop());
-        }
-
-
-        /// <summary>
-        /// Background task to manage connecting clients
-        /// </summary>
-        private async Task acceptLoop()
-        {
-            while (true)
+            var context = await _listener.GetContextAsync();
+            if (context.Request.IsWebSocketRequest)
             {
-                var context = await _listener.GetContextAsync();
-                if (context.Request.IsWebSocketRequest)
-                {
-                    var wsContext = await context.AcceptWebSocketAsync(null);
-                    _ = handleClient(wsContext.WebSocket); // Fire-and-forget
-                }
-                else
-                {
-                    context.Response.StatusCode = 400;
-                    context.Response.Close();
-                }
+                var wsContext = await context.AcceptWebSocketAsync(null);
+                _ = HandleClient(wsContext.WebSocket); // Fire-and-forget
+            }
+            else
+            {
+                context.Response.StatusCode = 400;
+                context.Response.Close();
             }
         }
+    }
 
 
-        /// <summary>
-        /// When client connects it creates two taks. One for managing
-        /// request and one for streaming data
-        /// </summary>
-        private async Task handleClient(WebSocket socket)
+    /// <summary>
+    /// When client connects it creates two taks. One for managing
+    /// request and one for streaming data
+    /// </summary>
+    private async Task HandleClient(WebSocket socket)
+    {
+        var receiveTask = Task.Run(() => HandleIncomingMessages(socket));
+        var streamTask = Task.Run(() => StreamLoop(socket));
+
+        await Task.WhenAll(receiveTask, streamTask);
+    }
+
+
+    /// <summary>
+    /// Manages incoming messages in a seperate thread
+    /// </summary>
+    private async Task HandleIncomingMessages(WebSocket socket)
+    {
+
+        while (socket.State == WebSocketState.Open)
         {
-            var receiveTask = Task.Run(() => handleIncomingMessages(socket));
-            var streamTask = Task.Run(() => streamLoop(socket));
+            //Read the next full message
+            WebSocketMessage incomingMessage = await GetFullMessage(socket);
 
-            await Task.WhenAll(receiveTask, streamTask);
-        }
-
-
-        /// <summary>
-        /// Manages incoming messages in a seperate thread
-        /// </summary>
-        private async Task handleIncomingMessages(WebSocket socket)
-        {
-
-            while (socket.State == WebSocketState.Open)
+            // Handle the message
+            if (IsRequestMessage(incomingMessage.MessageType))
             {
-                //Read the next full message
-                string incomingMessageString = await getFullMessage(socket);
-
-                //Convert message to a incoming message
-                WebSocketMessage incomingMessage = convertIncomingMessage(incomingMessageString);
-
-                // Handle the message
-                if (isRequestMessage(incomingMessage.messageType))
-                {
-                    //Handle a requst Message
-                    await handleRequestMessage(socket, incomingMessage);
-                }
-                else if (isSetMessage(incomingMessage.messageType))
-                {
-                    //Handle a set Message
-                    handleSetMessage(incomingMessage);
-                }
-                else
-                {
-                    throw new Exception("No Handleable message Type");
-                }
+                //Handle a requst Message
+                await HandleRequestMessage(socket, incomingMessage);
+            }
+            else if (IsSetMessage(incomingMessage.MessageType))
+            {
+                //Handle a set Message
+                await HandleSetMessage(incomingMessage);
+            }
+            else
+            {
+                throw new Exception("No Handeble message Type");
             }
         }
+    }
 
 
 
-        /// <summary>
-        /// Streams data contiunously to client
-        /// </summary>
-        private async Task streamLoop(WebSocket socket)
+    /// <summary>
+    /// Streams data contiunously to client
+    /// </summary>
+    private async Task StreamLoop(WebSocket socket)
+    {
+        while (socket.State == WebSocketState.Open)
         {
-            while (socket.State == WebSocketState.Open)
+            //Check if simulation is running
+            if (SimulationManager.SimulationState.SimulationRunning && SimulationManager.SimulationState.SimulationPaused == false)
             {
-                //Check if simulation is running
-                if (SimulationManager.isSimulationRunning && SimulationManager.isSimulationPaused == false)
-                {
-                    try
-                    {
-                        //Send the data
-                        await sendTrainData(socket);
-                        await Task.Delay(SimulationSettingsGlobal.streamDelayBetweenMessages);
-                        await sendRobotData(socket);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                }
-
-                //Delay between transmissions
-                await Task.Delay(SimulationSettingsGlobal.dataStreamDelay);
-            }
-        }
-
-
-        /// <summary>
-        /// Reads the websocket messages until a message is finished and returns the message as string
-        /// </summary>
-        private async Task<string> getFullMessage(WebSocket webSocket)
-        {
-            List<byte> messageBuffer = new List<byte>(); // Dynamic buffer
-
-            WebSocketReceiveResult result;
-            do
-            {
-                byte[] buffer = new byte[1024 * 4];
-
                 try
                 {
-                    result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    //Send the data
+                    await SendMessage(socket, WebSocketMessageGenerator.GetMessageStreamedData(MessageType.TRAINDATA));
+                    await Task.Delay(SimulationSettingsGlobal.StreamDelayBetweenMessages);
+                    await SendMessage(socket, WebSocketMessageGenerator.GetMessageStreamedData(MessageType.ROBOTDATA));
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new Exception("Cant read Message");
+                    Console.WriteLine(ex);
                 }
-
-                if (result.MessageType == WebSocketMessageType.Close)
-                {
-                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-                    throw new Exception("Websocket closed");
-                }
-
-                // Add received bytes to the dynamic message buffer
-                messageBuffer.AddRange(buffer.Take(result.Count));
-
-            } while (!result.EndOfMessage);
-
-            // Now we have the full message!
-            return Encoding.UTF8.GetString(messageBuffer.ToArray());
-        }
-
-
-
-        /// <summary>
-        /// Generates the response message and sends it to the client
-        /// </summary>
-        private async Task handleRequestMessage(WebSocket webSocket, WebSocketMessage incomingMessage)
-        {
-            //Get the response data
-            string resposeData = getResponseDataString(incomingMessage);
-
-            //Generate the answer message
-            WebSocketMessage answerMessage = generateWebsocketMessage(incomingMessage, resposeData);
-
-            //convert answer to json string
-            string answerString = convertResponseToJSON(answerMessage);
-
-            //Send the message to the client
-            // Send the response
-            var responseBytes = Encoding.UTF8.GetBytes(answerString);
-            await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Generates the response message and sends it to the client
-        /// </summary>
-        private static void handleSetMessage(WebSocketMessage incomingMessage)
-        {
-            //Check the message type
-            switch (incomingMessage.messageType)
-            {
-                case MessageType.SETTINGS:
-                    SimulationSettings.updateSettings(incomingMessage.data.GetRawText());
-                    return;
-                case MessageType.SETSIMULATIONSPEED:
-                    SimulationSettings.updateSimulationSeed(incomingMessage.data.GetRawText());
-                    return;
-                case MessageType.STARTSIMULATION:
-                    SimulationManager.startSimulation();
-                    return;
-                case MessageType.STOPSIMULATION:
-                    SimulationManager.stopSimulation();
-                    return;
-                case MessageType.PAUSESIMULATION:
-                    SimulationManager.pauseSimulation();
-                    return;
-                case MessageType.CONTINUESIMULATION:
-                    SimulationManager.continueSimulation();
-                    return;
-            }
-            throw new Exception("Message not valid");
-        }
-
-
-        /// <summary>
-        /// Generates the response data string
-        /// </summary>
-        private string getResponseDataString(WebSocketMessage incomingMessage)
-        {
-            switch (incomingMessage.messageType)
-            {
-                //Request Data
-                case MessageType.TRAINLINES:
-                    return TrainManager.getTrainLinesJSON();
-                case MessageType.TRAINSTATIONSINLINE:
-                    return TrainManager.getTrainStationsJSON();
-                case MessageType.USEDSTATIONS:
-                    return TrainManager.getUsedStationsJSON();
-                case MessageType.TRAINGEODATA:
-                    return TrainManager.getTrainGeoDataJSON();
-                case MessageType.PACKAGEDATA:
-                    return PackageManager.getPackageDataJSON();
-                case MessageType.SIMULATIONSTATE:
-                    return SimulationManager.getSimulationStateJSON();
             }
 
-            throw new Exception("Message not valid");
+            //Delay between transmissions
+            await Task.Delay(SimulationSettingsGlobal.DataStreamDelay);
         }
+    }
 
 
-        /// <summary>
-        /// Sends the train data message
-        /// </summary>
-        private async Task sendTrainData(WebSocket webSocket)
+    /// <summary>
+    /// Reads the websocket messages until a message is finished and returns the message as string
+    /// </summary>
+    private async Task<WebSocketMessage> GetFullMessage(WebSocket webSocket)
+    {
+        List<byte> messageBuffer = new List<byte>(); // Dynamic buffer
+
+        WebSocketReceiveResult result;
+        do
         {
-            WebSocketMessage message = new WebSocketMessage
+            byte[] buffer = new byte[1024 * 4];
+
+            try
             {
-                id = 0,
-                messageType = MessageType.TRAINDATA,
-                data = JsonDocument.Parse("{}").RootElement.Clone()
-            };
-
-            //Get the data string
-            string trainData = TrainManager.getTrainPositionsJSON();
-
-            //Generate the full message
-            message = generateWebsocketMessage(message, trainData);
-
-            //Send the message
-            //convert answer to json string
-            string messageString = convertResponseToJSON(message);
-
-            //Send the message to the client
-            // Send the response
-            var responseBytes = Encoding.UTF8.GetBytes(messageString);
-            await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-        }
-
-
-        /// <summary>
-        /// Sends a Robot data message
-        /// </summary>
-        private async Task sendRobotData(WebSocket webSocket)
-        {
-            WebSocketMessage message = new WebSocketMessage
+                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            }
+            catch
             {
-                id = 1,
-                messageType = MessageType.ROBOTDATA,
-                data = JsonDocument.Parse("{}").RootElement.Clone()
-            };
+                throw new Exception("Cant read Message");
+            }
 
-            //Get the data string
-            string robotData = RobotManager.getRobotDataJSON();
-
-            //Generate the full message
-            message = generateWebsocketMessage(message, robotData);
-
-            //Send the message
-            //convert answer to json string
-            string messageString = convertResponseToJSON(message);
-
-            //Send the message to the client
-            // Send the response
-            var responseBytes = Encoding.UTF8.GetBytes(messageString);
-            await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-        }
-
-
-        /// <summary>
-        /// Converts a message string to a message object
-        /// </summary>
-        private static WebSocketMessage convertIncomingMessage(string message)
-        {
-            var options = new JsonSerializerOptions
+            if (result.MessageType == WebSocketMessageType.Close)
             {
-                PropertyNameCaseInsensitive = true,
-                Converters = { new JsonStringEnumConverter() }
-            };
+                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+                throw new Exception("Websocket closed");
+            }
 
-            return JsonSerializer.Deserialize<WebSocketMessage>(message, options);
-        }
+            // Add received bytes to the dynamic message buffer
+            messageBuffer.AddRange(buffer.Take(result.Count));
 
+        } while (!result.EndOfMessage);
 
+        // Now we have the full message!
+        string fullMessageString = Encoding.UTF8.GetString(messageBuffer.ToArray());
 
-        /// <summary>
-        /// Generates a response message with incoming mesagge and a data string
-        /// </summary>
-        private static WebSocketMessage generateWebsocketMessage(WebSocketMessage incomingMessage, string dataString)
+        //Convert the string to Message
+        if (fullMessageString == null)
         {
-            int id = incomingMessage.id;
-            MessageType messageType = incomingMessage.messageType;
-            JsonDocument jsonDocument = JsonDocument.Parse(dataString);
-            JsonElement jsonElement = jsonDocument.RootElement.Clone();
-
-            return new WebSocketMessage
-            {
-                id = id,
-                messageType = messageType,
-                data = jsonElement
-            };
+            throw new Exception("No Message to Convert");
         }
 
-
-        /// <summary>
-        /// Converts a WebSocketMessage to a json string
-        /// </summary>
-        private string convertResponseToJSON(WebSocketMessage responseMessage)
+        var options = new JsonSerializerOptions
         {
-            var options = new JsonSerializerOptions
-            {
-                Converters = { new JsonStringEnumConverter() }
-            };
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
 
-            return JsonSerializer.Serialize(responseMessage, options);
-        }
+        WebSocketMessage incomingMessage = JsonSerializer.Deserialize<WebSocketMessage>(fullMessageString, options);
 
-
-
-        /// <summary>
-        /// Checks if a message Type is a request Message
-        /// </summary>
-        private static bool isRequestMessage(MessageType messageType)
+        if (incomingMessage == null)
         {
-            return messageType == MessageType.TRAINLINES
-            || messageType == MessageType.TRAINSTATIONSINLINE
-            || messageType == MessageType.USEDSTATIONS
-            || messageType == MessageType.TRAINGEODATA
-            || messageType == MessageType.PACKAGEDATA
-            || messageType == MessageType.SIMULATIONSTATE;
+            throw new Exception("Message could not be Converted");
+
         }
 
+        return incomingMessage;
+    }
 
-        /// <summary>
-        /// Checks if a message Type is a set Message
-        /// </summary>
-        private static bool isSetMessage(MessageType messageType)
+
+
+    /// <summary>
+    /// Generates the response message and sends it to the client
+    /// </summary>
+    private async Task HandleRequestMessage(WebSocket webSocket, WebSocketMessage incomingMessage)
+    {
+        //Get the response data
+        WebSocketMessage resoponse = WebSocketMessageGenerator.GetResponseMessage(incomingMessage);
+
+        //Send the Answer
+        await SendMessage(webSocket, resoponse);
+    }
+
+    /// <summary>
+    /// Generates the response message and sends it to the client
+    /// </summary>
+    private static async Task HandleSetMessage(WebSocketMessage incomingMessage)
+    {
+        //Check the message type
+        switch (incomingMessage.MessageType)
         {
-            return messageType == MessageType.SETTINGS
-            || messageType == MessageType.SETSIMULATIONSPEED
-            || messageType == MessageType.STARTSIMULATION
-            || messageType == MessageType.STOPSIMULATION
-            || messageType == MessageType.PAUSESIMULATION
-            || messageType == MessageType.CONTINUESIMULATION;
+            case MessageType.SETTINGS:
+                await SimulationSettings.UpdateSettings(incomingMessage.Data.GetRawText());
+                return;
+            case MessageType.SETSIMULATIONSPEED:
+                SimulationSettings.UpdateSimulationSeed(incomingMessage.Data.GetRawText());
+                return;
+            case MessageType.STARTSIMULATION:
+                SimulationManager.StartSimulation();
+                return;
+            case MessageType.STOPSIMULATION:
+                await SimulationManager.StopSimulation();
+                return;
+            case MessageType.PAUSESIMULATION:
+                SimulationManager.PauseSimulation();
+                return;
+            case MessageType.CONTINUESTIMULATION:
+                SimulationManager.ContinueSimulation();
+                return;
         }
+        throw new Exception("Message not valid");
+    }
 
-        public enum MessageType
+
+    private static async Task SendMessage(WebSocket webSocket, WebSocketMessage message)
+    {
+        //convert answer to json string
+
+
+        var options = new JsonSerializerOptions
         {
-            //Streamed Data
-            ROBOTDATA,
-            TRAINDATA,
+            Converters = { new JsonStringEnumConverter() }
+        };
 
-            //Requested Data
-            TRAINLINES,
-            TRAINSTATIONSINLINE,
-            USEDSTATIONS,
-            TRAINGEODATA,
-            PACKAGEDATA,
-            SIMULATIONSTATE,
+        string answerString = JsonSerializer.Serialize(message, options);
 
-            //Set Data
-            SETTINGS,
-            SETSIMULATIONSPEED,
-            STARTSIMULATION,
-            STOPSIMULATION,
-            PAUSESIMULATION,
-            CONTINUESIMULATION
-        }
+        //Send the message to the client
+        // Send the response
+        var responseBytes = Encoding.UTF8.GetBytes(answerString);
+        await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
 
-        private class WebSocketMessage
-        {
-            public int id { get; set; }
-            public MessageType messageType { get; set; }
-            public JsonElement data { get; set; }
-        }
+    }
+
+
+    /// <summary>
+    /// Checks if a message Type is a request Message
+    /// </summary>
+    private static bool IsRequestMessage(MessageType messageType)
+    {
+        return messageType == MessageType.TRAINLINES
+        || messageType == MessageType.USEDSTATIONS
+        || messageType == MessageType.PACKAGEDATA
+        || messageType == MessageType.SIMULATIONSTATE;
+    }
+
+
+    /// <summary>
+    /// Checks if a message Type is a set Message
+    /// </summary>
+    private static bool IsSetMessage(MessageType messageType)
+    {
+        return messageType == MessageType.SETTINGS
+        || messageType == MessageType.SETSIMULATIONSPEED
+        || messageType == MessageType.STARTSIMULATION
+        || messageType == MessageType.STOPSIMULATION
+        || messageType == MessageType.PAUSESIMULATION
+        || messageType == MessageType.CONTINUESTIMULATION;
     }
 }
