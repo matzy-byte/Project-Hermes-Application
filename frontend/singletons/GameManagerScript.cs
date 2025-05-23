@@ -11,13 +11,13 @@ public partial class GameManagerScript : Node
 {
     public static GameManagerScript Instance { get; set; }
     public SimulationSettingsData SimulationSettings { get; set; }
+    public List<StationScript> Stations { get; set; } = [];
+    public List<TrainScript> Trains { get; set; } = [];
+    public List<RobotScript> Robots { get; set; } = [];
 
     private PackedScene stationScene = ResourceLoader.Load<PackedScene>("res://assets/station/Station.tscn");
     private PackedScene trainScene = ResourceLoader.Load<PackedScene>("res://assets/train/Train.tscn");
     private PackedScene robotScene = ResourceLoader.Load<PackedScene>("res://assets/robot/Robot.tscn");
-    private List<StationScript> stations = [];
-    private List<TrainScript> trains = [];
-    private List<RobotScript> robots = [];
 
     public override void _Ready()
     {
@@ -49,8 +49,9 @@ public partial class GameManagerScript : Node
         foreach (StationData stationData in stations)
         {
             StationScript station = stationScene.Instantiate<StationScript>();
+            GetTree().CurrentScene.AddChild(station);
             station.Initialize(stationData);
-            this.stations.Add(station);
+            Stations.Add(station);
         }
     }
 
@@ -59,8 +60,9 @@ public partial class GameManagerScript : Node
         foreach (TrainData trainData in trains)
         {
             TrainScript train = trainScene.Instantiate<TrainScript>();
+            GetTree().CurrentScene.AddChild(train);
             train.Initialize(trainData);
-            this.trains.Add(train);
+            Trains.Add(train);
         }
     }
 
@@ -70,7 +72,7 @@ public partial class GameManagerScript : Node
         {
             RobotScript robot = robotScene.Instantiate<RobotScript>();
             robot.Initialize(robotData);
-            this.robots.Add(robot);
+            Robots.Add(robot);
         }
     }
 
@@ -78,7 +80,7 @@ public partial class GameManagerScript : Node
     {
         foreach (TrainData trainData in trains)
         {
-            TrainScript train = this.trains.Find(train => train.Data.TrainId == trainData.TrainId);
+            TrainScript train = this.Trains.Find(train => train.Data.TrainId == trainData.TrainId);
             train?.Update(trainData);
         }
     }
@@ -87,35 +89,18 @@ public partial class GameManagerScript : Node
     {
         foreach (RobotData robotData in robots)
         {
-            RobotScript robot = this.robots.Find(train => train.Data.TrainId == robotData.RobotId);
+            RobotScript robot = this.Robots.Find(train => train.Data.TrainId == robotData.RobotId);
             robot?.Update(robotData);
         }
     }
 
     public void Reset()
     {
-        robots.ForEach(robot => robot.QueueFree());
-        robots.Clear();
-        trains.ForEach(train => train.QueueFree());
-        trains.Clear();
-        stations.ForEach(station => station.QueueFree());
-        stations.Clear();
-    }
-
-    public StationScript FindStation(string stationId)
-    {
-        StationScript station = stations.Find(station => station.Data.StationId == stationId);
-        return station;
-    }
-
-    public TrainScript FindTrain(int trainId)
-    {
-        TrainScript train = trains.Find(train => train.Data.TrainId == trainId);
-        return train;
-    }
-
-    public int GetStationCount()
-    {
-        return stations.Count;
+        Robots.ForEach(robot => robot.QueueFree());
+        Robots.Clear();
+        Trains.ForEach(train => train.QueueFree());
+        Trains.Clear();
+        Stations.ForEach(station => station.QueueFree());
+        Stations.Clear();
     }
 }

@@ -5,13 +5,13 @@ namespace helper;
 public static class GeoMapper
 {
     private const double MINLON = 8.2;
-    private const double MINLAT = 8.7;
-    private const double MAXLON = 48.7;
+    private const double MAXLON = 8.7;
+    private const double MINLAT = 48.7;
     private const double MAXLAT = 49.2;
-    private const float MINX = 600f;
-    private const float MINZ = -600f;
-    private const float MAXX = -600f;
-    private const float MAXZ = 600f;
+    private const float MINX = -2000f;
+    private const float MAXX = 2000f;
+    private const float MINZ = -2000f;
+    private const float MAXZ = 2000f;
 
     public static Vector3 LatLonToGameCoords(double lat, double lon)
     {

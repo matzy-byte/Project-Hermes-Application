@@ -1,6 +1,6 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Godot;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using shared;
 
 namespace Singletons;
@@ -12,11 +12,6 @@ public partial class SessionManager : Node
     private string connectionString = "ws://localhost:5000/ws/";
     private WebSocketPeer webSocket = new();
     private bool connected = false;
-    private JsonSerializerOptions options = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        Converters = { new JsonStringEnumConverter() }
-    };
 
     public override void _Ready()
     {
@@ -52,12 +47,42 @@ public partial class SessionManager : Node
             var packet = webSocket.GetPacket();
             string packetData = packet.GetStringFromUtf8();
 
-            WebSocketMessage message = JsonSerializer.Deserialize<WebSocketMessage>(packetData, options);
+            WebSocketMessage message = JsonConvert.DeserializeObject<WebSocketMessage>(packetData);
             switch (message.MessageType)
             {
+                case MessageType.TRAINDATA:
+                    {
+                        if (GameManagerScript.Instance.Stations.Count == 0)
+                        {
+                            return;
+                        }
+                        TrainListData data = message.Data.ToObject<TrainListData>();
+                        if (GameManagerScript.Instance.Trains.Count == 0)
+                        {
+                            GameManagerScript.Instance.SpawnTrains(data.Trains);
+                            break;
+                        }
+                        GameManagerScript.Instance.UpdateTrains(data.Trains);
+                        break;
+                    }
+                case MessageType.ROBOTDATA:
+                    {
+                        if (GameManagerScript.Instance.Stations.Count == 0)
+                        {
+                            return;
+                        }
+                        RobotListData data = message.Data.ToObject<RobotListData>();
+                        if (GameManagerScript.Instance.Robots.Count == 0)
+                        {
+                            GameManagerScript.Instance.SpawnRobots(data.Robots);
+                            break;
+                        }
+                        GameManagerScript.Instance.UpdateRobots(data.Robots);
+                        break;
+                    }
                 case MessageType.USEDSTATIONS:
                     {
-                        StationListData data = message.Data.Deserialize<StationListData>();
+                        StationListData data = message.Data.ToObject<StationListData>();
                         GameManagerScript.Instance.SpawnStations(data.Stations);
                         break;
                     }
@@ -85,14 +110,14 @@ public partial class SessionManager : Node
 
     public void Request(int id, MessageType type)
     {
-        WebSocketMessage message = new(id, type, JsonDocument.Parse("{}").RootElement.Clone());
-        string jsonMessage = JsonSerializer.Serialize(message, options);
+        WebSocketMessage message = new(id, type, new JObject());
+        string jsonMessage = JsonConvert.SerializeObject(message);
         webSocket.SendText(jsonMessage);
     }
 
     public void Request(WebSocketMessage message)
     {
-        string jsonMessage = JsonSerializer.Serialize(message, options);
+        string jsonMessage = JsonConvert.SerializeObject(message);
         webSocket.SendText(jsonMessage);
     }
 }

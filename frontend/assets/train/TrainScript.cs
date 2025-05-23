@@ -19,15 +19,18 @@ public partial class TrainScript : StaticBody3D
         0,
         Mathf.Lerp(currentStation.GlobalPosition.Z, nextStation.GlobalPosition.Z, Data.TravelDistance)
         );
+
         if (GlobalPosition != nextStation.GlobalPosition)
+        {
             LookAt(nextStation.GlobalPosition, Vector3.Up);
+        }
     }
 
     public void Initialize(TrainData data)
     {
         Data = data;
-        currentStation = GameManagerScript.Instance.FindStation(Data.CurrentStationId);
-        nextStation = GameManagerScript.Instance.FindStation(Data.NextStationId);
+        currentStation = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.CurrentStationId);
+        nextStation = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.NextStationId);
     }
 
     public void Update(TrainData data)
@@ -35,8 +38,8 @@ public partial class TrainScript : StaticBody3D
         Data = data;
         if (currentStation.Data.StationId != Data.CurrentStationId || nextStation.Data.StationId != Data.NextStationId)
         {
-            currentStation = GameManagerScript.Instance.FindStation(Data.CurrentStationId);
-            nextStation = GameManagerScript.Instance.FindStation(Data.NextStationId);
+            currentStation = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.CurrentStationId);
+            nextStation = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.NextStationId);
         }
     }
 }
