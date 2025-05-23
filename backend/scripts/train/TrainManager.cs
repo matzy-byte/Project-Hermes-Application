@@ -23,7 +23,11 @@ public static class TrainManager
         }
         LoadAllUsedStations();
         GenerateTimeTables();
+        DataLogger.AddLog("Time Table for Trains Initialized: " + AllTrains.Count);
+
         Console.WriteLine($"Number Of Trains Initialized: {AllTrains.Count}");
+        DataLogger.AddLog("Number Of Trains Initialized: " + AllTrains.Count);
+
     }
 
     public static void UpdateAllTrains()

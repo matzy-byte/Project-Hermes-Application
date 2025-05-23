@@ -108,22 +108,29 @@ public class Train : TrainData
         if (DrivingForward && CurrentStationId == StationIds.Last())
         {
             DrivingForward = false;
+            DataLogger.AddLog("Train " + TrainId + " Changed Driving Direction to DrivingForward: " + DrivingForward.ToString());
         }
         //Flip driving direction if station is at Start
         else if (DrivingForward == false && CurrentStationId == StationIds.First())
         {
             DrivingForward = true;
+            DataLogger.AddLog("Train " + TrainId + " Changed Driving Direction to DrivingForward: " + DrivingForward.ToString());
         }
 
         NextStationId = FindNextStation();
         timeBetweenStations = GetTimeBetweenStations();
         inStationTimer = 0;
+
+        DataLogger.AddLog("Train " + TrainId + " Enterd Station " + CurrentStationId);
+
     }
 
     public void ExitStation()
     {
         InStation = false;
         drivingTimer = 0;
+
+        DataLogger.AddLog("Train " + TrainId + " Exited Station " + CurrentStationId + " Next Station " + NextStationId);
     }
 
     public List<string> GetBetweenStation(string startStationId, string destinationId)
@@ -193,6 +200,5 @@ public class Train : TrainData
             enterTime = TrainManager.TimeTableBackwards[TrainId][enterStationId].First();
         }
         return exitTime - enterTime - SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
-
     }
 }

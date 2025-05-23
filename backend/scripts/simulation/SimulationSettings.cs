@@ -20,6 +20,8 @@ public static class SimulationSettings
 
     public static async Task UpdateSettings(string settingsJSONstring)
     {
+        DataLogger.AddLog("Start Updateting Settings");
+
         if (SimulationManager.SimulationState.SimulationRunning)
         {
             //Stop the simulation 
@@ -33,6 +35,7 @@ public static class SimulationSettings
             if (data != null)
             {
                 SimulationSettingsParameters = data;
+                DataLogger.AddLog("Settings Updated");
             }
         }
         catch (Exception e)
@@ -51,6 +54,8 @@ public static class SimulationSettings
             SimulationSpeed speedSettings = JsonConvert.DeserializeObject<SimulationSpeed>(newSpeedJSONstring);
 
             SimulationSettingsParameters.SimulationSpeed = speedSettings.SimulationSpeedParameter;
+            DataLogger.AddLog("Simulation Speed Changed to: " + SimulationSettingsParameters.SimulationSpeed);
+
         }
         catch (Exception e)
         {
