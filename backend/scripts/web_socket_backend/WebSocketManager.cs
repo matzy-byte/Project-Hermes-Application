@@ -35,7 +35,6 @@ public class WebSocketManager
             if (context.Request.IsWebSocketRequest)
             {
                 DataLogger.AddLog("Client Connected to WebSocket");
-
                 var wsContext = await context.AcceptWebSocketAsync(null);
                 _ = HandleClient(wsContext.WebSocket); // Fire-and-forget
             }
@@ -169,7 +168,7 @@ public class WebSocketManager
         };
 
         WebSocketMessage incomingMessage = JsonSerializer.Deserialize<WebSocketMessage>(fullMessageString, options);
-
+        DataLogger.AddLog(fullMessageString);
         if (incomingMessage == null)
         {
             throw new Exception("Message could not be Converted");
