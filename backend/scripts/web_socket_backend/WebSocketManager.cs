@@ -165,7 +165,8 @@ public class WebSocketManager
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
-            Converters = { new JsonStringEnumConverter() }
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            Converters = { new JsonStringEnumConverter(null) }
         };
 
         WebSocketMessage incomingMessage = JsonSerializer.Deserialize<WebSocketMessage>(fullMessageString, options);
@@ -186,14 +187,14 @@ public class WebSocketManager
     /// </summary>
     private async Task HandleRequestMessage(WebSocket webSocket, WebSocketMessage incomingMessage)
     {
-        DataLogger.AddLog("Websocket Received REQUEST Message MessageId: " + incomingMessage.Id + " Message Type" + incomingMessage.MessageType);
+        DataLogger.AddLog("Websocket Received REQUEST Message MessageId: " + incomingMessage.Id + " Message Type " + incomingMessage.MessageType);
 
         //Get the response data
         WebSocketMessage resoponse = WebSocketMessageGenerator.GetResponseMessage(incomingMessage);
 
         //Send the Answer
         await SendMessage(webSocket, resoponse);
-        DataLogger.AddLog("Websocket Send Message MessageId: " + resoponse.Id + " Message Type" + resoponse.MessageType);
+        DataLogger.AddLog("Websocket Send Message MessageId: " + resoponse.Id + " Message Type " + resoponse.MessageType);
 
     }
 
@@ -238,7 +239,8 @@ public class WebSocketManager
 
         var options = new JsonSerializerOptions
         {
-            Converters = { new JsonStringEnumConverter() }
+            Converters = { new JsonStringEnumConverter(null) },
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
         string answerString = JsonSerializer.Serialize(message, options);

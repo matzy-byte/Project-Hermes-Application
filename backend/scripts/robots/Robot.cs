@@ -12,6 +12,8 @@ public class Robot : RobotData
     public string NextExitStationId { get; set; }
     public Dictionary<string, List<Package>> LoadedPackages { get; set; }
 
+    private bool OnPackagePath;
+
     public Robot(int robotId, string currentStationId)
     {
         RobotId = robotId;
@@ -27,6 +29,7 @@ public class Robot : RobotData
         TotalPath = [];
 
         OnPath = false;
+        OnPackagePath = false;
         NextExitStationId = "";
         LoadedPackages = [];
     }
@@ -39,7 +42,7 @@ public class Robot : RobotData
             RemovePackages();
         }
 
-        if (CanLoadPackages() && OnPath)
+        if (CanLoadPackages())
         {
             AddPackagesOnPath();
         }
@@ -68,6 +71,7 @@ public class Robot : RobotData
                     {
                         OnPath = false;
                         OnTrain = false;
+                        OnPackagePath = false;
                         OnStation = true;
                         Console.WriteLine("Robot " + RobotId + " at Final Station");
                         return;
@@ -153,7 +157,11 @@ public class Robot : RobotData
             return;
         }
 
-
+        //Check if there are any Packages Left
+        if (!PackageManager.HasPackagesToLoad())
+        {
+            return;
+        }
         //When robot is not at a loading station travel to the station where most packages are waiting
         string nextStationId = PackageManager.GetStationWithMostPackagesWaiting();
         //get the next path
@@ -161,6 +169,9 @@ public class Robot : RobotData
         OnPath = true;
 
         DataLogger.AddLog("Robot " + RobotId + " At Destination. New Loading Station " + TotalPath.Last().StationIds.Last());
+
+        //Reservate packages
+        PackageManager.ReservatePackages(RobotId, TotalPath.Last().StationIds.Last());
     }
 
     private bool CanRemovePackages()
@@ -188,7 +199,7 @@ public class Robot : RobotData
 
     private bool CanLoadPackages()
     {
-        if (!OnTrain && OnStation)
+        if (!OnTrain && OnStation && OnPath && OnPackagePath)
         {
             if (PackageManager.WaitingTable.ContainsKey(CurrentStationId))
             {
@@ -207,8 +218,14 @@ public class Robot : RobotData
 
     private void AddNewPackageRoute()
     {
-        //Get the station that is the final station of the new path
-        string targetStationId = PackageManager.GetDestinationStationWithMostPackagesWaiting(CurrentStationId);
+        //Edge case when robot spawns at Loading Station
+        if (!PackageManager.ReservationTable.ContainsKey(Tuple.Create(RobotId, CurrentStationId)))
+        {
+            PackageManager.ReservatePackages(RobotId, CurrentStationId);
+        }
+
+        //Get the Target Station of the Reservated Packages
+        string targetStationId = PackageManager.ReservationTable[Tuple.Create(RobotId, CurrentStationId)].Keys.First();
 
         //get the next path
         TotalPath = [.. Pathfinder.GetTransfers(CurrentStationId, targetStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
@@ -221,5 +238,6 @@ public class Robot : RobotData
         PackageManager.FillRemainingSpace(this);
 
         OnPath = true;
+        OnPackagePath = true;
     }
 }

@@ -69,9 +69,13 @@ public static class WebSocketMessageGenerator
         List<Package> packagesInStations = PackageManager.WaitingTable.Values.SelectMany(waitingList => waitingList.Values)
                                                                             .SelectMany(packages => packages).ToList();
 
+        List<Package> reservatedPackages = PackageManager.ReservationTable.Values.SelectMany(dict => dict.Values)
+                                                                                .SelectMany(packages => packages).ToList();
+
         //All Packages in the Simulation
         List<Package> allPackages = packagesInRobot;
         allPackages.AddRange(packagesInStations);
+        allPackages.AddRange(reservatedPackages);
 
         //Convert Packages to PackageData
         PackagesListData dataElement = new PackagesListData
@@ -129,10 +133,13 @@ public static class WebSocketMessageGenerator
 
     private static JsonElement ToJsonElement(object obj)
     {
-        string json = JsonSerializer.Serialize(obj);
+        var options = new JsonSerializerOptions
+        {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
+        string json = JsonSerializer.Serialize(obj, options);
         using var doc = JsonDocument.Parse(json);
-        return doc.RootElement.Clone(); // Clone to make it usable after doc is disposed
+        return doc.RootElement.Clone();
     }
-
-
 }
