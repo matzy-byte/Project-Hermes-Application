@@ -45,9 +45,16 @@ public partial class ConfigurationMenuScript : Panel
 
     private void StartSimulation()
     {
+        SetLoadingAndChargingStations();
         GameManagerScript.SetSimulationConfiguration(simulationSettingsData);
         GameManagerScript.StartSimulation();
         GetParent<HUDScript>().StartSimulation();
+    }
+
+    private void SetLoadingAndChargingStations()
+    {
+        simulationSettingsData.LoadingStationIds = GetParent<HUDScript>().LoadingStationsMenu.GetLoadingStations();
+        simulationSettingsData.ChargingStationIds = GetParent<HUDScript>().ChargingStationsMenu.GetChargingStations();
     }
 
     private void OnTrainWaitingTimeChanged(double value)

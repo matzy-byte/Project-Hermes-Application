@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace UI;
@@ -26,6 +27,8 @@ public partial class HUDScript : Control
     public void StartSimulation()
     {
         ConfigurationMenu.Visible = false;
+        LoadingStationsMenu.Visible = false;
+        ChargingStationsMenu.Visible = false;
         ControlMenu.Visible = true;
         ChatLog.Visible = true;
     }
@@ -33,6 +36,8 @@ public partial class HUDScript : Control
     public void StopSimulation()
     {
         ConfigurationMenu.Visible = true;
+        LoadingStationsMenu.Clear();
+        ChargingStationsMenu.Clear();
         ControlMenu.Visible = false;
         ChatLog.Visible = false;
         ObjectInfo.Visible = false;
