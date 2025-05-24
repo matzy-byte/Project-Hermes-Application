@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://t4b46d3rwuyj" path="res://ui/object_info/ObjectInfoScript.cs" id="1_0igth"]
 
 [node name="ObjectInfo" type="PanelContainer"]
-visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0

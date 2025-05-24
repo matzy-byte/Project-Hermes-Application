@@ -7,11 +7,9 @@
 size = Vector2(25, 25)
 
 [node name="ControlMenu" type="HBoxContainer"]
-visible = false
 anchors_preset = 9
 anchor_bottom = 1.0
-offset_left = -350.0
-offset_right = 25.0
+offset_right = 375.0
 grow_vertical = 2
 theme_override_constants/separation = 0
 script = ExtResource("1_txfwn")
@@ -49,6 +47,7 @@ layout_mode = 2
 text = "Simulation Speed"
 
 [node name="SimulationSpeedSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
@@ -58,7 +57,8 @@ layout_mode = 2
 layout_mode = 2
 text = "Simulation Paused"
 
-[node name="SimulationPausedCheckBox" type="CheckButton" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="SimulationPausedCheckButton" type="CheckButton" parent="Panel/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
 
@@ -72,23 +72,28 @@ label_settings = ExtResource("1_1sf6j")
 horizontal_alignment = 1
 
 [node name="CameraStaticButton" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Stationary Camera"
 
 [node name="CameraMovableButton" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Movable Camera"
 
 [node name="CameraFreeButton" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Free Camera"
 
 [node name="StopSimulationButton" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 10
 text = "Stop Simulation"
 
 [node name="ControlMenuButton" type="TextureButton" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 texture_normal = SubResource("PlaceholderTexture2D_c6gwx")

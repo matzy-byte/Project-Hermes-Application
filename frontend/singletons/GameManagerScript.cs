@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using Newtonsoft.Json;
 using Robots;
 using shared;
 using Stations;
@@ -22,6 +23,12 @@ public partial class GameManagerScript : Node
     public override void _Ready()
     {
         Instance = this;
+    }
+
+    public static void SetSimulationConfiguration(SimulationSettingsData simulationSettingsData)
+    {
+        WebSocketMessage settingsMessage = new(203, MessageType.SETTINGS, JsonConvert.SerializeObject(simulationSettingsData));
+        SessionManager.Instance.Request(settingsMessage);
     }
 
     public static void StartSimulation()

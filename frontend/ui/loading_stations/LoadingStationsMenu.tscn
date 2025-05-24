@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://cg1krap4cvyro" path="res://ui/loading_stations/LoadingStationsMenuScript.cs" id="1_ixu5e"]
 
 [node name="LoadingStationsMenu" type="Panel"]
-visible = false
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0

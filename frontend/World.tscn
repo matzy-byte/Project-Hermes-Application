@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=3 uid="uid://w3vb06w2ecuq"]
+[gd_scene load_steps=20 format=3 uid="uid://w3vb06w2ecuq"]
 
 [ext_resource type="PackedScene" uid="uid://cr3k1ilnvy8it" path="res://ui/configuration_menu/ConfigurationMenu.tscn" id="1_p1v5b"]
+[ext_resource type="Script" uid="uid://cslv2u871m8xs" path="res://ui/HUDScript.cs" id="1_wygdx"]
 [ext_resource type="PackedScene" uid="uid://dgo0m131fjiiv" path="res://ui/loading_stations/LoadingStationsMenu.tscn" id="2_wygdx"]
 [ext_resource type="PackedScene" uid="uid://drsfjyset2h87" path="res://ui/charging_stations/ChargingStationsMenu.tscn" id="3_bah7m"]
 [ext_resource type="PackedScene" uid="uid://bkmtcunm6cjju" path="res://ui/control_menu/ControlMenu.tscn" id="4_fv4w7"]
@@ -30,6 +31,102 @@ size = Vector3(1200, 2, 1200)
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_cmany"]
 data = PackedVector3Array(-600, 1, 600, 600, 1, 600, -600, -1, 600, 600, 1, 600, 600, -1, 600, -600, -1, 600, 600, 1, -600, -600, 1, -600, 600, -1, -600, -600, 1, -600, -600, -1, -600, 600, -1, -600, 600, 1, 600, 600, 1, -600, 600, -1, 600, 600, 1, -600, 600, -1, -600, 600, -1, 600, -600, 1, -600, -600, 1, 600, -600, -1, -600, -600, 1, 600, -600, -1, 600, -600, -1, -600, 600, 1, 600, -600, 1, 600, 600, 1, -600, -600, 1, 600, -600, 1, -600, 600, 1, -600, -600, -1, 600, 600, -1, 600, -600, -1, -600, 600, -1, 600, 600, -1, -600, -600, -1, -600)
 
+[sub_resource type="Animation" id="Animation_wygdx"]
+resource_name = "ControlUnfold"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ControlMenu:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-350, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_bah7m"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ControlMenu:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-350, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ChatLog:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(752, 623)]
+}
+
+[sub_resource type="Animation" id="Animation_fv4w7"]
+resource_name = "ControlFold"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ControlMenu:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-350, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_fvag4"]
+resource_name = "ChatUnfold"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ChatLog:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(752, 623), Vector2(752, 373)]
+}
+
+[sub_resource type="Animation" id="Animation_kva58"]
+resource_name = "ChatFold"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ChatLog:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(752, 373), Vector2(752, 623)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fv4w7"]
+_data = {
+&"ChatFold": SubResource("Animation_kva58"),
+&"ChatUnfold": SubResource("Animation_fvag4"),
+&"ControlFold": SubResource("Animation_fv4w7"),
+&"ControlUnfold": SubResource("Animation_wygdx"),
+&"RESET": SubResource("Animation_bah7m")
+}
+
 [node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -56,30 +153,40 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_wygdx")
 
 [node name="ConfigurationMenu" parent="HUD" instance=ExtResource("1_p1v5b")]
-layout_mode = 0
-anchors_preset = 0
+layout_mode = 1
 
 [node name="LoadingStationsMenu" parent="HUD" instance=ExtResource("2_wygdx")]
-layout_mode = 0
-anchors_preset = 0
+visible = false
+layout_mode = 1
 
 [node name="ChargingStationsMenu" parent="HUD" instance=ExtResource("3_bah7m")]
-layout_mode = 0
-anchors_preset = 0
+visible = false
+layout_mode = 1
 
 [node name="ControlMenu" parent="HUD" instance=ExtResource("4_fv4w7")]
-layout_mode = 0
-anchors_preset = 0
+visible = false
+layout_mode = 1
+offset_left = -350.0
+offset_right = 25.0
 
 [node name="ChatLog" parent="HUD" instance=ExtResource("5_fvag4")]
-layout_mode = 0
-anchors_preset = 0
+visible = false
+layout_mode = 1
+offset_top = -25.0
+offset_bottom = 250.0
 
 [node name="ObjectInfo" parent="HUD" instance=ExtResource("6_kva58")]
-layout_mode = 0
-anchors_preset = 0
+visible = false
+layout_mode = 1
+offset_bottom = 40.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HUD"]
+libraries = {
+&"": SubResource("AnimationLibrary_fv4w7")
+}
 
 [node name="Cameras" type="Node3D" parent="."]
 

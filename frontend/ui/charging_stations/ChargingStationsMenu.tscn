@@ -4,7 +4,6 @@
 [ext_resource type="LabelSettings" uid="uid://c3ttpywuxdq16" path="res://ui/text/SettingTitle.tres" id="1_d28fk"]
 
 [node name="ChargingStationsMenu" type="Panel"]
-visible = false
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
