@@ -1,4 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://w3vb06w2ecuq"]
+[gd_scene load_steps=13 format=3 uid="uid://w3vb06w2ecuq"]
+
+[ext_resource type="PackedScene" uid="uid://cr3k1ilnvy8it" path="res://ui/configuration_menu/ConfigurationMenu.tscn" id="1_p1v5b"]
+[ext_resource type="PackedScene" uid="uid://dgo0m131fjiiv" path="res://ui/loading_stations/LoadingStationsMenu.tscn" id="2_wygdx"]
+[ext_resource type="PackedScene" uid="uid://drsfjyset2h87" path="res://ui/charging_stations/ChargingStationsMenu.tscn" id="3_bah7m"]
+[ext_resource type="PackedScene" uid="uid://bkmtcunm6cjju" path="res://ui/control_menu/ControlMenu.tscn" id="4_fv4w7"]
+[ext_resource type="PackedScene" uid="uid://db351iefsnjvn" path="res://ui/chat_log/ChatLog.tscn" id="5_fvag4"]
+[ext_resource type="PackedScene" uid="uid://cayyhf2plj4f4" path="res://ui/object_info/ObjectInfo.tscn" id="6_kva58"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cmany"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -49,6 +56,30 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="ConfigurationMenu" parent="HUD" instance=ExtResource("1_p1v5b")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="LoadingStationsMenu" parent="HUD" instance=ExtResource("2_wygdx")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="ChargingStationsMenu" parent="HUD" instance=ExtResource("3_bah7m")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="ControlMenu" parent="HUD" instance=ExtResource("4_fv4w7")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="ChatLog" parent="HUD" instance=ExtResource("5_fvag4")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="ObjectInfo" parent="HUD" instance=ExtResource("6_kva58")]
+layout_mode = 0
+anchors_preset = 0
 
 [node name="Cameras" type="Node3D" parent="."]
 

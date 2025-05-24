@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=3 uid="uid://db351iefsnjvn"]
+
+[ext_resource type="Script" uid="uid://dnpi88gjjrs5u" path="res://ui/chat_log/ChatLogScript.cs" id="1_1ukrb"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_2dftf"]
+size = Vector2(25, 25)
+
+[node name="ChatLog" type="VBoxContainer"]
+visible = false
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -25.0
+offset_bottom = 250.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 0
+script = ExtResource("1_1ukrb")
+
+[node name="ChatLogButton" type="TextureButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+texture_normal = SubResource("PlaceholderTexture2D_2dftf")
+stretch_mode = 1
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Chat Log"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ChatLogContainer" type="VBoxContainer" parent="Panel/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
