@@ -1,4 +1,3 @@
-using System.Text.Json;
 using shared;
 using Trains;
 using Robots;
@@ -6,6 +5,7 @@ using Packages;
 using Simulation;
 using Helper;
 using Json;
+using Newtonsoft.Json.Linq;
 
 namespace Websocket;
 
@@ -34,7 +34,7 @@ public static class WebSocketMessageGenerator
 
 
 
-    private static JsonElement GetMessageData(MessageType messageType)
+    private static JToken GetMessageData(MessageType messageType)
     {
         switch (messageType)
         {
@@ -61,7 +61,7 @@ public static class WebSocketMessageGenerator
 
 
 
-    private static JsonElement GetPackageData()
+    private static JToken GetPackageData()
     {
         List<Package> packagesInRobot = RobotManager.AllRobots.SelectMany(robot => robot.LoadedPackages.Values)
                                                             .SelectMany(packageList => packageList).ToList();
@@ -79,15 +79,15 @@ public static class WebSocketMessageGenerator
             Packages = allPackages.Select(package => (PackageData)package).ToList(),
         };
 
-        return ToJsonElement(dataElement);
+        return ToJToken(dataElement);
     }
 
-    private static JsonElement GetSimluationState()
+    private static JToken GetSimluationState()
     {
-        return ToJsonElement(SimulationManager.SimulationState);
+        return ToJToken(SimulationManager.SimulationState);
     }
 
-    private static JsonElement GetLines()
+    private static JToken GetLines()
     {
         List<LineData> lineDatas = lineDatas = TrainManager.AllTrains.Select(train => new LineData
         {
@@ -96,42 +96,40 @@ public static class WebSocketMessageGenerator
             TrainId = train.TrainId
         }).ToList();
 
-        return ToJsonElement(new LinesListData { Lines = lineDatas });
+        return ToJToken(new LinesListData { Lines = lineDatas });
     }
 
 
-    private static JsonElement GetStations()
+    private static JToken GetStations()
     {
         List<string> usedStationIds = TrainManager.AllStations;
 
         List<Station> stations = DataManager.AllStations.Where(station => usedStationIds.Contains(station.StationId)).ToList();
 
-        return ToJsonElement(new StationListData { Stations = stations.Cast<StationData>().ToList() });
+        return ToJToken(new StationListData { Stations = stations.Cast<StationData>().ToList() });
     }
 
 
-    private static JsonElement GetRobotData()
+    private static JToken GetRobotData()
     {
         List<Robot> robots = RobotManager.AllRobots;
         List<RobotData> robotDatas = robots.Cast<RobotData>().ToList();
 
-        return ToJsonElement(new RobotListData { Robots = robotDatas });
+        return ToJToken(new RobotListData { Robots = robotDatas });
     }
 
-    private static JsonElement GetTrainData()
+    private static JToken GetTrainData()
     {
         List<Train> trains = TrainManager.AllTrains;
         List<TrainData> trainDatas = trains.Cast<TrainData>().ToList();
 
-        return ToJsonElement(new TrainListData { Trains = trainDatas });
+        return ToJToken(new TrainListData { Trains = trainDatas });
     }
 
 
-    private static JsonElement ToJsonElement(object obj)
+    private static JToken ToJToken(object obj)
     {
-        string json = JsonSerializer.Serialize(obj);
-        using var doc = JsonDocument.Parse(json);
-        return doc.RootElement.Clone(); // Clone to make it usable after doc is disposed
+        return JToken.FromObject(obj);
     }
 
 

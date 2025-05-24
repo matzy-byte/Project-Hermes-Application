@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://b40835y2qlsqy"]
+
+[ext_resource type="Script" uid="uid://bscb8mvipcnhd" path="res://assets/train/TrainScript.cs" id="1_pt48f"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_rpcq2"]
+size = Vector3(5, 5, 20)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_pt48f"]
+points = PackedVector3Array(-2.5, -2.5, -9.55741, 2.5, 2.5, 9.25875, 2.5, -2.42064, 9.25875, -2.5, -2.5, 9.55741, -2.42064, 2.5, 9.25875, 2.5, 2.5, -9.25875, 2.5, -2.42064, -9.25875, -2.42064, 2.5, -9.25875)
+
+[node name="Train" type="StaticBody3D"]
+script = ExtResource("1_pt48f")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_rpcq2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("ConvexPolygonShape3D_pt48f")

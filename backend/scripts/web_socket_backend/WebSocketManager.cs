@@ -1,8 +1,7 @@
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using shared;
 using Simulation;
 
@@ -35,7 +34,6 @@ public class WebSocketManager
             if (context.Request.IsWebSocketRequest)
             {
                 DataLogger.AddLog("Client Connected to WebSocket");
-
                 var wsContext = await context.AcceptWebSocketAsync(null);
                 _ = HandleClient(wsContext.WebSocket); // Fire-and-forget
             }
@@ -162,18 +160,11 @@ public class WebSocketManager
             throw new Exception("No Message to Convert");
         }
 
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            Converters = { new JsonStringEnumConverter() }
-        };
-
-        WebSocketMessage incomingMessage = JsonSerializer.Deserialize<WebSocketMessage>(fullMessageString, options);
+        WebSocketMessage incomingMessage = JsonConvert.DeserializeObject<WebSocketMessage>(fullMessageString);
 
         if (incomingMessage == null)
         {
             throw new Exception("Message could not be Converted");
-
         }
 
         return incomingMessage;
@@ -209,10 +200,10 @@ public class WebSocketManager
         switch (incomingMessage.MessageType)
         {
             case MessageType.SETTINGS:
-                await SimulationSettings.UpdateSettings(incomingMessage.Data.GetRawText());
+                await SimulationSettings.UpdateSettings(incomingMessage.Data.ToString());
                 return;
             case MessageType.SETSIMULATIONSPEED:
-                SimulationSettings.UpdateSimulationSeed(incomingMessage.Data.GetRawText());
+                SimulationSettings.UpdateSimulationSeed(incomingMessage.Data.ToString());
                 return;
             case MessageType.STARTSIMULATION:
                 SimulationManager.StartSimulation();
@@ -234,14 +225,7 @@ public class WebSocketManager
     private static async Task SendMessage(WebSocket webSocket, WebSocketMessage message)
     {
         //convert answer to json string
-
-
-        var options = new JsonSerializerOptions
-        {
-            Converters = { new JsonStringEnumConverter() }
-        };
-
-        string answerString = JsonSerializer.Serialize(message, options);
+        string answerString = JsonConvert.SerializeObject(message);
 
         //Send the message to the client
         // Send the response
