@@ -109,7 +109,8 @@ public static class PackageManager
         int packageSum = packagesForRobot.Sum(kvp => kvp.Value.Count);
         if (packageSum > 0)
         {
-            DataLogger.AddLog("Robot " + robot.RobotId + " Added " + packageSum + " Packages At Station " + robot.CurrentStationId);
+            DataLogger.AddLog("Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " packages to not empty Robot");
+            Console.WriteLine("Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " packages to not empty Robot");
         }
 
         //Copy the packages to the robot
@@ -141,7 +142,8 @@ public static class PackageManager
         //Remove the packages from the Reservation Table
         ReservationTable.Remove(Tuple.Create(robot.RobotId, robot.CurrentStationId));
 
-        DataLogger.AddLog("Empty Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " Packages At Station " + robot.CurrentStationId);
+        DataLogger.AddLog("Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " packages to empty Robot");
+        Console.WriteLine("Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " packages to empty Robot");
     }
 
     private static Dictionary<string, List<Package>> GetPackagesThatFitInRobot(Dictionary<string, List<Package>> packagesOnPath, int remainingSpace)
@@ -187,15 +189,10 @@ public static class PackageManager
         WaitingTable[loadingStationId][package.DestinationId].Remove(package);
     }
 
-
-
-
     public static void ReservatePackages(int robotId, string loadingStationId)
     {
         Tuple<int, string> robotStation = Tuple.Create(robotId, loadingStationId);
-        //Check if 
-        // 
-        // vation Table has entry for robot
+        //Check if  Reservation Table has entry for robot
         if (!ReservationTable.ContainsKey(robotStation))
         {
             ReservationTable.Add(robotStation, []);
@@ -211,7 +208,8 @@ public static class PackageManager
         //Save the dictionary in the Reservation table
         ReservationTable[robotStation] = new Dictionary<string, List<Package>> { { destinationWithMostPackages, packagesForRobot } };
 
-        DataLogger.AddLog("Reserved " + packagesForRobot.Count + " Packages For Robot: " + robotId);
+        Console.WriteLine("Robot " + robotId + "Reserved " + packagesForRobot.Count + " Packages");
+        DataLogger.AddLog("Robot " + robotId + "Reserved " + packagesForRobot.Count + " Packages");
 
         //Remove the packages from the waiting list
         foreach (Package package in packagesForRobot)
@@ -227,5 +225,11 @@ public static class PackageManager
                                                         .Sum(packageList => packageList.Count);
 
         return packageWaitingCount > 0;
+    }
+
+    public static bool HasPackageToLoadAtStation(string stationId)
+    {
+        int packagesWatingCount = WaitingTable[stationId].Values.Sum(packageList => packageList.Count);
+        return packagesWatingCount > 0;
     }
 }

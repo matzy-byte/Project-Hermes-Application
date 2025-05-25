@@ -4,6 +4,7 @@ using Robots;
 using Trains;
 using Pathfinding;
 using Packages;
+using Charging;
 
 namespace Simulation;
 
@@ -80,9 +81,11 @@ public static class SimulationManager
         PackageManager.Initialize();
         DataLogger.AddLog("Simulation Initialized Packages");
 
+        ChargingManager.Initialize();
+        DataLogger.AddLog("Simulation Initialized Charging");
+
         RobotManager.Initialize();
         DataLogger.AddLog("Simulation Initialized Robots");
-
         DataLogger.AddLog("Simulation Initialized");
 
     }
