@@ -12,6 +12,8 @@ public class WebSocketMessage
     public MessageType MessageType { get; set; }
     public JToken Data { get; set; }
 
+    public WebSocketMessage() { }
+  
     public WebSocketMessage(int id, MessageType type, JToken data)
     {
         Id = id;

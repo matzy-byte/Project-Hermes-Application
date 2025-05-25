@@ -1,42 +1,53 @@
+using System;
+using System.IO;
+using System.Threading;
 using Json;
 
 public static class DataLogger
 {
     public const string PathLoggingFolder = "backend\\logs";
     private static string FullPath { get; set; }
+    private static readonly object fileLock = new object();
 
     public static void Initialize()
     {
-        //Get the full path
         FullPath = JsonReader.GetFullPath(PathLoggingFolder);
 
-        //Check if folder exists and create one if not
-        // Check if folder exists and create it if not
         if (!Directory.Exists(FullPath))
-        {
             Directory.CreateDirectory(FullPath);
-        }
 
-        
-        //Add the File Name
         string time = GetTimeStamp();
         string fileName = $"{time}.log";
         FullPath = Path.Combine(FullPath, fileName);
-        FullPath.Replace('\\', '/');
+        FullPath = FullPath.Replace('\\', '/');
 
-        //Create the file
-        File.WriteAllText(FullPath, "Log file created at: " + DateTime.Now.ToString());
+        lock (fileLock)
+        {
+            File.WriteAllText(FullPath, "Log file created at: " + DateTime.Now.ToString());
+        }
 
         Console.WriteLine(FullPath);
     }
 
     public static string GetTimeStamp()
     {
-        return DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");         // European date format: dd-MM-yyyy_HH-mm-ss
+        return DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
     }
 
     public static void AddLog(string message)
     {
-        File.AppendAllText(FullPath, Environment.NewLine + GetTimeStamp() + ": " + message);
+        string logEntry = Environment.NewLine + GetTimeStamp() + ": " + message;
+
+        lock (fileLock)
+        {
+            try
+            {
+                File.AppendAllText(FullPath, logEntry);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine("Logging failed: " + e.Message);
+            }
+        }
     }
 }

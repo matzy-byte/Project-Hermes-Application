@@ -160,6 +160,7 @@ public class WebSocketManager
             throw new Exception("No Message to Convert");
         }
 
+
         WebSocketMessage incomingMessage = JsonConvert.DeserializeObject<WebSocketMessage>(fullMessageString);
 
         if (incomingMessage == null)
@@ -177,14 +178,14 @@ public class WebSocketManager
     /// </summary>
     private async Task HandleRequestMessage(WebSocket webSocket, WebSocketMessage incomingMessage)
     {
-        DataLogger.AddLog("Websocket Received REQUEST Message MessageId: " + incomingMessage.Id + " Message Type" + incomingMessage.MessageType);
+        DataLogger.AddLog("Websocket Received REQUEST Message MessageId: " + incomingMessage.Id + " Message Type " + incomingMessage.MessageType);
 
         //Get the response data
         WebSocketMessage resoponse = WebSocketMessageGenerator.GetResponseMessage(incomingMessage);
 
         //Send the Answer
         await SendMessage(webSocket, resoponse);
-        DataLogger.AddLog("Websocket Send Message MessageId: " + resoponse.Id + " Message Type" + resoponse.MessageType);
+        DataLogger.AddLog("Websocket Send Message MessageId: " + resoponse.Id + " Message Type " + resoponse.MessageType);
 
     }
 
@@ -224,9 +225,8 @@ public class WebSocketManager
 
     private static async Task SendMessage(WebSocket webSocket, WebSocketMessage message)
     {
-        //convert answer to json string
         string answerString = JsonConvert.SerializeObject(message);
-
+      
         //Send the message to the client
         // Send the response
         var responseBytes = Encoding.UTF8.GetBytes(answerString);

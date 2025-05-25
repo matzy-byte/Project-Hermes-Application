@@ -1,6 +1,8 @@
 using Trains;
 using Robots;
 using Simulation;
+using shared;
+using Pathfinding;
 
 namespace Packages;
 
@@ -10,6 +12,8 @@ using PackageTable = Dictionary<string, Dictionary<string, List<Package>>>;
 public static class PackageManager
 {
     public static PackageTable WaitingTable = [];
+
+    public static Dictionary<Tuple<int, string>, Dictionary<string, List<Package>>> ReservationTable = [];
     private static Random random = new();
 
     public static void Initialize()
@@ -45,7 +49,7 @@ public static class PackageManager
         {
             for (int i = 0; i < SimulationSettings.SimulationSettingsParameters.StartPackagesCount; i++)
             {
-                List<string> stations = [.. TrainManager.AllStations.Where(id => id != entry.Key)];
+                List<string> stations = [.. TrainManager.AllStations.Where(id => !WaitingTable.ContainsKey(id))];
                 string destinationId = stations[random.Next(0, stations.Count)];
                 Package package = new(destinationId, entry.Key);
                 entry.Value[package.DestinationId].Add(package);
@@ -131,42 +135,11 @@ public static class PackageManager
 
     public static void FillEmptyRobot(Robot robot)
     {
-        string destinationStationId = robot.TotalPath.Last().StationIds.Last();
-        List<Package> waitingPackagesInStation = [.. WaitingTable[robot.CurrentStationId][destinationStationId]];
+        //Copy values to Robot
+        robot.LoadedPackages = ReservationTable[Tuple.Create(robot.RobotId, robot.CurrentStationId)].ToDictionary();
 
-        if (waitingPackagesInStation.Count > SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot)
-        {
-            //Copy the packages from the waiting list
-            List<Package> packagesForRobot = [];
-            for (int i = 0; i < SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot; i++)
-            {
-                packagesForRobot.Add(waitingPackagesInStation[i]);
-            }
-
-            //Update package info
-            packagesForRobot.ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
-            //Copy the packages to the robot
-            robot.LoadedPackages.Add(destinationStationId, [.. packagesForRobot]);
-
-            //Remove the packages from the waiting list
-            foreach (Package package in packagesForRobot)
-            {
-                RemovePackage(package, robot.CurrentStationId);
-            }
-        }
-        //All packages fit into the robot
-        else
-        {
-            //Update package info
-            waitingPackagesInStation.ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
-            //Copy the packages to the robot
-            robot.LoadedPackages.Add(destinationStationId, waitingPackagesInStation);
-            foreach (Package package in waitingPackagesInStation)
-            {
-                RemovePackage(package, robot.CurrentStationId);
-            }
-        }
-
+        //Remove the packages from the Reservation Table
+        ReservationTable.Remove(Tuple.Create(robot.RobotId, robot.CurrentStationId));
 
         DataLogger.AddLog("Empty Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " Packages At Station " + robot.CurrentStationId);
     }
@@ -212,5 +185,47 @@ public static class PackageManager
     private static void RemovePackage(Package package, string loadingStationId)
     {
         WaitingTable[loadingStationId][package.DestinationId].Remove(package);
+    }
+
+
+
+
+    public static void ReservatePackages(int robotId, string loadingStationId)
+    {
+        Tuple<int, string> robotStation = Tuple.Create(robotId, loadingStationId);
+        //Check if 
+        // 
+        // vation Table has entry for robot
+        if (!ReservationTable.ContainsKey(robotStation))
+        {
+            ReservationTable.Add(robotStation, []);
+        }
+
+        //Get the Station that the robot is taking after picking up the packages
+        string destinationWithMostPackages = GetDestinationStationWithMostPackagesWaiting(loadingStationId);
+        List<Package> allPackagesForRobot = WaitingTable[loadingStationId][destinationWithMostPackages];
+
+        //only save the packages that are fitting into the robot
+        List<Package> packagesForRobot = allPackagesForRobot.Take(SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot).ToList();
+
+        //Save the dictionary in the Reservation table
+        ReservationTable[robotStation] = new Dictionary<string, List<Package>> { { destinationWithMostPackages, packagesForRobot } };
+
+        DataLogger.AddLog("Reserved " + packagesForRobot.Count + " Packages For Robot: " + robotId);
+
+        //Remove the packages from the waiting list
+        foreach (Package package in packagesForRobot)
+        {
+            RemovePackage(package, loadingStationId);
+        }
+    }
+
+
+    public static bool HasPackagesToLoad()
+    {
+        int packageWaitingCount = WaitingTable.Values.SelectMany(innerDict => innerDict.Values)
+                                                        .Sum(packageList => packageList.Count);
+
+        return packageWaitingCount > 0;
     }
 }
