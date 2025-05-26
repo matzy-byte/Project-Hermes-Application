@@ -208,8 +208,8 @@ public static class PackageManager
         //Save the dictionary in the Reservation table
         ReservationTable[robotStation] = new Dictionary<string, List<Package>> { { destinationWithMostPackages, packagesForRobot } };
 
-        Console.WriteLine("Robot " + robotId + "Reserved " + packagesForRobot.Count + " Packages");
-        DataLogger.AddLog("Robot " + robotId + "Reserved " + packagesForRobot.Count + " Packages");
+        Console.WriteLine("Robot " + robotId + " Reserved " + packagesForRobot.Count + " Packages at Station " + loadingStationId);
+        DataLogger.AddLog("Robot " + robotId + " Reserved " + packagesForRobot.Count + " Packages at Station " + loadingStationId);
 
         //Remove the packages from the waiting list
         foreach (Package package in packagesForRobot)

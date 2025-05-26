@@ -200,8 +200,8 @@ public class Robot : RobotData
         //Remove Battery Capacaty at train enter
         BatteryCapacaty -= SimulationSettings.SimulationSettingsParameters.RobotActionBatteryConsumption;
 
-        DataLogger.AddLog("Robot " + RobotId + " entered Train " + TrainId + " at Station" + CurrentStationId);
-        Console.WriteLine("Robot " + RobotId + " entered Train " + TrainId + " at Station" + CurrentStationId);
+        DataLogger.AddLog("Robot " + RobotId + " entered Train " + TrainId + " at Station " + CurrentStationId);
+        Console.WriteLine("Robot " + RobotId + " entered Train " + TrainId + " at Station " + CurrentStationId);
     }
 
     private void TravelWithTrain()
