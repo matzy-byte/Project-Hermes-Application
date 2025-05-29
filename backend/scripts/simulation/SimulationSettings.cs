@@ -13,7 +13,7 @@ public static class SimulationSettings
         SimulationSettingsParameters.TrainWaitingTimeAtStation = 30f;
         SimulationSettingsParameters.LoadingStationIds = ["de:08212:1011", "de:08212:302", "de:08212:17"];
         SimulationSettingsParameters.ChargingStationIds = ["de:08212:521", "de:08212:1004", "de:08212:45", "de:08212:409", "de:08212:1208", "de:08215:1902"];
-        SimulationSettingsParameters.StartPackagesCount = 200;
+        SimulationSettingsParameters.StartPackagesCount = 100;
         SimulationSettingsParameters.NumberOfPackagesInRobot = 15;
         SimulationSettingsParameters.NumberOfRobots = 5;
         SimulationSettingsParameters.TotalRobotBatteryCapacity = 1000;
@@ -55,9 +55,9 @@ public static class SimulationSettings
     {
         try
         {
-            SimulationSpeed speedSettings = JsonConvert.DeserializeObject<SimulationSpeed>(newSpeedJSONstring);
+            SimulationSpeedWrapper speedSettings = JsonConvert.DeserializeObject<SimulationSpeedWrapper>(newSpeedJSONstring);
 
-            SimulationSettingsParameters.SimulationSpeed = speedSettings.SimulationSpeedParameter;
+            SimulationSettingsParameters.SimulationSpeed = speedSettings.SimulationSpeed;
             DataLogger.AddLog("Simulation Speed Changed to: " + SimulationSettingsParameters.SimulationSpeed);
 
         }
@@ -70,8 +70,8 @@ public static class SimulationSettings
     /// <summary>
     /// Wrapper for changing simulation speed
     /// </summary>
-    private struct SimulationSpeed
+    private struct SimulationSpeedWrapper
     {
-        public float SimulationSpeedParameter { get; set; }
+        public float SimulationSpeed { get; set; }
     }
 }

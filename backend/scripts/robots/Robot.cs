@@ -15,6 +15,8 @@ public class Robot : RobotData
 
     private NextDestinationType NextDestination;
 
+    
+
     public Robot(int robotId, string currentStationId)
     {
         RobotId = robotId;
@@ -44,6 +46,12 @@ public class Robot : RobotData
 
         //Manage the Robot Battery
         ManageBattery();
+
+        //Check if new Packages are spawned else return
+        if (NoPackagesLeftMode())
+        {
+            return;
+        }
 
         //When charging nothing else happens
         if (IsCharging)
@@ -132,10 +140,8 @@ public class Robot : RobotData
 
     private void ManageBattery()
     {
-        bool removeBattery = OnTrain || (OnStation && !ChargingManager.ChargingStations.Contains(CurrentStationId));
-
         //Remove Battery when robot is on idle
-        if (removeBattery)
+        if (OnTrain || (OnStation && !ChargingManager.ChargingStations.Contains(CurrentStationId)))
         {
             //Delta Time in Minutes
             float deltaTimeMinute = SimulationManager.scaledDeltaTime / 60f;
@@ -152,7 +158,7 @@ public class Robot : RobotData
         }
 
         //Robot is at a charging for charging, Charge Robot to 100%
-        if (IsCharging)
+        if (IsCharging || NextDestination != NextDestinationType.NOPACKAGESLEFT)
         {
             ChargingManager.ChargeRobot(this);
             //When robot is fully charged make it no longer charge
@@ -163,6 +169,14 @@ public class Robot : RobotData
                 Console.WriteLine("Robot " + RobotId + " Fully Charged at Station " + CurrentStationId);
                 DataLogger.AddLog("Robot " + RobotId + " Fully Charged at Station " + CurrentStationId);
             }
+            return;
+        }
+
+        //Charges Robot but without Log Message to keep log file clean
+        if (NextDestination == NextDestinationType.NOPACKAGESLEFT)
+        {
+            ChargingManager.ChargeRobot(this);
+            return;
         }
     }
 
@@ -260,6 +274,10 @@ public class Robot : RobotData
                 AddChargingRoute();
                 //Add the Path to the next Charging Station
                 break;
+
+            case NextDestinationType.NOPACKAGESLEFT:
+                //Robot Stays at current Charging Station
+                break;
         }
     }
 
@@ -301,10 +319,11 @@ public class Robot : RobotData
         //Check if any Packages are left in the simulation
         if (!PackageManager.HasPackagesToLoad())
         {
-            //Set robot in Charging mode
-            IsCharging = true;
+            //Robot Stays at current Charging Station
+            NextDestination = NextDestinationType.NOPACKAGESLEFT;
 
-            //If any Packages are spwaned Robot Picks them up
+            DataLogger.AddLog("Robot " + RobotId + " cant add new Packages because none are Left in the Simulation");
+            Console.WriteLine("Robot " + RobotId + " cant add new Packages because none are Left in the Simulation");
             return;
         }
 
@@ -355,10 +374,33 @@ public class Robot : RobotData
     }
 
 
+
+    private bool NoPackagesLeftMode()
+    {
+        if (NextDestination != NextDestinationType.NOPACKAGESLEFT)
+        {
+            return false;
+        }
+
+        //Check if robot is in Mode to wait for new Packages and if new Packages where added
+        if (NextDestination == NextDestinationType.NOPACKAGESLEFT && PackageManager.HasPackagesToLoad())
+        {
+            //Set Robot in Mode to go in Loading mode as next Step
+            NextDestination = NextDestinationType.CHARGING;
+
+            DataLogger.AddLog("Robot " + RobotId + " Can load newly Added Packages");
+            Console.WriteLine("Robot " + RobotId + " Can load newly Added Packages");
+
+            return false;
+        }
+        return true;
+    }
+
     private enum NextDestinationType
     {
         PACKAGEDELIVERY,
         CHARGING,
-        LOADING
+        LOADING,
+        NOPACKAGESLEFT
     }
 }
