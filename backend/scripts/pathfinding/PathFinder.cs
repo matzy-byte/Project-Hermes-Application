@@ -1,3 +1,5 @@
+using Charging;
+using Simulation;
 using Trains;
 
 namespace Pathfinding;
@@ -16,7 +18,6 @@ public static class Pathfinder
         }
 
         DataLogger.AddLog("Created Direct Connection Table for Pathfinder");
-
     }
 
     public static List<Transfer> GetTransfers(string startStationId, string destinationStationId, float enterTime)
@@ -34,6 +35,14 @@ public static class Pathfinder
         }
 
         return allTransfers.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
+    }
+
+
+    public static List<Transfer> GetTransfersToChargingStation(string currentStation, float enterTime)
+    {
+        return ChargingManager.ChargingStations.Select(station => GetTransfers(currentStation, station, enterTime))
+                                                                .OrderBy(path => path.Count)
+                                                                .FirstOrDefault() ?? [];
     }
 
     private static float GetTravelTime(float enterTime, List<Transfer> transfers)
