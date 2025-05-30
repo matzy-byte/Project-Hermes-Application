@@ -9,9 +9,6 @@ public static class TrainManager
     public static List<Train> AllTrains { get; set; } = [];
     public static List<string> AllStations { get; set; } = [];
 
-    public static Dictionary<int, Dictionary<string, List<float>>> TimeTableForward = [];
-    public static Dictionary<int, Dictionary<string, List<float>>> TimeTableBackwards = [];
-
     public static void Initialize()
     {
         AllTrains = [];
@@ -22,7 +19,6 @@ public static class TrainManager
             trainIndex++;
         }
         LoadAllUsedStations();
-        GenerateTimeTables();
         DataLogger.AddLog("Time Table for Trains Initialized: " + AllTrains.Count);
 
         Console.WriteLine($"Number Of Trains Initialized: {AllTrains.Count}");
@@ -72,73 +68,4 @@ public static class TrainManager
         AllStations = [.. AllTrains.SelectMany(train => train.StationIds).Distinct()];
     }
 
-    private static void GenerateTimeTables()
-    {
-        // Clear and initialize dictionaries
-        TimeTableForward.Clear();
-        TimeTableBackwards.Clear();
-
-        foreach (Train train in AllTrains)
-        {
-            int trainId = train.TrainId;
-            List<string> stations = train.StationIds;
-            string startStation = stations.First();
-            string endStation = stations.Last();
-            bool goingForward = true;
-
-            TimeTableForward[trainId] = stations.ToDictionary(s => s, _ => new List<float>());
-            TimeTableBackwards[trainId] = stations.ToDictionary(s => s, _ => new List<float>());
-
-            for (int i = 0; i < SimulationSettingsGlobal.PreComputedStopTimes * 2; i++)
-            {
-                float timeBetweenStations = (goingForward ? train.TravelTime : train.TravelTimeReverse) * 60 / stations.Count;
-
-                for (int j = 0; j < stations.Count; j++)
-                {
-                    //Get the correct station
-                    string station = goingForward ? stations[j] : stations[stations.Count - 1 - j];
-                    var timeTable = goingForward ? TimeTableForward : TimeTableBackwards;
-
-                    bool isTerminal = goingForward ? station == endStation : station == startStation;
-                    if (isTerminal)
-                    {
-                        continue;
-                    }
-
-                    float exitTime;
-
-                    if (i == 0 && j == 0 && goingForward)
-                    {
-                        exitTime = SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
-                    }
-                    else
-                    {
-                        float previousExit;
-
-                        if (j == 0)
-                        {
-                            // Coming from other direction
-                            string otherStation = goingForward ? stations[1] : stations[stations.Count - 2];
-                            previousExit = (goingForward ? TimeTableBackwards : TimeTableForward)[trainId][otherStation].Last();
-                        }
-                        else
-                        {
-                            int previousIndex = goingForward ? j - 1 : j - 1;
-                            string previousStation = goingForward
-                                ? stations[previousIndex]
-                                : stations[stations.Count - 1 - previousIndex];
-
-                            previousExit = timeTable[trainId][previousStation].Last();
-                        }
-
-                        float entryTime = previousExit + timeBetweenStations;
-                        exitTime = entryTime + SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
-                    }
-                    timeTable[trainId][station].Add(exitTime);
-                }
-                // Switch direction
-                goingForward = !goingForward;
-            }
-        }
-    }
 }
