@@ -157,54 +157,6 @@ public class Train : TrainData
         return stations;
     }
 
-    /*
-        public float NextPickupTime(string stationId, bool drivingForward, float time)
-        {
-            var timeTable = drivingForward ? TrainManager.TimeTableForward : TrainManager.TimeTableBackwards;
-            foreach (float pickupTime in timeTable[TrainId][stationId])
-            {
-                if (pickupTime >= time)
-                {
-                    return pickupTime;
-                }
-            }
-            return float.PositiveInfinity;
-        }
-    */
-    /* public float GetTravelTime(string enterStationId, string exitStationId, bool drivingForward)
-     {
-         float exitTime;
-         float enterTime;
-         if (drivingForward)
-         {
-             //Edge cases where exit station is last station
-             if (exitStationId == StationIds.Last())
-             {
-                 exitTime = TrainManager.TimeTableBackwards[TrainId][exitStationId].First();
-             }
-             else
-             {
-                 exitTime = TrainManager.TimeTableForward[TrainId][exitStationId].First();
-             }
-             enterTime = TrainManager.TimeTableForward[TrainId][enterStationId].First();
-         }
-         else
-         {
-             //edge case where exit station is first station
-             if (exitStationId == StationIds.First())
-             {
-                 exitTime = TrainManager.TimeTableForward[TrainId][exitStationId][1];
-             }
-             else
-             {
-                 exitTime = TrainManager.TimeTableBackwards[TrainId][exitStationId].First();
-             }
-             enterTime = TrainManager.TimeTableBackwards[TrainId][enterStationId].First();
-         }
-         return exitTime - enterTime - SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
-     }
- */
-
     public float GetTravelTime(string enterStationId, string exitStationId, bool drivingForward)
     {
         float enterTime = NextPickupTime(enterStationId, drivingForward, 0);
