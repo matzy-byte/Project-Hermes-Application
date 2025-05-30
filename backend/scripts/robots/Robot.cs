@@ -14,8 +14,8 @@ public class Robot : RobotData
     public Dictionary<string, List<Package>> LoadedPackages { get; set; }
 
     private NextDestinationType NextDestination;
+    private bool ChargeFull;
 
-    
 
     public Robot(int robotId, string currentStationId)
     {
@@ -37,6 +37,7 @@ public class Robot : RobotData
         OnPath = false;
 
         NextDestination = NextDestinationType.CHARGING;
+        ChargeFull = false;
     }
 
     public void Update()
@@ -54,7 +55,7 @@ public class Robot : RobotData
         }
 
         //When charging nothing else happens
-        if (IsCharging)
+        if (ChargeFull)
         {
             return;
         }
@@ -118,14 +119,14 @@ public class Robot : RobotData
         {
             case NextDestinationType.CHARGING:
                 //When Robot is at charging station it Charges Full
-                IsCharging = true;
+                ChargeFull = true;
                 DataLogger.AddLog("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 Console.WriteLine("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 break;
 
             case NextDestinationType.LOADING:
                 //When Robot is at Loaing Station -> Robot first Charges to 100%
-                IsCharging = true;
+                ChargeFull = true;
                 DataLogger.AddLog("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 Console.WriteLine("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 break;
@@ -140,8 +141,16 @@ public class Robot : RobotData
 
     private void ManageBattery()
     {
-        //Remove Battery when robot is on idle
-        if (OnTrain || (OnStation && !ChargingManager.ChargingStations.Contains(CurrentStationId)))
+        //Set the IsCharging Bool
+        IsCharging = ChargeFull || (!OnTrain && OnStation && ChargingManager.ChargingStations.Contains(CurrentStationId)) || NextDestination == NextDestinationType.NOPACKAGESLEFT;
+
+        //Charge Robot
+        if (IsCharging)
+        {
+            ChargingManager.ChargeRobot(this);
+        }
+        //Remove Battery when not Charging
+        else
         {
             //Delta Time in Minutes
             float deltaTimeMinute = SimulationManager.scaledDeltaTime / 60f;
@@ -150,33 +159,16 @@ public class Robot : RobotData
             return;
         }
 
-        //Charge Robot when robot is on Path but staying at charging station
-        if (!OnTrain && OnStation && ChargingManager.ChargingStations.Contains(CurrentStationId) && !IsCharging)
+        //Check if battery is full
+        if (ChargeFull)
         {
-            ChargingManager.ChargeRobot(this);
-            return;
-        }
-
-        //Robot is at a charging for charging, Charge Robot to 100%
-        if (IsCharging || NextDestination != NextDestinationType.NOPACKAGESLEFT)
-        {
-            ChargingManager.ChargeRobot(this);
             //When robot is fully charged make it no longer charge
-            IsCharging = BatteryCapacaty < SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity;
-
-            if (!IsCharging)
+            ChargeFull = BatteryCapacaty < SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity;
+            if (!ChargeFull)
             {
                 Console.WriteLine("Robot " + RobotId + " Fully Charged at Station " + CurrentStationId);
                 DataLogger.AddLog("Robot " + RobotId + " Fully Charged at Station " + CurrentStationId);
             }
-            return;
-        }
-
-        //Charges Robot but without Log Message to keep log file clean
-        if (NextDestination == NextDestinationType.NOPACKAGESLEFT)
-        {
-            ChargingManager.ChargeRobot(this);
-            return;
         }
     }
 
@@ -360,7 +352,7 @@ public class Robot : RobotData
         //If Robot is at Charging Station set it in Charging mode
         if (ChargingManager.ChargingStations.Contains(CurrentStationId))
         {
-            IsCharging = true;
+            ChargeFull = true;
             DataLogger.AddLog("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
             Console.WriteLine("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
             return;
