@@ -2,7 +2,8 @@ using Trains;
 using Robots;
 using Simulation;
 using shared;
-using Pathfinding;
+using Newtonsoft;
+using Newtonsoft.Json;
 
 namespace Packages;
 
@@ -19,16 +20,13 @@ public static class PackageManager
     public static void Initialize()
     {
         WaitingTable = [];
-
-        List<string> allStation = TrainManager.AllStations;
         //Initialize the loading stations
         foreach (string stationId in SimulationSettings.SimulationSettingsParameters.LoadingStationIds)
         {
-            if (allStation.Contains(stationId) == false)
+            if (TrainManager.AllStations.Contains(stationId))
             {
-                throw new Exception("Station to add does not exist in simulation");
+                WaitingTable.Add(stationId, []);
             }
-            WaitingTable.Add(stationId, []);
         }
 
         InitializeWaitingList();
@@ -231,5 +229,37 @@ public static class PackageManager
     {
         int packagesWatingCount = WaitingTable[stationId].Values.Sum(packageList => packageList.Count);
         return packagesWatingCount > 0;
+    }
+
+
+    public static void AddPackages(string data)
+    {
+        //Try to deserialize the packages
+        try
+        {
+            PackagesListData newPackages = JsonConvert.DeserializeObject<PackagesListData>(data);
+
+            //Remove Packages where Destination Station is not in Simulation
+            List<PackageData> validPackages = newPackages.Packages.Where(p => TrainManager.AllStations.Contains(p.DestinationId)).ToList();
+
+            //Remove Packages where Loading Station are valid
+            validPackages = validPackages.Where(p => WaitingTable.ContainsKey(p.StationId)).ToList();
+
+            //Remove Packages where Destination is alo a loading station
+            validPackages = validPackages.Where(p => !WaitingTable.ContainsKey(p.DestinationId)).ToList();
+
+            //Make the Robot ID at every Packages to -1
+            validPackages = validPackages.Select(p => { p.RobotId = -1; return p; }).ToList();
+
+            //Add the Packages to the Waiting Table
+            validPackages.ForEach(p => WaitingTable[p.StationId][p.DestinationId].Add(new Package(p.DestinationId, p.StationId)));
+
+            Console.WriteLine("Packagemanager Added " + validPackages.Count + " Packages");
+            DataLogger.AddLog("Packagemanager Added " + validPackages.Count + " Packages");
+        }
+        catch (Exception e)
+        {
+            return;
+        }
     }
 }

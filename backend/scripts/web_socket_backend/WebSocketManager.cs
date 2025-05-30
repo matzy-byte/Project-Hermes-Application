@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using Newtonsoft.Json;
+using Packages;
 using shared;
 using Simulation;
 
@@ -181,11 +182,11 @@ public class WebSocketManager
         DataLogger.AddLog("Websocket Received REQUEST Message MessageId: " + incomingMessage.Id + " Message Type " + incomingMessage.MessageType);
 
         //Get the response data
-        WebSocketMessage resoponse = WebSocketMessageGenerator.GetResponseMessage(incomingMessage);
+        WebSocketMessage response = WebSocketMessageGenerator.GetResponseMessage(incomingMessage);
 
         //Send the Answer
-        await SendMessage(webSocket, resoponse);
-        DataLogger.AddLog("Websocket Send Message MessageId: " + resoponse.Id + " Message Type " + resoponse.MessageType);
+        await SendMessage(webSocket, response);
+        DataLogger.AddLog("Websocket Send Message MessageId: " + response.Id + " Message Type " + response.MessageType);
 
     }
 
@@ -195,7 +196,7 @@ public class WebSocketManager
     private static async Task HandleSetMessage(WebSocketMessage incomingMessage)
     {
 
-        DataLogger.AddLog("Websocket Received SET Message MessageId: " + incomingMessage.Id + " Message Type" + incomingMessage.MessageType);
+        DataLogger.AddLog("Websocket Received SET Message MessageId: " + incomingMessage.Id + " Message Type " + incomingMessage.MessageType);
 
         //Check the message type
         switch (incomingMessage.MessageType)
@@ -217,6 +218,9 @@ public class WebSocketManager
                 return;
             case MessageType.CONTINUESTIMULATION:
                 SimulationManager.ContinueSimulation();
+                return;
+            case MessageType.ADDPACKAGES:
+                PackageManager.AddPackages(incomingMessage.Data.ToString());
                 return;
         }
         throw new Exception("Message not valid");
@@ -257,6 +261,7 @@ public class WebSocketManager
         || messageType == MessageType.STARTSIMULATION
         || messageType == MessageType.STOPSIMULATION
         || messageType == MessageType.PAUSESIMULATION
-        || messageType == MessageType.CONTINUESTIMULATION;
+        || messageType == MessageType.CONTINUESTIMULATION
+        || messageType == MessageType.ADDPACKAGES;
     }
 }

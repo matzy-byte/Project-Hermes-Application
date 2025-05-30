@@ -3,6 +3,7 @@ using Robots;
 using Pathfinding;
 using Helper;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Trains;
 namespace Charging;
 
 public static class ChargingManager
@@ -16,6 +17,9 @@ public static class ChargingManager
         ChargingStations.AddRange(SimulationSettings.SimulationSettingsParameters.LoadingStationIds);
         //Remove dublicates
         ChargingStations.Distinct();
+
+        //Remove stations that are not in the simulation
+        ChargingStations = ChargingStations.Where(s => TrainManager.AllStations.Contains(s)).ToList();
     }
 
 
@@ -26,6 +30,6 @@ public static class ChargingManager
         float newCapacity = robot.BatteryCapacaty + deltaTimeMinute * SimulationSettings.SimulationSettingsParameters.RobotBatteryChargingSpeed;
 
         //Add Battery Capacaty
-        robot.BatteryCapacaty += Math.Clamp(newCapacity, 0, SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity);
+        robot.BatteryCapacaty = Math.Clamp(newCapacity, 0, SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity);
     }
 }
