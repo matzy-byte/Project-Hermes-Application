@@ -37,6 +37,9 @@ public class Train : TrainData
         timeBetweenStations = GetTimeBetweenStations();
     }
 
+    /// <summary>
+    /// Updates the Train
+    /// </summary>
     public void TrainUpdate()
     {
         if (!InStation)
@@ -47,6 +50,9 @@ public class Train : TrainData
         UpdateInStation();
     }
 
+    /// <summary>
+    /// Gets the station the train is traveling to next
+    /// </summary>
     private string FindNextStation()
     {
         if (DrivingForward)
@@ -67,6 +73,10 @@ public class Train : TrainData
         return StationIds[StationIds.IndexOf(CurrentStationId) - 1];
     }
 
+
+    /// <summary>
+    /// Gets the Travel time between two Stations that are next to each other
+    /// </summary>
     private float GetTimeBetweenStations()
     {
         float totalTime = TravelTime;
@@ -79,6 +89,9 @@ public class Train : TrainData
         return totalTime * 60 / StationIds.Count;
     }
 
+    /// <summary>
+    /// Update Train when driving
+    /// </summary>
     private void UpdateDriving()
     {
         drivingTimer += SimulationManager.scaledDeltaTime;
@@ -89,6 +102,10 @@ public class Train : TrainData
             EnterStation();
     }
 
+
+    /// <summary>
+    /// Update Train when in Station
+    /// </summary>
     private void UpdateInStation()
     {
         inStationTimer += SimulationManager.scaledDeltaTime;
@@ -99,6 +116,10 @@ public class Train : TrainData
             ExitStation();
     }
 
+
+    /// <summary>
+    /// Train enters a Station
+    /// </summary>
     public void EnterStation()
     {
         InStation = true;
@@ -126,6 +147,10 @@ public class Train : TrainData
 
     }
 
+
+    /// <summary>
+    /// Train Exits the Station
+    /// </summary>
     public void ExitStation()
     {
         InStation = false;
@@ -134,6 +159,10 @@ public class Train : TrainData
         DataLogger.AddLog("Train " + TrainId + " Exited Station " + CurrentStationId + " Next Station " + NextStationId);
     }
 
+
+    /// <summary>
+    /// Get The stations that are between two stations (start and end inclusive)
+    /// </summary>
     public List<string> GetBetweenStation(string startStationId, string destinationId)
     {
         int enterStationIndex = StationIds.IndexOf(startStationId);
@@ -157,6 +186,9 @@ public class Train : TrainData
         return stations;
     }
 
+    /// <summary>
+    /// Calculates the travel Time Between two stations
+    /// </summary>
     public float GetTravelTime(string enterStationId, string exitStationId, bool drivingForward)
     {
         float enterTime = NextPickupTime(enterStationId, drivingForward, 0);
@@ -185,6 +217,9 @@ public class Train : TrainData
         return exitTime - enterTime - SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
     }
 
+    /// <summary>
+    /// Calculates the next pickup time when a Train leaves a station 
+    /// </summary>
     public float NextPickupTime(string stationId, bool drivingForward, float time)
     {
         //Create Dictionary

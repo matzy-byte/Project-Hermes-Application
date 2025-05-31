@@ -9,6 +9,9 @@ public static class TrainManager
     public static List<Train> AllTrains { get; set; } = [];
     public static List<string> AllStations { get; set; } = [];
 
+    /// <summary>
+    /// Initializes all Trains
+    /// </summary>
     public static void Initialize()
     {
         AllTrains = [];
@@ -26,6 +29,9 @@ public static class TrainManager
 
     }
 
+    /// <summary>
+    /// Updates all Trains
+    /// </summary>
     public static void UpdateAllTrains()
     {
         foreach (Train train in AllTrains)
@@ -34,6 +40,9 @@ public static class TrainManager
         }
     }
 
+    /// <summary>
+    /// Gets the stationIds from TransitInfo wrapper in the correct order
+    /// </summary>
     private static List<string> GetStationIds(TransitInfoWrapper transit)
     {
         LineWrapper line = DataManager.AllLines.Find(x => x.Name == transit.LineName);
@@ -63,6 +72,9 @@ public static class TrainManager
         return stationIds;
     }
 
+    /// <summary>
+    /// Loads all stations that are used in the Simulation into the AllStations variable
+    /// </summary>
     private static void LoadAllUsedStations()
     {
         AllStations = [.. AllTrains.SelectMany(train => train.StationIds).Distinct()];
