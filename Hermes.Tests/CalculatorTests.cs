@@ -31,10 +31,9 @@ public class CalculatorTests
         Assert.Equal(2, calc.Divide(6, 3)); // Korrekt
     }
     [Fact]
-    public void Divide_ShouldReturnCorrectQuotient()
+    public void ForceFailTest()
     {
-        var calc = new Calculator();
-        Assert.Equal(3, calc.Divide(12, 4)); // Korrekt
+        throw new Exception("This is an intentionally forced error");
     }
 
 }

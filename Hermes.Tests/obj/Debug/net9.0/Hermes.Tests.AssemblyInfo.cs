@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Hermes.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5bcb86158076b40245bec8efa17ec2c3d33dc92f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ccecdf53fb0247144ccef7595af389e90b4db69b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Hermes.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Hermes.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
