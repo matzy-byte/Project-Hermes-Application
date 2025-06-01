@@ -30,5 +30,11 @@ public class CalculatorTests
         var calc = new Calculator();
         Assert.Equal(2, calc.Divide(6, 3)); // Korrekt
     }
+    [Fact]
+    public void Divide_ShouldReturnCorrectQuotient()
+    {
+        var calc = new Calculator();
+        Assert.Equal(3, calc.Divide(12, 4)); // Korrekt
+    }
 
 }
