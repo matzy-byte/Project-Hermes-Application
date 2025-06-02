@@ -23,3 +23,7 @@ GameManagerScript="*res://singletons/GameManagerScript.cs"
 [dotnet]
 
 project/assembly_name="frontend"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
