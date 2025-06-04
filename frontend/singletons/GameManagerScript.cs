@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using Godot;
+using Newtonsoft.Json;
 using Robots;
 using shared;
 using Stations;
 using Trains;
+using UI;
 
 namespace Singletons;
 
@@ -22,6 +24,12 @@ public partial class GameManagerScript : Node
     public override void _Ready()
     {
         Instance = this;
+    }
+
+    public static void SetSimulationConfiguration(SimulationSettingsData simulationSettingsData)
+    {
+        WebSocketMessage settingsMessage = new(203, MessageType.SETTINGS, JsonConvert.SerializeObject(simulationSettingsData));
+        SessionManager.Instance.Request(settingsMessage);
     }
 
     public static void StartSimulation()
@@ -53,6 +61,9 @@ public partial class GameManagerScript : Node
             station.Initialize(stationData);
             Stations.Add(station);
         }
+
+        GetTree().CurrentScene.GetNode<LoadingStationsMenuScript>("HUD/LoadingStationsMenu").UpdateStationsOption(stations);
+        GetTree().CurrentScene.GetNode<ChargingStationsMenuScript>("HUD/ChargingStationsMenu").UpdateStationsOption(stations);
     }
 
     public void SpawnTrains(List<TrainData> trains)
