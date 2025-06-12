@@ -34,6 +34,7 @@ data = PackedVector3Array(-600, 1, 600, 600, 1, 600, -600, -1, 600, 600, 1, 600,
 
 [sub_resource type="Animation" id="Animation_kva58"]
 resource_name = "ChatFold"
+length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -41,7 +42,7 @@ tracks/0/path = NodePath("ChatLog:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
+"times": PackedFloat32Array(0, 0.333333),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector2(752, 373), Vector2(752, 623)]
@@ -49,6 +50,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_fvag4"]
 resource_name = "ChatUnfold"
+length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -56,7 +58,7 @@ tracks/0/path = NodePath("ChatLog:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
+"times": PackedFloat32Array(0, 0.333333),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector2(752, 623), Vector2(752, 373)]
@@ -64,6 +66,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_fv4w7"]
 resource_name = "ControlFold"
+length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -71,7 +74,7 @@ tracks/0/path = NodePath("ControlMenu:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
+"times": PackedFloat32Array(0, 0.333333),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector2(0, 0), Vector2(-350, 0)]
@@ -79,6 +82,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_wygdx"]
 resource_name = "ControlUnfold"
+length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -86,7 +90,7 @@ tracks/0/path = NodePath("ControlMenu:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
+"times": PackedFloat32Array(0, 0.333333),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector2(-350, 0), Vector2(0, 0)]
@@ -154,6 +158,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_wygdx")
 
 [node name="ConfigurationMenu" parent="HUD" instance=ExtResource("1_p1v5b")]
@@ -198,13 +203,11 @@ current = true
 size = 2000.0
 
 [node name="CameraMovable" type="Camera3D" parent="Cameras"]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 272.573, 453.052)
-current = true
+transform = Transform3D(1, 0, 0, 0, 0.642787, 0.766044, 0, -0.766044, 0.642787, 0, 272.573, 453.052)
 script = ExtResource("8_bah7m")
 
 [node name="CameraFree" type="Camera3D" parent="Cameras"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 146.749, 439.666)
-current = true
 script = ExtResource("8_bah7m")
 
 [node name="CameraFollow" type="Camera3D" parent="Cameras"]
