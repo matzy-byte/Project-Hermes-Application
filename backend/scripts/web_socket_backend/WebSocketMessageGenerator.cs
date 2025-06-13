@@ -97,7 +97,8 @@ public static class WebSocketMessageGenerator
         {
             LineName = train.LineName,
             Stations = train.StationIds,
-            TrainId = train.TrainId
+            TrainId = train.TrainId,
+            LineColor = DataManager.AllLines.Find(x => x.Name == train.LineName).Color
         }).ToList();
 
         return ToJToken(new LinesListData { Lines = lineDatas });

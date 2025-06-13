@@ -86,6 +86,12 @@ public partial class SessionManager : Node
                         GameManagerScript.Instance.SpawnStations(data.Stations);
                         break;
                     }
+                case MessageType.TRAINLINES:
+                    {
+                        LinesListData data = message.Data.ToObject<LinesListData>();
+                        GameManagerScript.Instance.DrawLinePaths(data.Lines);
+                        break;
+                    }
                 default:
                     break;
             }
