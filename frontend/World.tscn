@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://w3vb06w2ecuq"]
+[gd_scene load_steps=23 format=3 uid="uid://w3vb06w2ecuq"]
 
 [ext_resource type="PackedScene" uid="uid://cr3k1ilnvy8it" path="res://ui/configuration_menu/ConfigurationMenu.tscn" id="1_p1v5b"]
 [ext_resource type="Script" uid="uid://cslv2u871m8xs" path="res://ui/HUDScript.cs" id="1_wygdx"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://db351iefsnjvn" path="res://ui/chat_log/ChatLog.tscn" id="5_fvag4"]
 [ext_resource type="PackedScene" uid="uid://cayyhf2plj4f4" path="res://ui/object_info/ObjectInfo.tscn" id="6_kva58"]
 [ext_resource type="Script" uid="uid://bha3pc0dyn4nx" path="res://camera/CameraControlScript.cs" id="8_bah7m"]
+[ext_resource type="PackedScene" uid="uid://dlaftvfugseeo" path="res://assets/city/karlsruhe_part_one.glb" id="9_fvag4"]
+[ext_resource type="PackedScene" uid="uid://bvdv4xc11bbx1" path="res://assets/city/karlsruhe_part_two.glb" id="10_kva58"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cmany"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -27,10 +29,10 @@ albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_c6gwx"]
 material = SubResource("StandardMaterial3D_cmany")
-size = Vector3(1200, 2, 1200)
+size = Vector3(30000, 2, 30000)
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_cmany"]
-data = PackedVector3Array(-600, 1, 600, 600, 1, 600, -600, -1, 600, 600, 1, 600, 600, -1, 600, -600, -1, 600, 600, 1, -600, -600, 1, -600, 600, -1, -600, -600, 1, -600, -600, -1, -600, 600, -1, -600, 600, 1, 600, 600, 1, -600, 600, -1, 600, 600, 1, -600, 600, -1, -600, 600, -1, 600, -600, 1, -600, -600, 1, 600, -600, -1, -600, -600, 1, 600, -600, -1, 600, -600, -1, -600, 600, 1, 600, -600, 1, 600, 600, 1, -600, -600, 1, 600, -600, 1, -600, 600, 1, -600, -600, -1, 600, 600, -1, 600, -600, -1, -600, 600, -1, 600, 600, -1, -600, -600, -1, -600)
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_fv4w7"]
+data = PackedVector3Array(-15000, 1, 15000, 15000, 1, 15000, -15000, -1, 15000, 15000, 1, 15000, 15000, -1, 15000, -15000, -1, 15000, 15000, 1, -15000, -15000, 1, -15000, 15000, -1, -15000, -15000, 1, -15000, -15000, -1, -15000, 15000, -1, -15000, 15000, 1, 15000, 15000, 1, -15000, 15000, -1, 15000, 15000, 1, -15000, 15000, -1, -15000, 15000, -1, 15000, -15000, 1, -15000, -15000, 1, 15000, -15000, -1, -15000, -15000, 1, 15000, -15000, -1, 15000, -15000, -1, -15000, 15000, 1, 15000, -15000, 1, 15000, 15000, 1, -15000, -15000, 1, 15000, -15000, 1, -15000, 15000, 1, -15000, -15000, -1, 15000, 15000, -1, 15000, -15000, -1, -15000, 15000, -1, 15000, 15000, -1, -15000, -15000, -1, -15000)
 
 [sub_resource type="Animation" id="Animation_kva58"]
 resource_name = "ChatFold"
@@ -142,6 +144,7 @@ transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -
 shadow_enabled = true
 
 [node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -149,7 +152,7 @@ mesh = SubResource("BoxMesh_c6gwx")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-shape = SubResource("ConcavePolygonShape3D_cmany")
+shape = SubResource("ConcavePolygonShape3D_fv4w7")
 
 [node name="HUD" type="Control" parent="."]
 layout_mode = 3
@@ -197,10 +200,11 @@ libraries = {
 [node name="Cameras" type="Node3D" parent="."]
 
 [node name="CameraStatic" type="Camera3D" parent="Cameras"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 157.718, 0)
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 157.718, 0)
 projection = 1
 current = true
-size = 2000.0
+size = 16000.0
+far = 160000.0
 
 [node name="CameraMovable" type="Camera3D" parent="Cameras"]
 transform = Transform3D(1, 0, 0, 0, 0.642787, 0.766044, 0, -0.766044, 0.642787, 0, 272.573, 453.052)
@@ -208,7 +212,14 @@ script = ExtResource("8_bah7m")
 
 [node name="CameraFree" type="Camera3D" parent="Cameras"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 146.749, 439.666)
+far = 160000.0
 script = ExtResource("8_bah7m")
 
 [node name="CameraFollow" type="Camera3D" parent="Cameras"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 146.749, 439.666)
+
+[node name="karlsruhe_part_one" parent="." instance=ExtResource("9_fvag4")]
+transform = Transform3D(-0.709844, 0, -0.0148691, 0, 0.71, 0, 0.0148691, 0, -0.709844, -480, -0.1, 3380)
+
+[node name="karlsruhe_part_two" parent="." instance=ExtResource("10_kva58")]
+transform = Transform3D(-0.709844, 0, -0.0148691, 0, 0.71, 0, 0.0148691, 0, -0.709844, -480, -0.1, 3380)
