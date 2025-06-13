@@ -34,7 +34,7 @@ public static class WebSocketMessageGenerator
 
 
 
-    private static JToken GetMessageData(MessageType messageType)
+    public static JToken GetMessageData(MessageType messageType)
     {
         switch (messageType)
         {
@@ -42,7 +42,7 @@ public static class WebSocketMessageGenerator
             case MessageType.PACKAGEDATA:
                 return GetPackageData();
             case MessageType.SIMULATIONSTATE:
-                return GetSimluationState();
+                return GetSimulationState();
             case MessageType.TRAINLINES:
                 return GetLines();
             case MessageType.USEDSTATIONS:
@@ -86,7 +86,7 @@ public static class WebSocketMessageGenerator
         return ToJToken(dataElement);
     }
 
-    private static JToken GetSimluationState()
+    public static JToken GetSimulationState()
     {
         return ToJToken(SimulationManager.SimulationState);
     }
@@ -122,7 +122,7 @@ public static class WebSocketMessageGenerator
         return ToJToken(new RobotListData { Robots = robotDatas });
     }
 
-    private static JToken GetTrainData()
+    public static JToken GetTrainData()
     {
         List<Train> trains = TrainManager.AllTrains;
         List<TrainData> trainDatas = trains.Cast<TrainData>().ToList();

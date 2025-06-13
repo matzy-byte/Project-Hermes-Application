@@ -19,4 +19,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\backend\backend.csproj" />
+    <ProjectReference Include="..\shared\shared.csproj" />
+  </ItemGroup>
+
 </Project>
