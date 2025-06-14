@@ -1,5 +1,5 @@
 {
-    "id": 3,
-    "messageType": "PAUSESIMULATION",
+    "Id": 202,
+    "MessageType": "PAUSESIMULATION",
     "Data": {}
 }

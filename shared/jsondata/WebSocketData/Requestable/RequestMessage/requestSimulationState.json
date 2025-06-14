@@ -1,5 +1,5 @@
 {
-    "id": 3,
-    "messageType": "SIMULATIONSTATE",
+    "Id": 105,
+    "MessageType": "SIMULATIONSTATE",
     "Data": {}
 }

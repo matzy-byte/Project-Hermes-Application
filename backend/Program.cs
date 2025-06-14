@@ -15,5 +15,4 @@ DataLogger.AddLog("WebSocket server started on " + SimulationSettingsGlobal.WebS
 
 DataManager.LoadDataFromJson();
 SimulationSettings.Initialize();
-SimulationManager.StartSimulation();
 SimulationManager.SimulationLoop();

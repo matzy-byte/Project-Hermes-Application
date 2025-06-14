@@ -1,213 +1,126 @@
 {
-    "id": 1,
-    "messageType": "ROBOTDATA",
-    "data": {
-        "RobotData": [
+    "Id": 1,
+    "MessageType": "ROBOTDATA",
+    "Data": {
+        "Robots": [
             {
-                "RobotID": 0,
                 "OnPath": true,
-                "OnTrain": false,
-                "OnStation": true,
-                "TrainID": null,
-                "CurrentStationID": "de:08212:10",
-                "TotalPath": {
-                    "StartStationID": "de:08212:1011",
-                    "EndStationID": "de:08212:501",
-                    "SubPaths": [
+                "NextExitStationId": "de:08212:39",
+                "LoadedPackages": {
+                    "de:08212:610": [
                         {
-                            "TrainID": 1,
-                            "Stations": [
-                                "de:08212:1011",
-                                "de:08212:1002",
-                                "de:08212:1001",
-                                "de:08212:6",
-                                "de:08212:7",
-                                "de:08212:9",
-                                "de:08212:10"
-                            ]
-                        },
-                        {
-                            "TrainID": 4,
-                            "Stations": [
-                                "de:08212:10",
-                                "de:08212:9",
-                                "de:08212:7",
-                                "de:08212:624",
-                                "de:08212:623",
-                                "de:08212:622",
-                                "de:08212:85",
-                                "de:08212:71",
-                                "de:08212:61",
-                                "de:08212:62",
-                                "de:08212:508",
-                                "de:08212:507",
-                                "de:08212:603",
-                                "de:08212:505",
-                                "de:08212:504",
-                                "de:08212:503",
-                                "de:08212:51",
-                                "de:08212:58",
-                                "de:08212:501"
-                            ]
+                            "DestinationId": "de:08212:610",
+                            "RobotId": -1,
+                            "StationId": "de:08212:3013"
                         }
                     ]
-                }
-            },
-            {
-                "RobotID": 1,
-                "OnPath": true,
+                },
+                "RobotId": 0,
                 "OnTrain": false,
                 "OnStation": true,
-                "TrainID": null,
-                "CurrentStationID": "de:08212:206",
-                "TotalPath": {
-                    "StartStationID": "de:08212:206",
-                    "EndStationID": "de:08212:302",
-                    "SubPaths": [
-                        {
-                            "TrainID": 10,
-                            "Stations": [
-                                "de:08212:206",
-                                "de:08212:205",
-                                "de:08212:204",
-                                "de:08212:203",
-                                "de:08212:201"
-                            ]
-                        },
-                        {
-                            "TrainID": 2,
-                            "Stations": [
-                                "de:08212:201",
-                                "de:08212:315",
-                                "de:08212:302"
-                            ]
-                        }
-                    ]
-                }
+                "TrainId": -1,
+                "CurrentStationId": "de:08212:39",
+                "BatteryCapacaty": 53.39251,
+                "IsCharging": false,
+                "TotalPath": [
+                    {
+                        "TrainId": 12,
+                        "StationIds": [
+                            "de:08212:3013",
+                            "de:08212:3301",
+                            "de:08212:233",
+                            "de:08212:3102",
+                            "de:08212:231",
+                            "de:08212:404",
+                            "de:08212:403",
+                            "de:08212:402",
+                            "de:08212:626",
+                            "de:08212:7",
+                            "de:08212:6",
+                            "de:08212:1001",
+                            "de:08212:1002",
+                            "de:08212:1003",
+                            "de:08212:1004",
+                            "de:08212:39"
+                        ]
+                    },
+                    {
+                        "TrainId": 3,
+                        "StationIds": [
+                            "de:08212:39",
+                            "de:08212:40",
+                            "de:08212:602",
+                            "de:08212:603",
+                            "de:08212:604",
+                            "de:08212:605",
+                            "de:08212:606",
+                            "de:08212:607",
+                            "de:08212:608",
+                            "de:08212:609",
+                            "de:08212:610"
+                        ]
+                    }
+                ]
             },
             {
-                "RobotID": 2,
                 "OnPath": true,
-                "OnTrain": false,
-                "OnStation": true,
-                "TrainID": null,
-                "CurrentStationID": "de:08212:39",
-                "TotalPath": {
-                    "StartStationID": "de:08212:10",
-                    "EndStationID": "de:08212:302",
-                    "SubPaths": [
+                "NextExitStationId": "de:08212:39",
+                "LoadedPackages": {
+                    "de:08212:610": [
                         {
-                            "TrainID": 0,
-                            "Stations": [
-                                "de:08212:10",
-                                "de:08212:9",
-                                "de:08212:7",
-                                "de:08212:6",
-                                "de:08212:1001",
-                                "de:08212:1002",
-                                "de:08212:1003",
-                                "de:08212:1004",
-                                "de:08212:39"
-                            ]
-                        },
-                        {
-                            "TrainID": 2,
-                            "Stations": [
-                                "de:08212:39",
-                                "de:08212:41",
-                                "de:08212:44",
-                                "de:08212:45",
-                                "de:08212:51",
-                                "de:08212:201",
-                                "de:08212:315",
-                                "de:08212:302"
-                            ]
+                            "DestinationId": "de:08212:610",
+                            "RobotId": -1,
+                            "StationId": "de:08215:1902"
                         }
                     ]
-                }
-            },
-            {
-                "RobotID": 3,
-                "OnPath": true,
-                "OnTrain": false,
-                "OnStation": true,
-                "TrainID": null,
-                "CurrentStationID": "de:08212:41",
-                "TotalPath": {
-                    "StartStationID": "de:08212:1206",
-                    "EndStationID": "de:08212:302",
-                    "SubPaths": [
-                        {
-                            "TrainID": 7,
-                            "Stations": [
-                                "de:08212:1206",
-                                "de:08212:1201",
-                                "de:08212:89",
-                                "de:08212:98",
-                                "de:08215:12656",
-                                "de:08212:1013",
-                                "de:08212:1012",
-                                "de:08212:1011",
-                                "de:08212:1003",
-                                "de:08212:1004",
-                                "de:08212:39",
-                                "de:08212:41"
-                            ]
-                        },
-                        {
-                            "TrainID": 2,
-                            "Stations": [
-                                "de:08212:41",
-                                "de:08212:44",
-                                "de:08212:45",
-                                "de:08212:51",
-                                "de:08212:201",
-                                "de:08212:315",
-                                "de:08212:302"
-                            ]
-                        }
-                    ]
-                }
-            },
-            {
-                "RobotID": 4,
-                "OnPath": true,
+                },
+                "RobotId": 1,
                 "OnTrain": true,
                 "OnStation": false,
-                "TrainID": 6,
-                "CurrentStationID": null,
-                "TotalPath": {
-                    "StartStationID": "de:08212:1011",
-                    "EndStationID": "de:08212:84",
-                    "SubPaths": [
-                        {
-                            "TrainID": 6,
-                            "Stations": [
-                                "de:08212:1011",
-                                "de:08212:1003",
-                                "de:08212:1004",
-                                "de:08212:39",
-                                "de:08212:41"
-                            ]
-                        },
-                        {
-                            "TrainID": 2,
-                            "Stations": [
-                                "de:08212:41",
-                                "de:08212:39",
-                                "de:08212:37",
-                                "de:08212:37:4",
-                                "de:08212:61",
-                                "de:08212:62",
-                                "de:08212:63",
-                                "de:08212:91",
-                                "de:08212:89",
-                                "de:08212:98",
-                                "de:08212:84"
-                            ]
-                        }
-                    ]
-                }
+                "TrainId": 13,
+                "CurrentStationId": "de:08212:626",
+                "BatteryCapacaty": 79.82496,
+                "IsCharging": false,
+                "TotalPath": [
+                    {
+                        "TrainId": 13,
+                        "StationIds": [
+                            "de:08215:1902",
+                            "de:08212:3013",
+                            "de:08212:3301",
+                            "de:08212:233",
+                            "de:08212:3102",
+                            "de:08212:231",
+                            "de:08212:404",
+                            "de:08212:403",
+                            "de:08212:402",
+                            "de:08212:626",
+                            "de:08212:7",
+                            "de:08212:6",
+                            "de:08212:1001",
+                            "de:08212:1002",
+                            "de:08212:1003",
+                            "de:08212:1004",
+                            "de:08212:39"
+                        ]
+                    },
+                    {
+                        "TrainId": 3,
+                        "StationIds": [
+                            "de:08212:39",
+                            "de:08212:40",
+                            "de:08212:602",
+                            "de:08212:603",
+                            "de:08212:604",
+                            "de:08212:605",
+                            "de:08212:606",
+                            "de:08212:607",
+                            "de:08212:608",
+                            "de:08212:609",
+                            "de:08212:610"
+                        ]
+                    }
+                ]
             }
         ]
     }

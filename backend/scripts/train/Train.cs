@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using shared;
 using Simulation;
 
@@ -36,6 +37,9 @@ public class Train : TrainData
         timeBetweenStations = GetTimeBetweenStations();
     }
 
+    /// <summary>
+    /// Updates the Train
+    /// </summary>
     public void TrainUpdate()
     {
         if (!InStation)
@@ -46,6 +50,9 @@ public class Train : TrainData
         UpdateInStation();
     }
 
+    /// <summary>
+    /// Gets the station the train is traveling to next
+    /// </summary>
     public string FindNextStation()
     {
         if (DrivingForward)
@@ -66,6 +73,9 @@ public class Train : TrainData
         return StationIds[StationIds.IndexOf(CurrentStationId) - 1];
     }
 
+    /// <summary>
+    /// Gets the Travel time between two Stations that are next to each other
+    /// </summary>
     public float GetTimeBetweenStations()
     {
         float totalTime = TravelTime;
@@ -78,6 +88,9 @@ public class Train : TrainData
         return totalTime * 60 / StationIds.Count;
     }
 
+    /// <summary>
+    /// Update Train when driving
+    /// </summary>
     private void UpdateDriving()
     {
         drivingTimer += SimulationManager.scaledDeltaTime;
@@ -88,6 +101,10 @@ public class Train : TrainData
             EnterStation();
     }
 
+
+    /// <summary>
+    /// Update Train when in Station
+    /// </summary>
     private void UpdateInStation()
     {
         inStationTimer += SimulationManager.scaledDeltaTime;
@@ -98,6 +115,10 @@ public class Train : TrainData
             ExitStation();
     }
 
+
+    /// <summary>
+    /// Train enters a Station
+    /// </summary>
     public void EnterStation()
     {
         InStation = true;
@@ -125,6 +146,10 @@ public class Train : TrainData
 
     }
 
+
+    /// <summary>
+    /// Train Exits the Station
+    /// </summary>
     public void ExitStation()
     {
         InStation = false;
@@ -133,6 +158,10 @@ public class Train : TrainData
         DataLogger.AddLog("Train " + TrainId + " Exited Station " + CurrentStationId + " Next Station " + NextStationId);
     }
 
+
+    /// <summary>
+    /// Get The stations that are between two stations (start and end inclusive)
+    /// </summary>
     public List<string> GetBetweenStation(string startStationId, string destinationId)
     {
         int enterStationIndex = StationIds.IndexOf(startStationId);
@@ -156,49 +185,122 @@ public class Train : TrainData
         return stations;
     }
 
-    public float NextPickupTime(string stationId, bool drivingForward, float time)
-    {
-        var timeTable = drivingForward ? TrainManager.TimeTableForward : TrainManager.TimeTableBackwards;
-        foreach (float pickupTime in timeTable[TrainId][stationId])
-        {
-            if (pickupTime >= time)
-            {
-                return pickupTime;
-            }
-        }
-        return float.PositiveInfinity;
-    }
-
+    /// <summary>
+    /// Calculates the travel Time Between two stations
+    /// </summary>
     public float GetTravelTime(string enterStationId, string exitStationId, bool drivingForward)
     {
+        float enterTime = NextPickupTime(enterStationId, drivingForward, 0);
         float exitTime;
-        float enterTime;
+
         if (drivingForward)
         {
-            //Edge cases where exit station is last station
-            if (exitStationId == StationIds.Last())
-            {
-                exitTime = TrainManager.TimeTableBackwards[TrainId][exitStationId].First();
-            }
-            else
-            {
-                exitTime = TrainManager.TimeTableForward[TrainId][exitStationId].First();
-            }
-            enterTime = TrainManager.TimeTableForward[TrainId][enterStationId].First();
+            bool isLastStation = exitStationId == StationIds.Last();
+            exitTime = NextPickupTime(exitStationId, !isLastStation ? true : false, 0);
         }
         else
         {
-            //edge case where exit station is first station
-            if (exitStationId == StationIds.First())
+            bool isFirstStation = exitStationId == StationIds.First();
+            exitTime = NextPickupTime(exitStationId, isFirstStation ? true : false, 0);
+
+            if (isFirstStation)
             {
-                exitTime = TrainManager.TimeTableForward[TrainId][exitStationId][1];
+                exitTime = NextPickupTime(
+                    exitStationId,
+                    true,
+                    exitTime + SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation * 2
+                );
             }
-            else
-            {
-                exitTime = TrainManager.TimeTableBackwards[TrainId][exitStationId].First();
-            }
-            enterTime = TrainManager.TimeTableBackwards[TrainId][enterStationId].First();
         }
+
         return exitTime - enterTime - SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
+    }
+
+    /// <summary>
+    /// Calculates the next pickup time when a Train leaves a station 
+    /// </summary>
+    public float NextPickupTime(string stationId, bool drivingForward, float time)
+    {
+        //Create Dictionary
+        Dictionary<string, List<float>> timeTableForward = StationIds.ToDictionary(s => s, _ => new List<float>());
+        Dictionary<string, List<float>> timeTableBackward = StationIds.ToDictionary(s => s, _ => new List<float>());
+
+        float pickupTime = 0;
+        bool pickupIsTerminal = drivingForward ? stationId == StationIds.Last() : stationId == StationIds.First();
+        bool endLoop = false;
+        bool goingForward = true;
+        int iterations = 0;
+        int maxIterations = 1000;
+
+        do
+        {
+            float timeBetweenStations = (goingForward ? TravelTime : TravelTimeReverse) * 60 / StationIds.Count;
+
+            for (int j = 0; j < StationIds.Count; j++)
+            {
+                //Get the correct station
+                string station = goingForward ? StationIds[j] : StationIds[StationIds.Count - 1 - j];
+                var timeTable = goingForward ? timeTableForward : timeTableBackward;
+
+                bool isTerminal = goingForward ? station == StationIds.Last() : station == StationIds.First();
+                if (isTerminal)
+                {
+                    continue;
+                }
+
+                float exitTime;
+
+                //Very first entry is hardcoded
+                if (iterations == 0)
+                {
+                    exitTime = SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
+                }
+                else
+                {
+                    float previousExit;
+
+                    if (j == 0)
+                    {
+                        // Coming from other direction
+                        string otherStation = goingForward ? StationIds[1] : StationIds[StationIds.Count - 2];
+                        previousExit = (goingForward ? timeTableBackward : timeTableForward)[otherStation].Last();
+                    }
+                    else
+                    {
+                        int previousIndex = goingForward ? j - 1 : j - 1;
+                        string previousStation = goingForward
+                            ? StationIds[previousIndex]
+                            : StationIds[StationIds.Count - 1 - previousIndex];
+
+                        previousExit = timeTable[previousStation].Last();
+                    }
+
+                    float entryTime = previousExit + timeBetweenStations;
+                    exitTime = entryTime + SimulationSettings.SimulationSettingsParameters.TrainWaitingTimeAtStation;
+                }
+                timeTable[station].Add(exitTime);
+            }
+
+            //Check the number of Values for Forward and backward are over 1 (both have at least one )
+            if (timeTableBackward.Sum(kvp => kvp.Value.Count) > 0 && timeTableForward.Sum(kvp => kvp.Value.Count) > 0)
+            {
+                //Get the time and check if loop can be exited
+                pickupTime = drivingForward ? timeTableForward[stationId].Last() : timeTableBackward[stationId].Last();
+                endLoop = pickupTime >= time;
+
+                //Return just a big value
+                if (iterations >= maxIterations)
+                {
+                    return float.PositiveInfinity / 2f;
+                }
+            }
+
+            // Switch direction
+            goingForward = !goingForward;
+            iterations++;
+        }
+        while (!endLoop);
+
+        return pickupTime;
     }
 }

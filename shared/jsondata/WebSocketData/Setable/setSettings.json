@@ -1,0 +1,28 @@
+{
+    "Id": 204,
+    "MessageType": "SETTINGS",
+    "Data": {
+        "SimulationSpeed": 300.0,
+        "TrainWaitingTimeAtStation": 30.0,
+        "LoadingStationIds": [
+            "de:08212:3013",
+            "de:08215:1902",
+            "de:08212:4496"
+        ],
+        "ChargingStationIds": [
+            "de:08212:521",
+            "de:08212:1004",
+            "de:08212:45",
+            "de:08212:409",
+            "de:08212:1208",
+            "de:08215:1902"
+        ],
+        "StartPackagesCount": 1,
+        "NumberOfPackagesInRobot": 10,
+        "NumberOfRobots": 2,
+        "TotalRobotBatteryCapacity": 100.0,
+        "RobotIdleBatteryConsumption": 0.5,
+        "RobotActionBatteryConsumption": 10.0,
+        "RobotBatteryChargingSpeed": 1.0
+    }
+}
