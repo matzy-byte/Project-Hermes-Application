@@ -53,7 +53,7 @@ public class Train : TrainData
     /// <summary>
     /// Gets the station the train is traveling to next
     /// </summary>
-    private string FindNextStation()
+    public string FindNextStation()
     {
         if (DrivingForward)
         {
@@ -73,11 +73,10 @@ public class Train : TrainData
         return StationIds[StationIds.IndexOf(CurrentStationId) - 1];
     }
 
-
     /// <summary>
     /// Gets the Travel time between two Stations that are next to each other
     /// </summary>
-    private float GetTimeBetweenStations()
+    public float GetTimeBetweenStations()
     {
         float totalTime = TravelTime;
         if (!DrivingForward)

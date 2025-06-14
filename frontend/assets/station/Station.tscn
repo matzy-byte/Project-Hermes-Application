@@ -3,10 +3,10 @@
 [ext_resource type="Script" uid="uid://c2c71v2u0rrqt" path="res://assets/station/StationScript.cs" id="1_lrann"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_rpcq2"]
-size = Vector3(20, 5, 20)
+size = Vector3(100, 100, 100)
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_266hg"]
-points = PackedVector3Array(9.26187, 2.5, 9.25875, -9.55979, -2.5, -9.55741, -9.55979, -2.5, 9.55741, 9.56063, -2.5, 9.55741, 9.56063, -2.5, -9.55741, -9.26103, 2.5, -9.25875, -9.26103, 2.5, 9.25875, 9.26187, 2.5, -9.25875)
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_lrann"]
+data = PackedVector3Array(-50, 50, 50, 50, 50, 50, -50, -50, 50, 50, 50, 50, 50, -50, 50, -50, -50, 50, 50, 50, -50, -50, 50, -50, 50, -50, -50, -50, 50, -50, -50, -50, -50, 50, -50, -50, 50, 50, 50, 50, 50, -50, 50, -50, 50, 50, 50, -50, 50, -50, -50, 50, -50, 50, -50, 50, -50, -50, 50, 50, -50, -50, -50, -50, 50, 50, -50, -50, 50, -50, -50, -50, 50, 50, 50, -50, 50, 50, 50, 50, -50, -50, 50, 50, -50, 50, -50, 50, 50, -50, -50, -50, 50, 50, -50, 50, -50, -50, -50, 50, -50, 50, 50, -50, -50, -50, -50, -50)
 
 [node name="Station" type="StaticBody3D"]
 script = ExtResource("1_lrann")
@@ -15,4 +15,4 @@ script = ExtResource("1_lrann")
 mesh = SubResource("BoxMesh_rpcq2")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("ConvexPolygonShape3D_266hg")
+shape = SubResource("ConcavePolygonShape3D_lrann")
