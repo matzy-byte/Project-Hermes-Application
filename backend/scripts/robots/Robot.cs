@@ -16,7 +16,9 @@ public class Robot : RobotData
     private NextDestinationType NextDestination;
     private bool ChargeFull;
 
-
+    /// <summary>
+    /// Constructor for Robot, initializes ID and starting station.
+    /// </summary>
     public Robot(int robotId, string currentStationId)
     {
         RobotId = robotId;
@@ -24,6 +26,9 @@ public class Robot : RobotData
         Initialize();
     }
 
+    /// <summary>
+    /// Initializes robot properties and resets state.
+    /// </summary>
     public void Initialize()
     {
         //Robot Values
@@ -40,6 +45,9 @@ public class Robot : RobotData
         ChargeFull = false;
     }
 
+    /// <summary>
+    /// Main update loop for robot behavior, including package management, battery, and path handling.
+    /// </summary>
     public void Update()
     {
         //Manage the packages
@@ -91,6 +99,9 @@ public class Robot : RobotData
         }
     }
 
+    /// <summary>
+    /// Handles delivery and loading of packages while on station.
+    /// </summary>
     private void ManagePackagesOnPath()
     {
         if (OnStation && LoadedPackages.ContainsKey(CurrentStationId))
@@ -107,7 +118,9 @@ public class Robot : RobotData
         }
     }
 
-
+    /// <summary>
+    /// Handles actions when arriving at the final station in the current path.
+    /// </summary>
     private void ManageFinalExit()
     {
         //Robot no longer on Path
@@ -118,51 +131,44 @@ public class Robot : RobotData
         switch (NextDestination)
         {
             case NextDestinationType.CHARGING:
-                //When Robot is at charging station it Charges Full
                 ChargeFull = true;
                 DataLogger.AddLog("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 Console.WriteLine("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 break;
 
             case NextDestinationType.LOADING:
-                //When Robot is at Loaing Station -> Robot first Charges to 100%
                 ChargeFull = true;
                 DataLogger.AddLog("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 Console.WriteLine("Robot " + RobotId + " is Charging at Station " + CurrentStationId);
                 break;
+
             case NextDestinationType.PACKAGEDELIVERY:
-                //Robot is now on Path to a charging station
                 DataLogger.AddLog("Robot " + RobotId + " deliverd last Package at Station" + CurrentStationId);
                 Console.WriteLine("Robot " + RobotId + " deliverd last Package at Station" + CurrentStationId);
                 break;
         }
     }
 
-
+    /// <summary>
+    /// Manages battery consumption and charging behavior.
+    /// </summary>
     private void ManageBattery()
     {
-        //Set the IsCharging Bool
         IsCharging = ChargeFull || (!OnTrain && OnStation && ChargingManager.ChargingStations.Contains(CurrentStationId)) || NextDestination == NextDestinationType.NOPACKAGESLEFT;
 
-        //Charge Robot
         if (IsCharging)
         {
             ChargingManager.ChargeRobot(this);
         }
-        //Remove Battery when not Charging
         else
         {
-            //Delta Time in Minutes
             float deltaTimeMinute = SimulationManager.scaledDeltaTime / 60f;
-            //Remove Battery Capacaty
             BatteryCapacaty -= deltaTimeMinute * SimulationSettings.SimulationSettingsParameters.RobotIdleBatteryConsumption;
             return;
         }
 
-        //Check if battery is full
         if (ChargeFull)
         {
-            //When robot is fully charged make it no longer charge
             ChargeFull = BatteryCapacaty < SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity;
             if (!ChargeFull)
             {
@@ -172,48 +178,48 @@ public class Robot : RobotData
         }
     }
 
-
+    /// <summary>
+    /// Checks if the train has arrived at the station and allows the robot to enter.
+    /// </summary>
     private void IsTrainAtEnterStation()
     {
         Transfer transfer = (Transfer)TotalPath.Find(x => x.StationIds.First() == CurrentStationId);
         string exitStation = transfer.StationIds.Last();
         Train train = TrainManager.AllTrains[transfer.TrainId];
 
-        //check if train is traveling at the right direciton
         int enterStationIndex = train.StationIds.IndexOf(CurrentStationId);
         int exitStationIndex = train.StationIds.IndexOf(exitStation);
         bool drivingForward = enterStationIndex < exitStationIndex;
 
         if (train.DrivingForward == drivingForward)
         {
-            //check if train is at the right staion
             if (train.InStation && train.CurrentStationId == CurrentStationId)
             {
-                //Robot enters train
                 EnterTrain(train.TrainId);
-
-                //Save the exit station
                 NextExitStationId = exitStation;
             }
         }
     }
 
+    /// <summary>
+    /// Allows robot to enter the specified train.
+    /// </summary>
     private void EnterTrain(int trainId)
     {
         OnTrain = true;
         TrainId = trainId;
-
-        //Remove Battery Capacaty at train enter
         BatteryCapacaty -= SimulationSettings.SimulationSettingsParameters.RobotActionBatteryConsumption;
 
         DataLogger.AddLog("Robot " + RobotId + " entered Train " + TrainId + " at Station " + CurrentStationId);
         Console.WriteLine("Robot " + RobotId + " entered Train " + TrainId + " at Station " + CurrentStationId);
     }
 
+    /// <summary>
+    /// Updates robot's state while riding the train.
+    /// </summary>
     private void TravelWithTrain()
     {
         Train train = TrainManager.AllTrains[TrainId];
-        //Update the current station when train is waiting at station
         if (!train.InStation)
         {
             OnStation = false;
@@ -222,13 +228,9 @@ public class Robot : RobotData
         CurrentStationId = train.CurrentStationId;
         OnStation = true;
 
-        //When train is at the exit station
         if (CurrentStationId == NextExitStationId)
         {
-            //robot leaves train
             OnTrain = false;
-
-            //Remove Battery Capacaty at train exit
             BatteryCapacaty -= SimulationSettings.SimulationSettingsParameters.RobotActionBatteryConsumption;
 
             DataLogger.AddLog("Robot " + RobotId + " exit Train " + TrainId + " at Station " + CurrentStationId);
@@ -237,81 +239,67 @@ public class Robot : RobotData
         }
     }
 
+    /// <summary>
+    /// Handles switching robot to next destination type.
+    /// </summary>
     private void ManageNewPath()
     {
-        //Check where robot should travel next
         switch (NextDestination)
         {
             case NextDestinationType.CHARGING:
-
-                //Set the Robots next destination to loading Packages
                 NextDestination = NextDestinationType.LOADING;
-
-                //Get the path to the next Loading Station
                 TravelToNextLoadingStation();
                 break;
 
             case NextDestinationType.LOADING:
-                //Set the Robots next destination to loading Packages
                 NextDestination = NextDestinationType.PACKAGEDELIVERY;
-
-                //Get the new Packages and Route to Deliver
                 AddNewPackageRoute();
                 break;
 
             case NextDestinationType.PACKAGEDELIVERY:
-                //After Package Delivery Robot goes to Charging
                 NextDestination = NextDestinationType.CHARGING;
-
                 AddChargingRoute();
-                //Add the Path to the next Charging Station
                 break;
 
             case NextDestinationType.NOPACKAGESLEFT:
-                //Robot Stays at current Charging Station
                 break;
         }
     }
 
+    /// <summary>
+    /// Builds route to deliver packages after loading.
+    /// </summary>
     private void AddNewPackageRoute()
     {
-        //Edge case when robot spawns at Loading Station
         if (!PackageManager.ReservationTable.ContainsKey(Tuple.Create(RobotId, CurrentStationId)) && PackageManager.WaitingTable.ContainsKey(CurrentStationId))
         {
             PackageManager.ReservatePackages(RobotId, CurrentStationId);
         }
 
-        //Get the Target Station of the Reservated Packages
         string targetStationId = PackageManager.ReservationTable[Tuple.Create(RobotId, CurrentStationId)].Keys.First();
 
-        //get the next path
         TotalPath = [.. Pathfinder.GetTransfers(CurrentStationId, targetStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
 
         DataLogger.AddLog("Robot " + RobotId + " has new Delivery Route to Station " + TotalPath.Last().StationIds.Last());
         Console.WriteLine("Robot " + RobotId + " has new Delivery Route to Station " + TotalPath.Last().StationIds.Last());
 
-        //Fill the empty robot with packages that go to the final station
         PackageManager.FillEmptyRobot(this);
-
-        //fill remaining space with packages that go to station that are on the way
         PackageManager.FillRemainingSpace(this);
-
-        //Robot is now on a Path
         OnPath = true;
     }
 
+    /// <summary>
+    /// Calculates route to next loading station.
+    /// </summary>
     public void TravelToNextLoadingStation()
     {
-        //Check if robot is actually empty
         if (LoadedPackages.Count != 0)
         {
             throw new Exception("Robot is not empty");
         }
 
-        //Check if any Packages are left in the simulation
         if (!PackageManager.HasPackagesToLoad())
         {
-            //Robot Stays at current Charging Station
             NextDestination = NextDestinationType.NOPACKAGESLEFT;
 
             DataLogger.AddLog("Robot " + RobotId + " cant add new Packages because none are Left in the Simulation");
@@ -319,37 +307,31 @@ public class Robot : RobotData
             return;
         }
 
-        //Case where Robot Charged at a loading station
         if (PackageManager.WaitingTable.ContainsKey(CurrentStationId))
         {
-            //Check if the Station where the robot is has a package to Deliver
             if (PackageManager.HasPackageToLoadAtStation(CurrentStationId))
             {
                 DataLogger.AddLog("Robot " + RobotId + " Charged at Station " + CurrentStationId + " where it picks up Packages");
                 Console.WriteLine("Robot " + RobotId + " Charged at Station " + CurrentStationId + " where it picks up Packages");
-                //Robot reservates Packages to pick up next simulation loop
                 PackageManager.ReservatePackages(RobotId, CurrentStationId);
                 return;
             }
         }
 
-        //When robot is not at a loading station travel to the station where most packages are waiting
         string nextStationId = PackageManager.GetStationWithMostPackagesWaiting();
-        //get the next path
         TotalPath = [.. Pathfinder.GetTransfers(CurrentStationId, nextStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
 
         DataLogger.AddLog("Robot " + RobotId + " has new Path to Loading Station " + TotalPath.Last().StationIds.Last());
         Console.WriteLine("Robot " + RobotId + " has new Path to Loading Station " + TotalPath.Last().StationIds.Last());
-        //Reservate packages
         PackageManager.ReservatePackages(RobotId, TotalPath.Last().StationIds.Last());
-
-        //Set Robot on Path
         OnPath = true;
     }
 
+    /// <summary>
+    /// Adds charging route for robot.
+    /// </summary>
     public void AddChargingRoute()
     {
-        //If Robot is at Charging Station set it in Charging mode
         if (ChargingManager.ChargingStations.Contains(CurrentStationId))
         {
             ChargeFull = true;
@@ -358,15 +340,15 @@ public class Robot : RobotData
             return;
         }
 
-        //Find the path to the next Charging station
         TotalPath = [.. Pathfinder.GetTransfersToChargingStation(CurrentStationId, SimulationManager.SimulationState.SimulationTotalTimeScaled).Cast<TransferData>()];
         DataLogger.AddLog("Robot " + RobotId + " has new route to Charging Station " + TotalPath.Last().StationIds.Last());
         Console.WriteLine("Robot " + RobotId + " has new route to Charging Station " + TotalPath.Last().StationIds.Last());
         OnPath = true;
     }
 
-
-
+    /// <summary>
+    /// Handles mode when no more packages are left in simulation.
+    /// </summary>
     private bool NoPackagesLeftMode()
     {
         if (NextDestination != NextDestinationType.NOPACKAGESLEFT)
@@ -374,10 +356,8 @@ public class Robot : RobotData
             return false;
         }
 
-        //Check if robot is in Mode to wait for new Packages and if new Packages where added
         if (NextDestination == NextDestinationType.NOPACKAGESLEFT && PackageManager.HasPackagesToLoad())
         {
-            //Set Robot in Mode to go in Loading mode as next Step
             NextDestination = NextDestinationType.CHARGING;
 
             DataLogger.AddLog("Robot " + RobotId + " Can load newly Added Packages");

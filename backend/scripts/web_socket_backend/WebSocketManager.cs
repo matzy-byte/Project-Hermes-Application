@@ -12,20 +12,25 @@ public class WebSocketManager
 {
     private readonly HttpListener _listener = new HttpListener();
 
+    /// <summary>
+    /// Initializes a new instance of the WebSocketManager with a specified URL.
+    /// </summary>
     public WebSocketManager(string url)
     {
         _listener.Prefixes.Add(url); // e.g. "http://localhost:5000/ws/"
     }
 
+    /// <summary>
+    /// Starts the WebSocket listener and begins accepting connections.
+    /// </summary>
     public void Start()
     {
         _listener.Start();
         Task.Run(() => AcceptLoop());
     }
 
-
     /// <summary>
-    /// Background task to manage connecting clients
+    /// Background task to manage connecting clients.
     /// </summary>
     private async Task AcceptLoop()
     {
@@ -46,10 +51,8 @@ public class WebSocketManager
         }
     }
 
-
     /// <summary>
-    /// When client connects it creates two taks. One for managing
-    /// request and one for streaming data
+    /// When client connects it creates two taks. One for managing request and one for streaming data
     /// </summary>
     private async Task HandleClient(WebSocket socket)
     {
@@ -59,13 +62,11 @@ public class WebSocketManager
         await Task.WhenAll(receiveTask, streamTask);
     }
 
-
     /// <summary>
     /// Manages incoming messages in a seperate thread
     /// </summary>
     private async Task HandleIncomingMessages(WebSocket socket)
     {
-
         while (socket.State == WebSocketState.Open)
         {
             //Read the next full message
@@ -88,8 +89,6 @@ public class WebSocketManager
             }
         }
     }
-
-
 
     /// <summary>
     /// Streams data contiunously to client
@@ -118,7 +117,6 @@ public class WebSocketManager
             await Task.Delay(SimulationSettingsGlobal.DataStreamDelay);
         }
     }
-
 
     /// <summary>
     /// Reads the websocket messages until a message is finished and returns the message as string
@@ -161,7 +159,6 @@ public class WebSocketManager
             throw new Exception("No Message to Convert");
         }
 
-
         WebSocketMessage incomingMessage = JsonConvert.DeserializeObject<WebSocketMessage>(fullMessageString);
 
         if (incomingMessage == null)
@@ -171,8 +168,6 @@ public class WebSocketManager
 
         return incomingMessage;
     }
-
-
 
     /// <summary>
     /// Generates the response message and sends it to the client
@@ -187,7 +182,6 @@ public class WebSocketManager
         //Send the Answer
         await SendMessage(webSocket, response);
         DataLogger.AddLog("Websocket Send Message MessageId: " + response.Id + " Message Type " + response.MessageType);
-
     }
 
     /// <summary>
@@ -195,7 +189,6 @@ public class WebSocketManager
     /// </summary>
     private static async Task HandleSetMessage(WebSocketMessage incomingMessage)
     {
-
         DataLogger.AddLog("Websocket Received SET Message MessageId: " + incomingMessage.Id + " Message Type " + incomingMessage.MessageType);
 
         //Check the message type
@@ -226,18 +219,18 @@ public class WebSocketManager
         throw new Exception("Message not valid");
     }
 
-
+    /// <summary>
+    /// Sends a message to the client over the WebSocket connection
+    /// </summary>
     private static async Task SendMessage(WebSocket webSocket, WebSocketMessage message)
     {
         string answerString = JsonConvert.SerializeObject(message);
-      
+
         //Send the message to the client
         // Send the response
         var responseBytes = Encoding.UTF8.GetBytes(answerString);
         await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-
     }
-
 
     /// <summary>
     /// Checks if a message Type is a request Message
@@ -249,7 +242,6 @@ public class WebSocketManager
         || messageType == MessageType.PACKAGEDATA
         || messageType == MessageType.SIMULATIONSTATE;
     }
-
 
     /// <summary>
     /// Checks if a message Type is a set Message

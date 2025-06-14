@@ -7,6 +7,9 @@ public static class SimulationSettings
 {
     public static SimulationSettingsData SimulationSettingsParameters { get; set; } = new();
 
+    /// <summary>
+    /// Initializes the simulation settings with default values.
+    /// </summary>
     public static void Initialize()
     {
         SimulationSettingsParameters.SimulationSpeed = 300f;
@@ -22,6 +25,9 @@ public static class SimulationSettings
         SimulationSettingsParameters.RobotBatteryChargingSpeed = 4f;
     }
 
+    /// <summary>
+    /// Updates simulation settings from a JSON string and restarts simulation.
+    /// </summary>
     public static async Task UpdateSettings(string settingsJSONstring)
     {
         DataLogger.AddLog("Start Updateting Settings");
@@ -51,6 +57,9 @@ public static class SimulationSettings
         SimulationManager.StartSimulation();
     }
 
+    /// <summary>
+    /// Updates the simulation speed from a JSON string.
+    /// </summary>
     public static void UpdateSimulationSeed(string newSpeedJSONstring)
     {
         try
@@ -68,7 +77,7 @@ public static class SimulationSettings
     }
 
     /// <summary>
-    /// Wrapper for changing simulation speed
+    /// Wrapper for changing simulation speed.
     /// </summary>
     private struct SimulationSpeedWrapper
     {

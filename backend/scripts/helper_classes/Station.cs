@@ -4,6 +4,9 @@ namespace Helper;
 
 public class Station : StationData
 {
+    /// <summary>
+    /// Creates a Station from a StationWrapper object.
+    /// </summary>
     public Station(StationWrapper stationWrapper)
     {
         StationId = stationWrapper.TriasID;

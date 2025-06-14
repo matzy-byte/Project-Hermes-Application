@@ -1,19 +1,12 @@
 namespace Json;
 
 using Helper;
+
 public static class DataManager
 {
-    public static List<TransitInfoWrapper> AllTransits { get; set; } = [];
-    public static List<LineWrapper> AllLines { get; set; } = [];
-
-    //Paths to the json files
-    private const string PATHSTATIONJSON = "shared\\jsondata\\haltestellen_v2.json";
-    private const string PATHLINEJSON = "shared\\jsondata\\lines_v2.json";
-    private const string PATHGEODATA = "shared\\jsondata\\KVVLinesGeoJSON.json";
-    private const string PATHTRANSITINFO = "shared\\jsondata\\KVV_Transit_Information.json";
-
-    public static List<Station> AllStations = [];
-
+    /// <summary>
+    /// Loads all necessary data from JSON files into memory.
+    /// </summary>
     public static void LoadDataFromJson()
     {
         Console.WriteLine("Start Extracting Data from JSON Files ...");
@@ -31,4 +24,15 @@ public static class DataManager
         Console.WriteLine($"Number Of Lines: {AllLines.Count}");
         Console.WriteLine($"Number Of Trains: {AllTransits.Count}");
     }
+
+    public static List<TransitInfoWrapper> AllTransits { get; set; } = [];
+    public static List<LineWrapper> AllLines { get; set; } = [];
+
+    // Paths to the json files
+    private const string PATHSTATIONJSON = "shared\\jsondata\\haltestellen_v2.json";
+    private const string PATHLINEJSON = "shared\\jsondata\\lines_v2.json";
+    private const string PATHGEODATA = "shared\\jsondata\\KVVLinesGeoJSON.json";
+    private const string PATHTRANSITINFO = "shared\\jsondata\\KVV_Transit_Information.json";
+
+    public static List<Station> AllStations = [];
 }

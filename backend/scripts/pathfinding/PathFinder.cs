@@ -8,6 +8,9 @@ public static class Pathfinder
 {
     private static Dictionary<int, List<Train>> directConnectionTable = [];
 
+    /// <summary>
+    /// Builds the direct connection table between trains.
+    /// </summary>
     public static void Initialize()
     {
         directConnectionTable = [];
@@ -20,6 +23,9 @@ public static class Pathfinder
         DataLogger.AddLog("Created Direct Connection Table for Pathfinder");
     }
 
+    /// <summary>
+    /// Finds the optimal transfer route between two stations.
+    /// </summary>
     public static List<Transfer> GetTransfers(string startStationId, string destinationStationId, float enterTime)
     {
         Dictionary<List<Transfer>, float> allTransfers = [];
@@ -37,7 +43,9 @@ public static class Pathfinder
         return allTransfers.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
     }
 
-
+    /// <summary>
+    /// Gets transfers to the closest charging station.
+    /// </summary>
     public static List<Transfer> GetTransfersToChargingStation(string currentStation, float enterTime)
     {
         return ChargingManager.ChargingStations.Select(station => GetTransfers(currentStation, station, enterTime))
@@ -45,6 +53,9 @@ public static class Pathfinder
                                                                 .FirstOrDefault() ?? [];
     }
 
+    /// <summary>
+    /// Calculates total travel time across all transfers.
+    /// </summary>
     private static float GetTravelTime(float enterTime, List<Transfer> transfers)
     {
         float totalTavelTime = 0f;
@@ -67,6 +78,9 @@ public static class Pathfinder
         return totalTavelTime;
     }
 
+    /// <summary>
+    /// Computes travel time for a single transfer.
+    /// </summary>
     private static float CalculateTravelTime(float enterTime, Transfer transfer)
     {
         Train train = TrainManager.AllTrains.Find(x => x.TrainId == transfer.TrainId);
@@ -81,6 +95,9 @@ public static class Pathfinder
         return enterTime + travelTime;
     }
 
+    /// <summary>
+    /// Builds transfer segments from a list of trains.
+    /// </summary>
     private static List<Transfer> CreateTransfers(List<Train> trains, string startStationId, string destinationStationId)
     {
         List<Transfer> transfers = [];
@@ -118,6 +135,9 @@ public static class Pathfinder
         return transfers;
     }
 
+    /// <summary>
+    /// Finds transfer stations between consecutive trains.
+    /// </summary>
     private static List<string> GetTransferStations(List<Train> trains, string startStationId, string destinationStationId)
     {
         List<string> transferStations = [startStationId];
@@ -158,6 +178,9 @@ public static class Pathfinder
         return transferStations;
     }
 
+    /// <summary>
+    /// Finds all trains relevant for travel between two stations.
+    /// </summary>
     private static List<List<Train>> GetRelevantTrains(string startStationId, string destinationStationId)
     {
         List<List<Train>> relevantTrains = [];
@@ -226,6 +249,9 @@ public static class Pathfinder
         return [.. relevantTrains.OrderBy(x => x.Count)];
     }
 
+    /// <summary>
+    /// Finds trains that share stations with the given train.
+    /// </summary>
     private static List<Train> GetConnectedTrains(Train train)
     {
         List<Train> connectedTrains = [];
