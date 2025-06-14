@@ -4,6 +4,7 @@ namespace Camera;
 
 public partial class CameraControlScript : Camera3D
 {
+    private FollowCameraScript followCamera;
     private bool IsFreeCam = false;
     private float MouseSensitivity = 0.002f;
     private float Speed = 5.0f;
@@ -12,6 +13,7 @@ public partial class CameraControlScript : Camera3D
 
     public override void _Ready()
     {
+        followCamera = (FollowCameraScript)GetTree().GetFirstNodeInGroup("FollowCamera");
         if (Name.ToString().Contains("Free"))
         {
             IsFreeCam = true;
@@ -21,33 +23,59 @@ public partial class CameraControlScript : Camera3D
     public override void _Input(InputEvent @event)
     {
         if (!Current) return;
-        if (@event is InputEventMouseButton button && button.ButtonIndex == MouseButton.Right)
+        if (@event is InputEventMouseButton button)
         {
-            if (button.Pressed)
+            if (button.ButtonIndex == MouseButton.Right)
             {
-                Input.MouseMode = Input.MouseModeEnum.Captured;
-                Rotating = true;
+                if (button.Pressed)
+                {
+                    Input.MouseMode = Input.MouseModeEnum.Captured;
+                    Rotating = true;
+                }
+                else
+                {
+                    Input.MouseMode = Input.MouseModeEnum.Visible;
+                    Rotating = false;
+                }
+                return;
             }
-            else
+            if (button.ButtonIndex == MouseButton.Left && button.Pressed)
             {
-                Input.MouseMode = Input.MouseModeEnum.Visible;
-                Rotating = false;
-            }
-            return;
-        }
+                Vector2 mousePos = GetViewport().GetMousePosition();
+                Vector3 from = ProjectRayOrigin(mousePos);
+                Vector3 to = from + ProjectRayNormal(mousePos) * 1000f;
 
-        if (@event is InputEventMouseButton wheelEvent)
-        {
-            if (wheelEvent.ButtonIndex == MouseButton.WheelUp && wheelEvent.Pressed)
+                var spaceState = GetWorld3D().DirectSpaceState;
+                var result = spaceState.IntersectRay(new PhysicsRayQueryParameters3D
+                {
+                    From = from,
+                    To = to,
+                    CollisionMask = 1,
+                });
+
+                if (result.TryGetValue("collider", out var colliderObj))
+                {
+                    var colliderNode = (Node)colliderObj;
+                    if (colliderNode != null)
+                    {
+                        if (colliderNode is IInteractable interactable)
+                        {
+                            Node3D obj = interactable.Select();
+                            followCamera.SetTarget(obj);
+                            followCamera.Camera.Current = true;
+                        }
+                    }
+                }
+            }
+            if (button.ButtonIndex == MouseButton.WheelUp && button.Pressed)
             {
                 Fov = Mathf.Clamp(Fov - 2.0f, 5.0f, 90.0f);
             }
-            else if (wheelEvent.ButtonIndex == MouseButton.WheelDown && wheelEvent.Pressed)
+            else if (button.ButtonIndex == MouseButton.WheelDown && button.Pressed)
             {
                 Fov = Mathf.Clamp(Fov + 2.0f, 5.0f, 90.0f);
             }
         }
-
 
         if (@event is InputEventMouseMotion mouseMotion && Rotating)
         {

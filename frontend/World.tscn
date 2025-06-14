@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://w3vb06w2ecuq"]
+[gd_scene load_steps=24 format=3 uid="uid://w3vb06w2ecuq"]
 
 [ext_resource type="PackedScene" uid="uid://cr3k1ilnvy8it" path="res://ui/configuration_menu/ConfigurationMenu.tscn" id="1_p1v5b"]
 [ext_resource type="Script" uid="uid://cslv2u871m8xs" path="res://ui/HUDScript.cs" id="1_wygdx"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://cayyhf2plj4f4" path="res://ui/object_info/ObjectInfo.tscn" id="6_kva58"]
 [ext_resource type="Script" uid="uid://bha3pc0dyn4nx" path="res://camera/CameraControlScript.cs" id="8_bah7m"]
 [ext_resource type="PackedScene" uid="uid://dlaftvfugseeo" path="res://assets/city/karlsruhe_part_one.glb" id="9_fvag4"]
+[ext_resource type="Script" uid="uid://bbuel23ty10e6" path="res://camera/FollowCameraScript.cs" id="9_kva58"]
 [ext_resource type="PackedScene" uid="uid://bvdv4xc11bbx1" path="res://assets/city/karlsruhe_part_two.glb" id="10_kva58"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cmany"]
@@ -154,7 +155,7 @@ mesh = SubResource("BoxMesh_c6gwx")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 shape = SubResource("ConcavePolygonShape3D_fv4w7")
 
-[node name="HUD" type="Control" parent="."]
+[node name="HUD" type="Control" parent="." groups=["HUD"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -199,6 +200,13 @@ libraries = {
 
 [node name="Cameras" type="Node3D" parent="."]
 
+[node name="CameraFollow" type="Node3D" parent="Cameras" groups=["FollowCamera"]]
+script = ExtResource("9_kva58")
+
+[node name="Tilt" type="Node3D" parent="Cameras/CameraFollow"]
+
+[node name="Camera3D" type="Camera3D" parent="Cameras/CameraFollow/Tilt"]
+
 [node name="CameraStatic" type="Camera3D" parent="Cameras"]
 transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 157.718, 0)
 projection = 1
@@ -214,9 +222,6 @@ script = ExtResource("8_bah7m")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 146.749, 439.666)
 far = 160000.0
 script = ExtResource("8_bah7m")
-
-[node name="CameraFollow" type="Camera3D" parent="Cameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 146.749, 439.666)
 
 [node name="karlsruhe_part_one" parent="." instance=ExtResource("9_fvag4")]
 transform = Transform3D(-0.709844, 0, -0.0148691, 0, 0.71, 0, 0.0148691, 0, -0.709844, -480, -0.1, 3380)
