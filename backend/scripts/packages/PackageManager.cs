@@ -17,6 +17,9 @@ public static class PackageManager
     public static Dictionary<Tuple<int, string>, Dictionary<string, List<Package>>> ReservationTable = [];
     private static Random random = new();
 
+    /// <summary>
+    /// Initializes the waiting and reservation tables and populates starting packages.
+    /// </summary>
     public static void Initialize()
     {
         WaitingTable = [];
@@ -33,6 +36,9 @@ public static class PackageManager
         InitializePackages();
     }
 
+    /// <summary>
+    /// Initializes the waiting list structure for all stations.
+    /// </summary>
     private static void InitializeWaitingList()
     {
         foreach (KeyValuePair<string, Dictionary<string, List<Package>>> entry in WaitingTable)
@@ -41,6 +47,9 @@ public static class PackageManager
         }
     }
 
+    /// <summary>
+    /// Populates the waiting table with initial packages at each loading station.
+    /// </summary>
     private static void InitializePackages()
     {
         foreach (KeyValuePair<string, Dictionary<string, List<Package>>> entry in WaitingTable)
@@ -58,6 +67,9 @@ public static class PackageManager
         }
     }
 
+    /// <summary>
+    /// Finds the station with the highest number of packages waiting.
+    /// </summary>
     public static string GetStationWithMostPackagesWaiting()
     {
         int numberOfPackages = WaitingTable.SelectMany(x => x.Value.Values).Sum(packageList => packageList.Count);
@@ -70,11 +82,17 @@ public static class PackageManager
         return stationId;
     }
 
+    /// <summary>
+    /// Finds the destination station with the most packages waiting from a given station.
+    /// </summary>
     public static string GetDestinationStationWithMostPackagesWaiting(string currentStation)
     {
         return WaitingTable[currentStation].OrderByDescending(kvp => kvp.Value.Count).First().Key;
     }
 
+    /// <summary>
+    /// Fills the remaining space in a robot with packages from stations along its path.
+    /// </summary>
     public static void FillRemainingSpace(Robot robot)
     {
         int remainingSpace = SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot - robot.LoadedPackages.Values.Sum(packageList => packageList.Count);
@@ -132,6 +150,9 @@ public static class PackageManager
         }
     }
 
+    /// <summary>
+    /// Loads packages into an empty robot from the reservation table.
+    /// </summary>
     public static void FillEmptyRobot(Robot robot)
     {
         //Copy values to Robot
@@ -144,6 +165,9 @@ public static class PackageManager
         Console.WriteLine("Robot " + robot.RobotId + " Added " + robot.LoadedPackages.Sum(kvp => kvp.Value.Count) + " packages to empty Robot");
     }
 
+    /// <summary>
+    /// Selects packages that fit within the robot's remaining space.
+    /// </summary>
     private static Dictionary<string, List<Package>> GetPackagesThatFitInRobot(Dictionary<string, List<Package>> packagesOnPath, int remainingSpace)
     {
         Dictionary<string, List<Package>> packagesForRobot = [];
@@ -182,11 +206,17 @@ public static class PackageManager
         return packagesForRobot;
     }
 
+    /// <summary>
+    /// Removes a package from the waiting list at a specified station.
+    /// </summary>
     private static void RemovePackage(Package package, string loadingStationId)
     {
         WaitingTable[loadingStationId][package.DestinationId].Remove(package);
     }
 
+    /// <summary>
+    /// Reserves packages for a robot at a given loading station.
+    /// </summary>
     public static void ReservatePackages(int robotId, string loadingStationId)
     {
         Tuple<int, string> robotStation = Tuple.Create(robotId, loadingStationId);
@@ -216,7 +246,9 @@ public static class PackageManager
         }
     }
 
-
+    /// <summary>
+    /// Checks if there are any packages waiting to be loaded.
+    /// </summary>
     public static bool HasPackagesToLoad()
     {
         int packageWaitingCount = WaitingTable.Values.SelectMany(innerDict => innerDict.Values)
@@ -225,13 +257,18 @@ public static class PackageManager
         return packageWaitingCount > 0;
     }
 
+    /// <summary>
+    /// Checks if there are packages waiting at a specific station.
+    /// </summary>
     public static bool HasPackageToLoadAtStation(string stationId)
     {
         int packagesWatingCount = WaitingTable[stationId].Values.Sum(packageList => packageList.Count);
         return packagesWatingCount > 0;
     }
 
-
+    /// <summary>
+    /// Adds packages to the waiting table by deserializing JSON data.
+    /// </summary>
     public static void AddPackages(string data)
     {
         //Try to deserialize the packages

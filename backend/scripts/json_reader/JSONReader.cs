@@ -4,6 +4,9 @@ namespace Json;
 
 public static class JsonReader
 {
+    /// <summary>
+    /// Loads and deserializes a JSON file into an object of type T.
+    /// </summary>
     public static T LoadData<T>(string path)
     {
         // Read the json file into a string
@@ -12,6 +15,9 @@ public static class JsonReader
         return JsonConvert.DeserializeObject<T>(jsonString) ?? throw new Exception("Failed to load data from: " + jsonPath);
     }
 
+    /// <summary>
+    /// Loads and deserializes a JSON file into a list of objects of type T using a wrapper type and factory function.
+    /// </summary>
     public static List<T> LoadListedData<T, TWrapper>(string path, Func<TWrapper, T> factory)
     {
         // Read the json file into a string
@@ -34,6 +40,9 @@ public static class JsonReader
         return objects;
     }
 
+    /// <summary>
+    /// Loads and deserializes a JSON file into a root object and extracts a nested list from it.
+    /// </summary>
     public static List<T> LoadNestedListData<TRoot, T>(string path, Func<TRoot, List<T>> extractList)
     {
         // Read the json file into a string
@@ -50,6 +59,9 @@ public static class JsonReader
         return items;
     }
 
+    /// <summary>
+    /// Gets the full path of a file relative to the git root directory.
+    /// </summary>
     public static string GetFullPath(string path)
     {
         string startPath = AppContext.BaseDirectory;

@@ -9,7 +9,10 @@ namespace Charging;
 public static class ChargingManager
 {
     public static List<string> ChargingStations = [];
-
+    
+    /// <summary>
+    /// Initialize Stations from setting as charging stations (Loading Stations are also Charging Stations)
+    /// </summary>
     public static void Initialize()
     {
         ChargingStations = SimulationSettings.SimulationSettingsParameters.ChargingStationIds;
@@ -22,7 +25,9 @@ public static class ChargingManager
         ChargingStations = ChargingStations.Where(s => TrainManager.AllStations.Contains(s)).ToList();
     }
 
-
+    /// <summary>
+    /// Charges the Robot
+    /// </summary>
     public static void ChargeRobot(Robot robot)
     {
         //Delta Time in Minutes

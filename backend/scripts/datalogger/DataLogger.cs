@@ -9,6 +9,10 @@ public static class DataLogger
     private static string FullPath { get; set; }
     private static readonly object fileLock = new object();
 
+
+    /// <summary>
+    /// Initialize the Data logger (create file)
+    /// </summary>
     public static void Initialize()
     {
         FullPath = JsonReader.GetFullPath(PathLoggingFolder);
@@ -29,11 +33,17 @@ public static class DataLogger
         Console.WriteLine(FullPath);
     }
 
+    /// <summary>
+    /// Get The time stamp in dd-mm-hh-mm-ss
+    /// </summary>
     public static string GetTimeStamp()
     {
         return DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
     }
 
+    /// <summary>
+    /// Add Log Message to Log File
+    /// </summary>
     public static void AddLog(string message)
     {
         string logEntry = Environment.NewLine + GetTimeStamp() + ": " + message;

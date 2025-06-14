@@ -11,6 +11,9 @@ namespace Websocket;
 
 public static class WebSocketMessageGenerator
 {
+    /// <summary>
+    /// Generates the response message by cloning the incoming message and filling its data.
+    /// </summary>
     public static WebSocketMessage GetResponseMessage(WebSocketMessage incomingMessage)
     {
         WebSocketMessage responseMessage = incomingMessage.Clone();
@@ -19,6 +22,9 @@ public static class WebSocketMessageGenerator
         return responseMessage;
     }
 
+    /// <summary>
+    /// Generates a new streamed data message based on message type.
+    /// </summary>
     public static WebSocketMessage GetMessageStreamedData(MessageType messageType)
     {
         switch (messageType)
@@ -32,8 +38,9 @@ public static class WebSocketMessageGenerator
         }
     }
 
-
-
+    /// <summary>
+    /// Retrieves the message data for a specific message type.
+    /// </summary>
     public static JToken GetMessageData(MessageType messageType)
     {
         switch (messageType)
@@ -59,8 +66,9 @@ public static class WebSocketMessageGenerator
         }
     }
 
-
-
+    /// <summary>
+    /// Collects and returns all package data from robots, stations and reservations.
+    /// </summary>
     private static JToken GetPackageData()
     {
         List<Package> packagesInRobot = RobotManager.AllRobots.SelectMany(robot => robot.LoadedPackages.Values)
@@ -86,11 +94,17 @@ public static class WebSocketMessageGenerator
         return ToJToken(dataElement);
     }
 
+    /// <summary>
+    /// Returns current simulation state data.
+    /// </summary>
     public static JToken GetSimulationState()
     {
         return ToJToken(SimulationManager.SimulationState);
     }
 
+    /// <summary>
+    /// Collects and returns train line data.
+    /// </summary>
     private static JToken GetLines()
     {
         List<LineData> lineDatas = lineDatas = TrainManager.AllTrains.Select(train => new LineData
@@ -104,7 +118,9 @@ public static class WebSocketMessageGenerator
         return ToJToken(new LinesListData { Lines = lineDatas });
     }
 
-
+    /// <summary>
+    /// Collects and returns used station data.
+    /// </summary>
     private static JToken GetStations()
     {
         List<string> usedStationIds = TrainManager.AllStations;
@@ -114,7 +130,9 @@ public static class WebSocketMessageGenerator
         return ToJToken(new StationListData { Stations = stations.Cast<StationData>().ToList() });
     }
 
-
+    /// <summary>
+    /// Collects and returns robot data.
+    /// </summary>
     private static JToken GetRobotData()
     {
         List<Robot> robots = RobotManager.AllRobots;
@@ -123,6 +141,9 @@ public static class WebSocketMessageGenerator
         return ToJToken(new RobotListData { Robots = robotDatas });
     }
 
+    /// <summary>
+    /// Collects and returns train data.
+    /// </summary>
     public static JToken GetTrainData()
     {
         List<Train> trains = TrainManager.AllTrains;
@@ -131,7 +152,9 @@ public static class WebSocketMessageGenerator
         return ToJToken(new TrainListData { Trains = trainDatas });
     }
 
-
+    /// <summary>
+    /// Converts any object to JToken.
+    /// </summary>
     private static JToken ToJToken(object obj)
     {
         return JToken.FromObject(obj);

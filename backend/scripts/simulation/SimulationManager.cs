@@ -19,6 +19,9 @@ public static class SimulationManager
 
     private static bool stopSimulationAtLoopEnd = false;
 
+    /// <summary>
+    /// Main simulation loop that controls simulation updates and timing.
+    /// </summary>
     public static void SimulationLoop()
     {
         while (true)
@@ -48,6 +51,9 @@ public static class SimulationManager
         }
     }
 
+    /// <summary>
+    /// Calculates elapsed time and updates simulation time variables.
+    /// </summary>
     private static void StopTime()
     {
         stopwatch.Stop();
@@ -60,6 +66,9 @@ public static class SimulationManager
         stopwatch.Restart();
     }
 
+    /// <summary>
+    /// Waits to maintain a stable simulation loop frequency.
+    /// </summary>
     private static void SleepTime()
     {
         float cycleTime = 1f / SimulationSettingsGlobal.SimulationLoopsPerSecond;
@@ -70,6 +79,9 @@ public static class SimulationManager
         }
     }
 
+    /// <summary>
+    /// Initializes all simulation subsystems before starting.
+    /// </summary>
     private static void InitializeSimulation()
     {
         TrainManager.Initialize();
@@ -87,9 +99,11 @@ public static class SimulationManager
         RobotManager.Initialize();
         DataLogger.AddLog("Simulation Initialized Robots");
         DataLogger.AddLog("Simulation Initialized");
-
     }
 
+    /// <summary>
+    /// Clears the simulation and resets all simulation components.
+    /// </summary>
     private static void ClearSimualtion()
     {
         SimulationState.SimulationRunning = false;
@@ -108,6 +122,9 @@ public static class SimulationManager
         DataLogger.AddLog("Simulation Cleared");
     }
 
+    /// <summary>
+    /// Starts the simulation and initializes all components.
+    /// </summary>
     public static void StartSimulation()
     {
         //Simulation is already running
@@ -124,13 +141,15 @@ public static class SimulationManager
         SimulationState.SimulationTotalTime = 0;
         SimulationState.SimulationTotalTimeScaled = 0;
 
-
         Console.WriteLine("Starting Simulation ...");
         SimulationState.SimulationRunning = true;
 
         DataLogger.AddLog("Simulation Started");
     }
 
+    /// <summary>
+    /// Stops the simulation safely and waits for it to fully stop.
+    /// </summary>
     public static async Task StopSimulation()
     {
         Console.WriteLine("Stoping Simulation ...");
@@ -144,17 +163,21 @@ public static class SimulationManager
         Console.WriteLine("Simulation Stopped: ");
 
         DataLogger.AddLog("Simulation Stopped");
-
     }
 
+    /// <summary>
+    /// Pauses the simulation.
+    /// </summary>
     public static void PauseSimulation()
     {
         Console.WriteLine("Pause Simulation");
         SimulationState.SimulationPaused = true;
         DataLogger.AddLog("Simulation Paused");
-
     }
 
+    /// <summary>
+    /// Resumes the simulation after being paused.
+    /// </summary>
     public static void ContinueSimulation()
     {
         Console.WriteLine("Continue Simulation");
