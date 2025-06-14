@@ -33,6 +33,8 @@ public static class WebSocketMessageGenerator
                 return new WebSocketMessage(1, MessageType.ROBOTDATA, GetMessageData(MessageType.ROBOTDATA));
             case MessageType.TRAINDATA:
                 return new WebSocketMessage(0, MessageType.TRAINDATA, GetMessageData(MessageType.TRAINDATA));
+            case MessageType.LOG:
+                return new WebSocketMessage(2, MessageType.LOG, GetMessageData(MessageType.LOG));
             default:
                 throw new Exception("No Stremed Data for this Message Type: " + messageType);
         }
@@ -60,6 +62,8 @@ public static class WebSocketMessageGenerator
                 return GetRobotData();
             case MessageType.TRAINDATA:
                 return GetTrainData();
+            case MessageType.LOG:
+                return GetLog();
 
             default:
                 throw new Exception("No Message Type found");
@@ -150,6 +154,11 @@ public static class WebSocketMessageGenerator
         List<TrainData> trainDatas = trains.Cast<TrainData>().ToList();
 
         return ToJToken(new TrainListData { Trains = trainDatas });
+    }
+
+    public static JToken GetLog()
+    {
+        return ToJToken(DataLogger.CollectLog());
     }
 
     /// <summary>

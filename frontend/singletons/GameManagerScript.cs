@@ -25,32 +25,33 @@ public partial class GameManagerScript : Node
     public override void _Ready()
     {
         Instance = this;
+        SimulationSettings = new();
     }
 
     public static void SetSimulationConfiguration(SimulationSettingsData simulationSettingsData)
     {
-        WebSocketMessage settingsMessage = new(203, MessageType.SETTINGS, JsonConvert.SerializeObject(simulationSettingsData));
+        WebSocketMessage settingsMessage = new(204, MessageType.SETTINGS, JsonConvert.SerializeObject(simulationSettingsData));
         SessionManager.Instance.Request(settingsMessage);
     }
 
     public static void StartSimulation()
     {
-        SessionManager.Instance.Request(102, MessageType.STARTSIMULATION);
+        SessionManager.Instance.Request(200, MessageType.STARTSIMULATION);
     }
 
     public static void StopSimulation()
     {
-        SessionManager.Instance.Request(102, MessageType.STOPSIMULATION);
+        SessionManager.Instance.Request(205, MessageType.STOPSIMULATION);
     }
 
     public static void PauseSimulation(bool isPaused)
     {
         if (isPaused)
         {
-            SessionManager.Instance.Request(102, MessageType.CONTINUESTIMULATION);
+            SessionManager.Instance.Request(203, MessageType.CONTINUESTIMULATION);
             return;
         }
-        SessionManager.Instance.Request(102, MessageType.PAUSESIMULATION);
+        SessionManager.Instance.Request(202, MessageType.PAUSESIMULATION);
     }
 
     public void SpawnStations(List<StationData> stations)

@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using Godot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using shared;
+using UI;
 
 namespace Singletons;
 
@@ -28,7 +30,7 @@ public partial class SessionManager : Node
             if (webSocket.GetReadyState() == WebSocketPeer.State.Open)
             {
                 GD.Print("Connected to WebSocket: " + connectionString);
-                Request(102, MessageType.USEDSTATIONS);
+                Request(101, MessageType.USEDSTATIONS);
                 connected = true;
             }
             return;
@@ -78,6 +80,12 @@ public partial class SessionManager : Node
                             break;
                         }
                         GameManagerScript.Instance.UpdateRobots(data.Robots);
+                        break;
+                    }
+                case MessageType.LOG:
+                    {
+                        List<string> data = message.Data.ToObject<List<string>>();
+                        GetTree().CurrentScene.GetNode<HUDScript>("HUD").ChatLog.WriteLog(data);
                         break;
                     }
                 case MessageType.USEDSTATIONS:

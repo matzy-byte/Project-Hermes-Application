@@ -10,19 +10,4 @@ public class TrainData
     public string NextStationId { get; set; } = "";
     public float TravelDistance { get; set; }
     public float WaitingTime { get; set; }
-
-    public TrainData Json()
-    {
-        return new TrainData
-        {
-            TrainId = TrainId,
-            Driving = Driving,
-            InStation = InStation,
-            DrivingForward = DrivingForward,
-            CurrentStationId = CurrentStationId,
-            NextStationId = NextStationId,
-            TravelDistance = TravelDistance,
-            WaitingTime = WaitingTime
-        };
-    }
 }

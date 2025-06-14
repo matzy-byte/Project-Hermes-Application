@@ -6,7 +6,6 @@ namespace UI;
 
 public partial class ConfigurationMenuScript : Panel
 {
-    private SimulationSettingsData simulationSettingsData { get; set; }
     private SpinBox TrainWaitingTimeSpinBox { get; set; }
     private TextureButton LoadingStationsButton { get; set; }
     private TextureButton ChargingStationsButton { get; set; }
@@ -15,7 +14,9 @@ public partial class ConfigurationMenuScript : Panel
     private SpinBox RobotCountSpinBox { get; set; }
     private SpinBox MaxPaketsRobotSpinBox { get; set; }
     private SpinBox BatteryCapacitySpinBox { get; set; }
-    private SpinBox BatteryConsumptionSpinBox { get; set; }
+    private SpinBox BatteryConsumptionIdleSpinBox { get; set; }
+    private SpinBox BatteryConsumptionActionSpinBox { get; set; }
+    private SpinBox BatteryRechargeSpinBox { get; set; }
     private Button StartSimulationButton { get; set; }
 
     public override void _Ready()
@@ -36,30 +37,45 @@ public partial class ConfigurationMenuScript : Panel
         MaxPaketsRobotSpinBox.ValueChanged += OnMaxPaketRobotChanged;
         BatteryCapacitySpinBox = GetNode<SpinBox>("%BatteryCapacitySpinBox");
         BatteryCapacitySpinBox.ValueChanged += OnBatteryCapacityChanged;
-        BatteryConsumptionSpinBox = GetNode<SpinBox>("%BatteryConsumptionSpinBox");
-        BatteryConsumptionSpinBox.ValueChanged += OnBatteryConsumptionChanged;
+        BatteryConsumptionIdleSpinBox = GetNode<SpinBox>("%BatteryConsumptionIdleSpinBox");
+        BatteryConsumptionIdleSpinBox.ValueChanged += OnBatteryConsumptionIdleChanged;
+        BatteryConsumptionActionSpinBox = GetNode<SpinBox>("%BatteryConsumptionActionSpinBox");
+        BatteryConsumptionActionSpinBox.ValueChanged += OnBatteryConsumptionActionChanged;
+        BatteryRechargeSpinBox = GetNode<SpinBox>("%BatteryRechargeSpinBox");
+        BatteryRechargeSpinBox.ValueChanged += OnBatteryRechargeChanged;
         StartSimulationButton = GetNode<Button>("%StartSimulationButton");
         StartSimulationButton.Pressed += StartSimulation;
-        simulationSettingsData = new();
+
+        GameManagerScript.Instance.SimulationSettings.SimulationSpeed = (float)SimulationSpeedSlider.Value;
+        GameManagerScript.Instance.SimulationSettings.TrainWaitingTimeAtStation = (float)TrainWaitingTimeSpinBox.Value;
+        GameManagerScript.Instance.SimulationSettings.LoadingStationIds = ["de:08212:1011", "de:08212:302", "de:08212:17"];
+        GameManagerScript.Instance.SimulationSettings.ChargingStationIds = ["de:08212:521", "de:08212:1004", "de:08212:45", "de:08212:409", "de:08212:1208", "de:08215:1902"];
+        GameManagerScript.Instance.SimulationSettings.StartPackagesCount = (int)PaketCountSpinBox.Value;
+        GameManagerScript.Instance.SimulationSettings.NumberOfPackagesInRobot = (int)MaxPaketsRobotSpinBox.Value;
+        GameManagerScript.Instance.SimulationSettings.NumberOfRobots = (int)RobotCountSpinBox.Value;
+        GameManagerScript.Instance.SimulationSettings.TotalRobotBatteryCapacity = (float)BatteryCapacitySpinBox.Value;
+        GameManagerScript.Instance.SimulationSettings.RobotIdleBatteryConsumption = (float)BatteryConsumptionIdleSpinBox.Value;
+        GameManagerScript.Instance.SimulationSettings.RobotActionBatteryConsumption = (float)BatteryConsumptionActionSpinBox.Value;
+        GameManagerScript.Instance.SimulationSettings.RobotBatteryChargingSpeed = (float)BatteryRechargeSpinBox.Value;
     }
 
     private void StartSimulation()
     {
         SetLoadingAndChargingStations();
-        GameManagerScript.SetSimulationConfiguration(simulationSettingsData);
+        GameManagerScript.SetSimulationConfiguration(GameManagerScript.Instance.SimulationSettings);
         GameManagerScript.StartSimulation();
         GetParent<HUDScript>().StartSimulation();
     }
 
     private void SetLoadingAndChargingStations()
     {
-        simulationSettingsData.LoadingStationIds = GetParent<HUDScript>().LoadingStationsMenu.GetLoadingStations();
-        simulationSettingsData.ChargingStationIds = GetParent<HUDScript>().ChargingStationsMenu.GetChargingStations();
+        GameManagerScript.Instance.SimulationSettings.LoadingStationIds = GetParent<HUDScript>().LoadingStationsMenu.GetLoadingStations();
+        GameManagerScript.Instance.SimulationSettings.ChargingStationIds = GetParent<HUDScript>().ChargingStationsMenu.GetChargingStations();
     }
 
     private void OnTrainWaitingTimeChanged(double value)
     {
-        simulationSettingsData.TrainWaitingTimeAtStation = (float)value;
+        GameManagerScript.Instance.SimulationSettings.TrainWaitingTimeAtStation = (float)value;
     }
 
     private void OnLoadingStationButtonPressed()
@@ -74,29 +90,41 @@ public partial class ConfigurationMenuScript : Panel
 
     private void OnPaketCountChanged(double value)
     {
-        simulationSettingsData.StartPackagesCount = (int)value;
+        GameManagerScript.Instance.SimulationSettings.StartPackagesCount = (int)value;
     }
 
     private void OnSimulationSpeedChanged(double value)
     {
-        simulationSettingsData.SimulationSpeed = (float)value;
+        GameManagerScript.Instance.SimulationSettings.SimulationSpeed = (float)value;
     }
 
     private void OnRobotCountChanged(double value)
     {
-        simulationSettingsData.NumberOfRobots = (int)value;
+        GameManagerScript.Instance.SimulationSettings.NumberOfRobots = (int)value;
     }
 
     private void OnMaxPaketRobotChanged(double value)
     {
-        simulationSettingsData.NumberOfPackagesInRobot = (int)value;
+        GameManagerScript.Instance.SimulationSettings.NumberOfPackagesInRobot = (int)value;
     }
 
     private void OnBatteryCapacityChanged(double value)
     {
+        GameManagerScript.Instance.SimulationSettings.TotalRobotBatteryCapacity = (float)value;
     }
 
-    private void OnBatteryConsumptionChanged(double value)
+    private void OnBatteryConsumptionIdleChanged(double value)
     {
+        GameManagerScript.Instance.SimulationSettings.RobotIdleBatteryConsumption = (float)value;
+    }
+
+    private void OnBatteryConsumptionActionChanged(double value)
+    {
+        GameManagerScript.Instance.SimulationSettings.RobotActionBatteryConsumption = (float)value;
+    }
+
+    private void OnBatteryRechargeChanged(double value)
+    {
+        GameManagerScript.Instance.SimulationSettings.RobotBatteryChargingSpeed = (float)value;
     }
 }
