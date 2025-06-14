@@ -1,5 +1,5 @@
 {
-    "id": 3,
-    "messageType": "CONTINUESIMULATION",
+    "Id": 203,
+    "MessageType": "CONTINUESTIMULATION",
     "Data": {}
 }

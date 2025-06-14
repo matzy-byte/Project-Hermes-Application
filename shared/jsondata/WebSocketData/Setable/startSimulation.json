@@ -1,5 +1,5 @@
 {
-    "id": 3,
-    "messageType": "STARTSIMULATION",
+    "Id": 200,
+    "MessageType": "STARTSIMULATION",
     "Data": {}
 }

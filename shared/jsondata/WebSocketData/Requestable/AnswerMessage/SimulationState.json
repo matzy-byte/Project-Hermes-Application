@@ -1,27 +1,21 @@
 {
-    "id": 105,
-    "messageType": "SIMULATIONSTATE",
-    "data": {
-        "SimulationState": {
-            "SimulationRunning": true,
-            "SimulationPaused": false,
-            "SimulationTotalTime": 24.839,
-            "SimulationTotalTimeScaled": 3725.8494,
-            "SimulationSpeed": 150,
-            "TrainWaitingTimeAtStation": 30,
-            "LoadingStationIDs": [
-                "de:08212:1011",
-                "de:08212:302",
-                "de:08212:17"
-            ],
-            "ChargingStationIDs": [
-                "de:08212:1011",
-                "de:08212:302",
-                "de:08212:17"
-            ],
-            "StartPackageCount": 200,
-            "NumberOfPackagesInRobor": 15,
-            "NumberOfRobots": 5
-        }
+    "Id": 105,
+    "MessageType": "SIMULATIONSTATE",
+    "Data": {
+        "SimulationRunning": true,
+        "SimulationPaused": false,
+        "SimulationTotalTime": 390.46237,
+        "SimulationTotalTimeScaled": 117122.94,
+        "SimulationSpeed": 0.0,
+        "TrainWaitingTimeAtStation": 0.0,
+        "LoadingStationIds": [],
+        "ChargingStationIds": [],
+        "StartPackagesCount": 0,
+        "NumberOfPackagesInRobot": 0,
+        "NumberOfRobots": 0,
+        "TotalRobotBatteryCapacity": 0.0,
+        "RobotIdleBatteryConsumption": 0.0,
+        "RobotActionBatteryConsumption": 0.0,
+        "RobotBatteryChargingSpeed": 0.0
     }
 }

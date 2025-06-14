@@ -1,5 +1,5 @@
 {
-    "id": 3,
-    "messageType": "USEDSTATIONS",
+    "Id": 101,
+    "MessageType": "USEDSTATIONS",
     "Data": {}
 }

@@ -1,11 +1,11 @@
 {
-    "id": 101,
-    "messageType": "TRAINSTATIONSINLINE",
-    "data": {
-        "StationsInLine": [
+    "Id": 0,
+    "MessageType": "TRAINDATA",
+    "Data": {
+        "Trains": [
             {
-                "TrainID": 0,
-                "Stations": [
+                "LineName": "Straßenbahn 1",
+                "StationIds": [
                     "de:08212:18",
                     "de:08212:17",
                     "de:08212:16",
@@ -25,11 +25,21 @@
                     "de:08212:12",
                     "de:08212:7009",
                     "de:08212:13"
-                ]
+                ],
+                "TravelTime": 27.0,
+                "TravelTimeReverse": 27.0,
+                "TrainId": 0,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:1003",
+                "NextStationId": "de:08212:1002",
+                "TravelDistance": 0.007037037,
+                "WaitingTime": 1.05
             },
             {
-                "TrainID": 1,
-                "Stations": [
+                "LineName": "Straßenbahn 2",
+                "StationIds": [
                     "de:08212:4500",
                     "de:08212:4492",
                     "de:08212:4496",
@@ -73,11 +83,21 @@
                     "de:08212:238",
                     "de:08212:239",
                     "de:08212:240"
-                ]
+                ],
+                "TravelTime": 58.0,
+                "TravelTimeReverse": 58.0,
+                "TrainId": 1,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:89",
+                "NextStationId": "de:08212:98",
+                "TravelDistance": 0.9415516,
+                "WaitingTime": 1.09
             },
             {
-                "TrainID": 2,
-                "Stations": [
+                "LineName": "Straßenbahn 3",
+                "StationIds": [
                     "de:08212:308",
                     "de:08212:307",
                     "de:08212:306",
@@ -110,11 +130,21 @@
                     "de:08212:310",
                     "de:08212:313",
                     "de:08212:314"
-                ]
+                ],
+                "TravelTime": 50.0,
+                "TravelTimeReverse": 49.0,
+                "TrainId": 2,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:304",
+                "NextStationId": "de:08212:305",
+                "TravelDistance": 0.4342857,
+                "WaitingTime": 1.0
             },
             {
-                "TrainID": 3,
-                "Stations": [
+                "LineName": "Straßenbahn 4",
+                "StationIds": [
                     "de:08212:611",
                     "de:08212:610",
                     "de:08212:609",
@@ -145,11 +175,21 @@
                     "de:08212:3017",
                     "de:08212:411",
                     "de:08212:3012"
-                ]
+                ],
+                "TravelTime": 38.0,
+                "TravelTimeReverse": 39.0,
+                "TrainId": 3,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": true,
+                "CurrentStationId": "de:08212:603",
+                "NextStationId": "de:08212:602",
+                "TravelDistance": 0.4223684,
+                "WaitingTime": 1.11
             },
             {
-                "TrainID": 4,
-                "Stations": [
+                "LineName": "Straßenbahn 5",
+                "StationIds": [
                     "de:08212:501",
                     "de:08212:58",
                     "de:08212:51",
@@ -170,11 +210,21 @@
                     "de:08212:9",
                     "de:08212:10",
                     "de:08212:802"
-                ]
+                ],
+                "TravelTime": 27.0,
+                "TravelTimeReverse": 28.0,
+                "TrainId": 4,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:622",
+                "NextStationId": "de:08212:85",
+                "TravelDistance": 0.90714276,
+                "WaitingTime": 1.09
             },
             {
-                "TrainID": 5,
-                "Stations": [
+                "LineName": "Straßenbahn 8",
+                "StationIds": [
                     "de:08212:4500",
                     "de:08212:4492",
                     "de:08212:4496",
@@ -186,11 +236,21 @@
                     "de:08212:16",
                     "de:08212:17",
                     "de:08212:18"
-                ]
+                ],
+                "TravelTime": 14.0,
+                "TravelTimeReverse": 13.0,
+                "TrainId": 5,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": true,
+                "CurrentStationId": "de:08212:16",
+                "NextStationId": "de:08212:17",
+                "TravelDistance": 0.5224999,
+                "WaitingTime": 1.03
             },
             {
-                "TrainID": 6,
-                "Stations": [
+                "LineName": "S-Bahn S1",
+                "StationIds": [
                     "de:08215:1157",
                     "de:08215:1156",
                     "de:08215:1155",
@@ -245,11 +305,21 @@
                     "de:08235:9703",
                     "de:08235:9711",
                     "de:08235:9558"
-                ]
+                ],
+                "TravelTime": 90.0,
+                "TravelTimeReverse": 92.0,
+                "TrainId": 6,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08235:9703",
+                "NextStationId": "de:08215:1304",
+                "TravelDistance": 0.49891305,
+                "WaitingTime": 1.0
             },
             {
-                "TrainID": 7,
-                "Stations": [
+                "LineName": "S-Bahn S1",
+                "StationIds": [
                     "de:08215:1157",
                     "de:08215:1156",
                     "de:08215:1155",
@@ -295,11 +365,21 @@
                     "de:08215:1223",
                     "de:08215:1231",
                     "de:08215:1235"
-                ]
+                ],
+                "TravelTime": 70.0,
+                "TravelTimeReverse": 73.0,
+                "TrainId": 7,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08215:12656",
+                "NextStationId": "de:08212:1013",
+                "TravelDistance": 0.9431507,
+                "WaitingTime": 1.0500001
             },
             {
-                "TrainID": 8,
-                "Stations": [
+                "LineName": "S-Bahn S1",
+                "StationIds": [
                     "de:08212:1115",
                     "de:08212:1114",
                     "de:08212:1111",
@@ -339,11 +419,21 @@
                     "de:08235:9703",
                     "de:08235:9711",
                     "de:08235:9558"
-                ]
+                ],
+                "TravelTime": 68.0,
+                "TravelTimeReverse": 68.0,
+                "TrainId": 8,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:1209",
+                "NextStationId": "de:08212:1208",
+                "TravelDistance": 0.48749998,
+                "WaitingTime": 1.0
             },
             {
-                "TrainID": 9,
-                "Stations": [
+                "LineName": "S-Bahn S1",
+                "StationIds": [
                     "de:08212:1115",
                     "de:08212:1114",
                     "de:08212:1111",
@@ -374,11 +464,21 @@
                     "de:08215:1223",
                     "de:08215:1231",
                     "de:08215:1235"
-                ]
+                ],
+                "TravelTime": 48.0,
+                "TravelTimeReverse": 47.0,
+                "TrainId": 9,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:1114",
+                "NextStationId": "de:08212:1115",
+                "TravelDistance": 0.26489362,
+                "WaitingTime": 1.03
             },
             {
-                "TrainID": 10,
-                "Stations": [
+                "LineName": "S-Bahn S2",
+                "StationIds": [
                     "de:08215:1501",
                     "de:08215:1500",
                     "de:08215:220",
@@ -427,11 +527,21 @@
                     "de:08215:33079",
                     "de:08215:32052",
                     "de:08215:32296"
-                ]
+                ],
+                "TravelTime": 71.0,
+                "TravelTimeReverse": 71.0,
+                "TrainId": 10,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:233",
+                "NextStationId": "de:08212:3102",
+                "TravelDistance": 0.28056338,
+                "WaitingTime": 1.12
             },
             {
-                "TrainID": 11,
-                "Stations": [
+                "LineName": "S-Bahn S2",
+                "StationIds": [
                     "de:08215:1501",
                     "de:08215:1500",
                     "de:08215:220",
@@ -475,11 +585,21 @@
                     "de:08215:32031",
                     "de:08215:1906",
                     "de:08215:32033"
-                ]
+                ],
+                "TravelTime": 61.0,
+                "TravelTimeReverse": 61.0,
+                "TrainId": 11,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:1004",
+                "NextStationId": "de:08212:39",
+                "TravelDistance": 0.0070491806,
+                "WaitingTime": 1.05
             },
             {
-                "TrainID": 12,
-                "Stations": [
+                "LineName": "S-Bahn S2",
+                "StationIds": [
                     "de:08215:1501",
                     "de:08215:1500",
                     "de:08215:220",
@@ -517,11 +637,21 @@
                     "de:08212:233",
                     "de:08212:3301",
                     "de:08212:3013"
-                ]
+                ],
+                "TravelTime": 51.0,
+                "TravelTimeReverse": 51.0,
+                "TrainId": 12,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08215:212",
+                "NextStationId": "de:08215:213",
+                "TravelDistance": 0.85607827,
+                "WaitingTime": 1.03
             },
             {
-                "TrainID": 13,
-                "Stations": [
+                "LineName": "S-Bahn S2",
+                "StationIds": [
                     "de:08212:206",
                     "de:08212:205",
                     "de:08212:204",
@@ -558,11 +688,21 @@
                     "de:08215:33079",
                     "de:08215:32052",
                     "de:08215:32296"
-                ]
+                ],
+                "TravelTime": 54.0,
+                "TravelTimeReverse": 54.0,
+                "TrainId": 13,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": false,
+                "CurrentStationId": "de:08212:1003",
+                "NextStationId": "de:08212:1004",
+                "TravelDistance": 0.9633333,
+                "WaitingTime": 1.0600001
             },
             {
-                "TrainID": 14,
-                "Stations": [
+                "LineName": "S-Bahn S2",
+                "StationIds": [
                     "de:08212:206",
                     "de:08212:205",
                     "de:08212:204",
@@ -594,11 +734,21 @@
                     "de:08215:32031",
                     "de:08215:1906",
                     "de:08215:32033"
-                ]
+                ],
+                "TravelTime": 44.0,
+                "TravelTimeReverse": 44.0,
+                "TrainId": 14,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": true,
+                "CurrentStationId": "de:08212:204",
+                "NextStationId": "de:08212:203",
+                "TravelDistance": 0.007045455,
+                "WaitingTime": 1.05
             },
             {
-                "TrainID": 15,
-                "Stations": [
+                "LineName": "S-Bahn S2",
+                "StationIds": [
                     "de:08212:206",
                     "de:08212:205",
                     "de:08212:204",
@@ -624,7 +774,17 @@
                     "de:08212:233",
                     "de:08212:3301",
                     "de:08212:3013"
-                ]
+                ],
+                "TravelTime": 34.0,
+                "TravelTimeReverse": 34.0,
+                "TrainId": 15,
+                "Driving": false,
+                "InStation": false,
+                "DrivingForward": true,
+                "CurrentStationId": "de:08212:626",
+                "NextStationId": "de:08212:402",
+                "TravelDistance": 0.5661765,
+                "WaitingTime": 1.0
             }
         ]
     }
