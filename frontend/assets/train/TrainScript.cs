@@ -1,12 +1,14 @@
+using System.Collections.Generic;
 using Godot;
+using Interface;
 using shared;
 using Singletons;
 using Stations;
-using System;
+using UI;
 
 namespace Trains;
 
-public partial class TrainScript : StaticBody3D
+public partial class TrainScript : StaticBody3D, IInteractable
 {
     public TrainData Data { get; set; }
     private StationScript currentStation;
@@ -41,5 +43,21 @@ public partial class TrainScript : StaticBody3D
             currentStation = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.CurrentStationId);
             nextStation = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.NextStationId);
         }
+    }
+
+    public Node3D Select()
+    {
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.ShowInfo(GetInfo(), this);
+        return this;
+    }
+
+    public Dictionary<string, string> GetInfo()
+    {
+        string nextStationName = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.NextStationId).Data.StationName;
+        return new Dictionary<string, string>
+        {
+            ["Train ID"] = Data.TrainId.ToString(),
+            ["Next Station"] = nextStationName
+        };
     }
 }

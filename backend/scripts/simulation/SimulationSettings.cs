@@ -75,12 +75,4 @@ public static class SimulationSettings
             return;
         }
     }
-
-    /// <summary>
-    /// Wrapper for changing simulation speed.
-    /// </summary>
-    private struct SimulationSpeedWrapper
-    {
-        public float SimulationSpeed { get; set; }
-    }
 }

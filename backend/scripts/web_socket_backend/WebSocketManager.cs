@@ -106,6 +106,8 @@ public class WebSocketManager
                     await SendMessage(socket, WebSocketMessageGenerator.GetMessageStreamedData(MessageType.TRAINDATA));
                     await Task.Delay(SimulationSettingsGlobal.StreamDelayBetweenMessages);
                     await SendMessage(socket, WebSocketMessageGenerator.GetMessageStreamedData(MessageType.ROBOTDATA));
+                    await Task.Delay(SimulationSettingsGlobal.StreamDelayBetweenMessages);
+                    await SendMessage(socket, WebSocketMessageGenerator.GetMessageStreamedData(MessageType.LOG));
                 }
                 catch (Exception ex)
                 {

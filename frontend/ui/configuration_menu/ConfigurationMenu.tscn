@@ -47,7 +47,7 @@ layout_mode = 2
 size_flags_horizontal = 10
 min_value = 1.0
 max_value = 300.0
-value = 10.0
+value = 30.0
 rounded = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -91,7 +91,7 @@ layout_mode = 2
 size_flags_horizontal = 10
 min_value = 1.0
 max_value = 300.0
-value = 200.0
+value = 100.0
 rounded = true
 
 [node name="HBoxContainer3" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -161,24 +161,57 @@ text = "Battery Capacity"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
-min_value = 100.0
-max_value = 1000.0
-value = 100.0
+min_value = 500.0
+max_value = 5000.0
+value = 1000.0
 
 [node name="HBoxContainer7" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="BatteryConsumptionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer7"]
+[node name="BatteryConsumptionIdleLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer7"]
 layout_mode = 2
-text = "Battery Consumption Rate"
+text = "Battery Consumption Idle"
 
-[node name="BatteryConsumptionSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer7"]
+[node name="BatteryConsumptionIdleSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer7"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 10
-min_value = 1.0
+min_value = 0.1
 max_value = 50.0
+step = 0.1
+value = 0.5
+
+[node name="HBoxContainer10" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BatteryConsumptionActionLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer10"]
+layout_mode = 2
+text = "Battery Consumption Action"
+
+[node name="BatteryConsumptionActionSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer10"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+min_value = 0.1
+max_value = 50.0
+step = 0.1
 value = 10.0
+
+[node name="HBoxContainer11" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BatteryRechargeLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer11"]
+layout_mode = 2
+text = "Battery Recharge Rate"
+
+[node name="BatteryRechargeSpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer11"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+min_value = 0.1
+max_value = 50.0
+step = 0.1
+value = 4.0
 
 [node name="StartSimulationButton" type="Button" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true

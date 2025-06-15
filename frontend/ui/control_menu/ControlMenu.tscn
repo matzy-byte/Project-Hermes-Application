@@ -49,6 +49,8 @@ text = "Simulation Speed"
 [node name="SimulationSpeedSlider" type="HSlider" parent="Panel/MarginContainer/VBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+min_value = 1.0
+value = 1.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2

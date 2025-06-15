@@ -8,7 +8,7 @@ public static class DataLogger
     public const string PathLoggingFolder = "backend\\logs";
     private static string FullPath { get; set; }
     private static readonly object fileLock = new object();
-
+    private static List<string> BufferedLogs { get; set; } = [];
 
     /// <summary>
     /// Initialize the Data logger (create file)
@@ -47,6 +47,7 @@ public static class DataLogger
     public static void AddLog(string message)
     {
         string logEntry = Environment.NewLine + GetTimeStamp() + ": " + message;
+        BufferedLogs.Add(GetTimeStamp() + ": " + message);
 
         lock (fileLock)
         {
@@ -59,5 +60,15 @@ public static class DataLogger
                 Console.Error.WriteLine("Logging failed: " + e.Message);
             }
         }
+    }
+
+    /// <summary>
+    /// Gather and clear log buffer
+    /// </summary>
+    public static List<string> CollectLog()
+    {
+        List<string> logs = [.. BufferedLogs];
+        BufferedLogs.Clear();
+        return logs;
     }
 }

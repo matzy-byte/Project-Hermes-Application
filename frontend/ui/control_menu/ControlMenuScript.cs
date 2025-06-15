@@ -21,6 +21,7 @@ public partial class ControlMenuScript : HBoxContainer
     {
         Unfolded = false;
         SimulationSpeedSlider = GetNode<HSlider>("%SimulationSpeedSlider");
+        SimulationSpeedSlider.Value = GameManagerScript.Instance.SimulationSettings.SimulationSpeed;
         SimulationSpeedSlider.ValueChanged += OnSimulationSpeedChanged;
         SimulationPausedCheckButton = GetNode<CheckButton>("%SimulationPausedCheckButton");
         SimulationPausedCheckButton.Pressed += OnSimulationPausedPressed;
@@ -47,30 +48,37 @@ public partial class ControlMenuScript : HBoxContainer
         GetParent<HUDScript>().OpenControlMenu();
     }
 
-    // TODO: Corrent JSON OBJECT
     private void OnSimulationSpeedChanged(double value)
     {
-        WebSocketMessage message = new(102, MessageType.SETSIMULATIONSPEED, JsonConvert.SerializeObject("hi"));
+        WebSocketMessage message = new(
+            201,
+            MessageType.SETSIMULATIONSPEED,
+            JsonConvert.SerializeObject(new SimulationSpeedWrapper() { SimulationSpeed = (float)value })
+        );
         SessionManager.Instance.Request(message);
+        GameManagerScript.Instance.SimulationSettings.SimulationSpeed = (float)value;
     }
 
     private void OnSimulationPausedPressed()
     {
-        GameManagerScript.PauseSimulation(SimulationPausedCheckButton.ButtonPressed);
+        GameManagerScript.PauseSimulation(!SimulationPausedCheckButton.ButtonPressed);
     }
 
     private void OnCameraStaticPressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraStatic").Current = true;
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 
     private void OnCameraMovablePressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraMovable").Current = true;
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 
     private void OnCameraFreePressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraFree").Current = true;
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 }
