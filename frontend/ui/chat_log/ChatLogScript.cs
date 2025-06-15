@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
-using UI;
+
+namespace UI;
 
 public partial class ChatLogScript : VBoxContainer
 {

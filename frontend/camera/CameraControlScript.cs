@@ -1,4 +1,6 @@
 using Godot;
+using Interface;
+using UI;
 
 namespace Camera;
 
@@ -66,14 +68,17 @@ public partial class CameraControlScript : Camera3D
                         }
                     }
                 }
+                return;
             }
             if (button.ButtonIndex == MouseButton.WheelUp && button.Pressed)
             {
                 Fov = Mathf.Clamp(Fov - 2.0f, 5.0f, 90.0f);
+                return;
             }
             else if (button.ButtonIndex == MouseButton.WheelDown && button.Pressed)
             {
                 Fov = Mathf.Clamp(Fov + 2.0f, 5.0f, 90.0f);
+                return;
             }
         }
 
@@ -88,6 +93,7 @@ public partial class CameraControlScript : Camera3D
                 newPitch = Mathf.Clamp(newPitch, -90f, 90f);
                 RotationDegrees = new Vector3(newPitch, RotationDegrees.Y, RotationDegrees.Z);
             }
+            return;
         }
     }
 

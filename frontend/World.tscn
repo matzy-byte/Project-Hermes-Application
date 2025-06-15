@@ -207,18 +207,18 @@ script = ExtResource("9_kva58")
 
 [node name="Camera3D" type="Camera3D" parent="Cameras/CameraFollow/Tilt"]
 
-[node name="CameraStatic" type="Camera3D" parent="Cameras"]
+[node name="CameraStatic" type="Camera3D" parent="Cameras" groups=["Camera"]]
 transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 157.718, 0)
 projection = 1
 current = true
 size = 16000.0
 far = 160000.0
 
-[node name="CameraMovable" type="Camera3D" parent="Cameras"]
+[node name="CameraMovable" type="Camera3D" parent="Cameras" groups=["Camera"]]
 transform = Transform3D(1, 0, 0, 0, 0.642787, 0.766044, 0, -0.766044, 0.642787, 0, 272.573, 453.052)
 script = ExtResource("8_bah7m")
 
-[node name="CameraFree" type="Camera3D" parent="Cameras"]
+[node name="CameraFree" type="Camera3D" parent="Cameras" groups=["Camera"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 146.749, 439.666)
 far = 160000.0
 script = ExtResource("8_bah7m")

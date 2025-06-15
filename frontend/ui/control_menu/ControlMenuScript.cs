@@ -67,15 +67,18 @@ public partial class ControlMenuScript : HBoxContainer
     private void OnCameraStaticPressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraStatic").Current = true;
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 
     private void OnCameraMovablePressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraMovable").Current = true;
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 
     private void OnCameraFreePressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraFree").Current = true;
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 }

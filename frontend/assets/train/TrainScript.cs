@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Reflection;
 using Godot;
+using Interface;
 using shared;
 using Singletons;
 using Stations;
@@ -47,12 +47,17 @@ public partial class TrainScript : StaticBody3D, IInteractable
 
     public Node3D Select()
     {
-        var dict = new Dictionary<string, string>
+        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.ShowInfo(GetInfo(), this);
+        return this;
+    }
+
+    public Dictionary<string, string> GetInfo()
+    {
+        string nextStationName = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == Data.NextStationId).Data.StationName;
+        return new Dictionary<string, string>
         {
             ["Train ID"] = Data.TrainId.ToString(),
-            ["Next Station"] = nextStation.Data.StationName
+            ["Next Station"] = nextStationName
         };
-        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.ShowInfo(dict);
-        return this;
     }
 }

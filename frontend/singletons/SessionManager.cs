@@ -85,7 +85,7 @@ public partial class SessionManager : Node
                 case MessageType.LOG:
                     {
                         List<string> data = message.Data.ToObject<List<string>>();
-                        GetTree().CurrentScene.GetNode<HUDScript>("HUD").ChatLog.WriteLog(data);
+                        ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ChatLog.WriteLog(data);
                         break;
                     }
                 case MessageType.USEDSTATIONS:
@@ -117,7 +117,6 @@ public partial class SessionManager : Node
         if (error != Error.Ok)
         {
             GD.Print("Error connecting to WebSocket: " + error);
-            //GetTree().CurrentScene.GetNode<HUDScript>("HUD").ShowConnectionDebugInfo(error);
             return;
         }
     }
