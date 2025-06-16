@@ -1,5 +1,7 @@
 using Simulation;
 using Json;
+using Trains;
+using Robots;
 
 DataLogger.Initialize();
 
@@ -15,4 +17,6 @@ DataLogger.AddLog("WebSocket server started on " + SimulationSettingsGlobal.WebS
 
 DataManager.LoadDataFromJson();
 SimulationSettings.Initialize();
+TrainManager.Initialize();
+RobotManager.Initialize();
 SimulationManager.SimulationLoop();
