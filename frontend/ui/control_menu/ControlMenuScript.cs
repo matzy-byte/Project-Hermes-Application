@@ -37,6 +37,11 @@ public partial class ControlMenuScript : HBoxContainer
         ControlMenuButton.Pressed += OnControlMenuPressed;
     }
 
+    public void UpdateSpeedSlider()
+    {
+        SimulationSpeedSlider.Value = GameManagerScript.Instance.SimulationSettings.SimulationSpeed;
+    }
+
     private void OnStopSimulationPressed()
     {
         GameManagerScript.StopSimulation();

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Godot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,9 +16,13 @@ public partial class SessionManager : Node
     private string connectionString = "ws://localhost:5000/ws/";
     private WebSocketPeer webSocket = new();
     private bool connected = false;
+    private Process _backendProcess;
 
     public override void _Ready()
     {
+        StartBackend();
+        Window window = GetWindow();
+        window.Mode = Window.ModeEnum.Fullscreen;
         Instance = this;
         ConnectToUrl();
     }
@@ -106,6 +112,11 @@ public partial class SessionManager : Node
         }
     }
 
+    public override void _ExitTree()
+    {
+        StopBackend();
+    }
+
     public void SetConnectionURL(string url)
     {
         connectionString = url;
@@ -132,5 +143,58 @@ public partial class SessionManager : Node
     {
         string jsonMessage = JsonConvert.SerializeObject(message);
         webSocket.SendText(jsonMessage);
+    }
+
+    private void StartBackend()
+    {
+        string gameDir = Path.GetDirectoryName(OS.GetExecutablePath());
+        string backendDir = Path.Combine(gameDir, "..", "backend");
+        string dllPath = Path.Combine(backendDir, "backend.dll");
+        string exePath = Path.Combine(backendDir, "backend.exe");
+
+        var startInfo = new ProcessStartInfo
+        {
+            WorkingDirectory = backendDir,
+            UseShellExecute = true,
+            CreateNoWindow = true
+        };
+
+        if (File.Exists(exePath))
+        {
+            startInfo.FileName = exePath;
+        }
+        else if (File.Exists(dllPath))
+        {
+            startInfo.FileName = "dotnet";
+            startInfo.Arguments = $"\"{dllPath}\"";
+        }
+        else
+        {
+            GD.PrintErr("No backend executable found.");
+            return;
+        }
+
+        startInfo.UseShellExecute = false;
+        startInfo.CreateNoWindow = true;
+
+        try
+        {
+            _backendProcess = Process.Start(startInfo);
+            GD.Print("Backend started successfully.");
+        }
+        catch (System.Exception ex)
+        {
+            GD.PrintErr($"Failed to start backend: {ex.Message}");
+        }
+    }
+
+    private void StopBackend()
+    {
+        if (_backendProcess != null && !_backendProcess.HasExited)
+        {
+            _backendProcess.Kill();
+            _backendProcess.Dispose();
+            _backendProcess = null;
+        }
     }
 }

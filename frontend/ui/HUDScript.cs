@@ -31,6 +31,7 @@ public partial class HUDScript : Control
         ChargingStationsMenu.Visible = false;
         ControlMenu.Visible = true;
         ChatLog.Visible = true;
+        ControlMenu.UpdateSpeedSlider();
     }
 
     public void StopSimulation()

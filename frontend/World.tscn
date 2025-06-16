@@ -224,7 +224,7 @@ far = 160000.0
 script = ExtResource("8_bah7m")
 
 [node name="karlsruhe_part_one" parent="." instance=ExtResource("9_fvag4")]
-transform = Transform3D(-0.709844, 0, -0.0148691, 0, 0.71, 0, 0.0148691, 0, -0.709844, -480, -0.1, 3380)
+transform = Transform3D(-0.70993, 0, -0.00991316, 0, 0.71, 0, 0.00991316, 0, -0.70993, -463.697, -0.1, 3326.31)
 
 [node name="karlsruhe_part_two" parent="." instance=ExtResource("10_kva58")]
-transform = Transform3D(-0.709844, 0, -0.0148691, 0, 0.71, 0, 0.0148691, 0, -0.709844, -480, -0.1, 3380)
+transform = Transform3D(-0.70993, 0, -0.00991316, 0, 0.71, 0, 0.00991316, 0, -0.70993, -463.697, -0.1, 3326.31)
