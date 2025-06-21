@@ -83,15 +83,15 @@ public class DataLoggerTests
         [Fact]
         public void GetStationWithMostPackagesWaiting_ShouldReturnExpectedResult()
         {
-            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<Package>>>();
+            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<PackageData>>>();
 
-            PackageManager.WaitingTable["A"] = new Dictionary<string, List<Package>>
+            PackageManager.WaitingTable["A"] = new Dictionary<string, List<PackageData>>
             {
-                { "Dest", new List<Package> { new Package("ID1", "Dest"), new Package("ID2", "Dest") } }
+                { "Dest", new List<PackageData> { new PackageData("ID1", "Dest"), new PackageData("ID2", "Dest") } }
             };
-            PackageManager.WaitingTable["B"] = new Dictionary<string, List<Package>>
+            PackageManager.WaitingTable["B"] = new Dictionary<string, List<PackageData>>
             {
-                { "Dest", new List<Package> { new Package("ID3", "Dest") } }
+                { "Dest", new List<PackageData> { new PackageData("ID3", "Dest") } }
             };
 
             string result = PackageManager.GetStationWithMostPackagesWaiting();
@@ -105,13 +105,13 @@ public class DataLoggerTests
         {
             var stationId = "X";
 
-            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<Package>>>
+            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<PackageData>>>
             {
                 {
-                    stationId, new Dictionary<string, List<Package>>
+                    stationId, new Dictionary<string, List<PackageData>>
                     {
-                        { "Z", new List<Package> { new Package("Z", stationId), new Package("Z", stationId) } },
-                        { "Y", new List<Package> { new Package("Y", stationId) } }
+                        { "Z", new List<PackageData> { new PackageData("Z", stationId), new PackageData("Z", stationId) } },
+                        { "Y", new List<PackageData> { new PackageData("Y", stationId) } }
                     }
                 }
             };
@@ -124,12 +124,12 @@ public class DataLoggerTests
         [Fact]
         public void HasPackagesToLoad_ShouldReturnTrueIfAnyPackageExists()
         {
-            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<Package>>>
+            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<PackageData>>>
             {
                 {
-                    "A", new Dictionary<string, List<Package>>
+                    "A", new Dictionary<string, List<PackageData>>
                     {
-                        { "Dest", new List<Package> { new Package("Dest", "A") } }
+                        { "Dest", new List<PackageData> { new PackageData("Dest", "A") } }
                     }
                 }
             };
@@ -146,12 +146,12 @@ public class DataLoggerTests
         {
             string station = "B";
 
-            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<Package>>>
+            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<PackageData>>>
             {
                 {
-                    "B", new Dictionary<string, List<Package>>
+                    "B", new Dictionary<string, List<PackageData>>
                     {
-                        { "X", new List<Package> { new Package("X", "B") } }
+                        { "X", new List<PackageData> { new PackageData("X", "B") } }
                     }
                 }
             };
@@ -425,12 +425,12 @@ public class DataLoggerTests
         [Fact(Skip = "Skipping this test because it is currently not passing.")]
         public void GetPackageData_ShouldContainKnownDestination()
         {
-            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<Package>>>
+            PackageManager.WaitingTable = new Dictionary<string, Dictionary<string, List<PackageData>>>
             {
                 {
-                    "A", new Dictionary<string, List<Package>>
+                    "A", new Dictionary<string, List<PackageData>>
                     {
-                        { "X", new List<Package> { new Package("X", "A") } }
+                        { "X", new List<PackageData> { new PackageData("X", "A") } }
                     }
                 }
             };
@@ -440,7 +440,7 @@ public class DataLoggerTests
                 new Robot(1, "A")
             };
 
-            PackageManager.ReservationTable = new Dictionary<Tuple<int, string>, Dictionary<string, List<Package>>>();
+            PackageManager.ReservationTable = new Dictionary<Tuple<int, string>, Dictionary<string, List<PackageData>>>();
 
             var result = typeof(WebSocketMessageGenerator)
                 .GetMethod("GetMessageData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)

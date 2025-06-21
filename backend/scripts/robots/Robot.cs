@@ -11,7 +11,6 @@ public class Robot : RobotData
 {
     public bool OnPath { get; set; }
     public string NextExitStationId { get; set; }
-    public Dictionary<string, List<Package>> LoadedPackages { get; set; }
 
     private NextDestinationType NextDestination;
     private bool ChargeFull;
@@ -36,7 +35,7 @@ public class Robot : RobotData
         OnStation = true;
         TrainId = -1;
         TotalPath = [];
-        BatteryCapacaty = SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity;
+        BatteryCapacity = SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity;
         NextExitStationId = "";
         LoadedPackages = [];
         OnPath = false;
@@ -163,13 +162,13 @@ public class Robot : RobotData
         else
         {
             float deltaTimeMinute = SimulationManager.scaledDeltaTime / 60f;
-            BatteryCapacaty -= deltaTimeMinute * SimulationSettings.SimulationSettingsParameters.RobotIdleBatteryConsumption;
+            BatteryCapacity -= deltaTimeMinute * SimulationSettings.SimulationSettingsParameters.RobotIdleBatteryConsumption;
             return;
         }
 
         if (ChargeFull)
         {
-            ChargeFull = BatteryCapacaty < SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity;
+            ChargeFull = BatteryCapacity < SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity;
             if (!ChargeFull)
             {
                 Console.WriteLine("Robot " + RobotId + " Fully Charged at Station " + CurrentStationId);
@@ -208,7 +207,7 @@ public class Robot : RobotData
     {
         OnTrain = true;
         TrainId = trainId;
-        BatteryCapacaty -= SimulationSettings.SimulationSettingsParameters.RobotActionBatteryConsumption;
+        BatteryCapacity -= SimulationSettings.SimulationSettingsParameters.RobotActionBatteryConsumption;
 
         DataLogger.AddLog("Robot " + RobotId + " entered Train " + TrainId + " at Station " + CurrentStationId);
         Console.WriteLine("Robot " + RobotId + " entered Train " + TrainId + " at Station " + CurrentStationId);
@@ -231,7 +230,7 @@ public class Robot : RobotData
         if (CurrentStationId == NextExitStationId)
         {
             OnTrain = false;
-            BatteryCapacaty -= SimulationSettings.SimulationSettingsParameters.RobotActionBatteryConsumption;
+            BatteryCapacity -= SimulationSettings.SimulationSettingsParameters.RobotActionBatteryConsumption;
 
             DataLogger.AddLog("Robot " + RobotId + " exit Train " + TrainId + " at Station " + CurrentStationId);
             Console.WriteLine("Robot " + RobotId + " exit Train " + TrainId + " at Station " + CurrentStationId);

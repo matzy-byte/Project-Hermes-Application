@@ -44,7 +44,7 @@ public partial class ControlMenuScript : HBoxContainer
 
     private void OnStopSimulationPressed()
     {
-        GameManagerScript.StopSimulation();
+        GameManagerScript.Instance.StopSimulation();
         GetParent<HUDScript>().StopSimulation();
     }
 

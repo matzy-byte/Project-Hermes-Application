@@ -45,7 +45,7 @@ public partial class CameraControlScript : Camera3D
             {
                 Vector2 mousePos = GetViewport().GetMousePosition();
                 Vector3 from = ProjectRayOrigin(mousePos);
-                Vector3 to = from + ProjectRayNormal(mousePos) * 1000f;
+                Vector3 to = from + ProjectRayNormal(mousePos) * 10000f;
 
                 var spaceState = GetWorld3D().DirectSpaceState;
                 var result = spaceState.IntersectRay(new PhysicsRayQueryParameters3D
