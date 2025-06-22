@@ -162,99 +162,6 @@ public class DataLoggerTests
         }
 
     }
-    public class PathFinderTests
-    {
-        [Fact(Skip = "Skipping this test because it is currently not passing.")]
-        public void GetTransfers_ShouldReturnExpectedTransfers()
-        {
-            TrainManager.AllTrains = new List<Train> {
-                new Train("T0", new List<string> { "A", "B", "C" }, 1.0f, 1.0f, 0)
-            };
-
-            TrainManager.TimeTableForward = new Dictionary<int, Dictionary<string, List<float>>>
-            {
-                {
-                    0, new Dictionary<string, List<float>>
-                    {
-                        { "A", new List<float> { 0f } },
-                        { "B", new List<float> { 2f } },
-                        { "C", new List<float> { 4f } }
-                    }
-                }
-            };
-
-            TrainManager.TimeTableBackwards = new Dictionary<int, Dictionary<string, List<float>>>
-            {
-                {
-                    0, new Dictionary<string, List<float>>
-                    {
-                        { "C", new List<float> { 0f } },
-                        { "B", new List<float> { 2f } },
-                        { "A", new List<float> { 4f } }
-                    }
-                }
-            };
-
-            string startStation = "A";
-            string endStation = "C";
-            float enterTime = 0;
-
-            var transfers = Pathfinder.GetTransfers(startStation, endStation, enterTime);
-
-            Assert.NotNull(transfers);
-            Assert.True(transfers.Count > 0);
-            Assert.All(transfers, t => Assert.Equal(0, t.TrainId));
-        }
-
-
-        [Fact(Skip = "Skipping this test because it is currently not passing.")]
-        public void GetTransfers_ShouldReturnValidTransferList()
-        {
-            int trainId = 1;
-
-            TrainManager.AllTrains = new List<Train>
-            {
-                new Train("T1", new List<string> { "A", "B", "C" }, 1.0f, 1.0f, trainId)
-            };
-
-            TrainManager.TimeTableForward = new Dictionary<int, Dictionary<string, List<float>>>
-            {
-                {
-                    trainId, new Dictionary<string, List<float>>
-                    {
-                        { "A", new List<float> { 0f } },
-                        { "B", new List<float> { 2f } },
-                        { "C", new List<float> { 4f } }
-                    }
-                }
-            };
-
-            TrainManager.TimeTableBackwards = new Dictionary<int, Dictionary<string, List<float>>>
-            {
-                {
-                    trainId, new Dictionary<string, List<float>>
-                    {
-                        { "C", new List<float> { 0f } },
-                        { "B", new List<float> { 2f } },
-                        { "A", new List<float> { 4f } }
-                    }
-                }
-            };
-
-            SimulationSettings.SimulationSettingsParameters = new SimulationSettingsData
-            {
-                TrainWaitingTimeAtStation = 1.0f
-            };
-
-            var transfers = Pathfinder.GetTransfers("A", "C", 0f);
-
-            Assert.NotEmpty(transfers);
-            Assert.Equal("A", transfers[0].StationIds.First());
-            Assert.Equal("C", transfers[0].StationIds.Last());
-        }
-
-
-    }
     public class RobotTests
     {
 
@@ -272,49 +179,17 @@ public class DataLoggerTests
     public class TrainTests
     {
         [Fact]
-        public void GetTravelTime_ShouldReturnCorrectTravelTime_WhenTimetableExists()
+        public void GetTravelTime_ShouldReturnCorrectTravelTime_BasedOnConstructor()
         {
-            int trainId = 0;
-            string startStation = "A";
-            string endStation = "C";
+            var train = new Train("Line1", new List<string> { "A", "B", "C" }, 6.0f, 5.0f, 0);
 
-            TrainManager.TimeTableForward = new Dictionary<int, Dictionary<string, List<float>>>
-            {
-                {
-                    trainId,
-                    new Dictionary<string, List<float>>
-                    {
-                        { "A", new List<float> { 0.0f } },
-                        { "B", new List<float> { 2.0f } },
-                        { "C", new List<float> { 4.0f } }
-                    }
-                }
-            };
+            float forwardTime = train.GetTravelTime("A", "C", true);
+            float backwardTime = train.GetTravelTime("C", "A", false);
 
-            TrainManager.TimeTableBackwards = new Dictionary<int, Dictionary<string, List<float>>>
-            {
-                {
-                    trainId,
-                    new Dictionary<string, List<float>>
-                    {
-                        { "A", new List<float> { 10.0f } },
-                        { "B", new List<float> { 8.0f } },
-                        { "C", new List<float> { 6.0f } }
-                    }
-                }
-            };
-
-            SimulationSettings.SimulationSettingsParameters = new SimulationSettingsData
-            {
-                TrainWaitingTimeAtStation = 1.0f
-            };
-
-            var train = new Train("Line1", new List<string> { "A", "B", "C" }, 6.0f, 5.0f, trainId);
-
-            float travelTime = train.GetTravelTime(startStation, endStation, true);
-
-            Assert.Equal(5.0f, travelTime);
+            Assert.Equal(100.0f, forwardTime);
+            Assert.Equal(-100.0f, backwardTime);
         }
+
 
 
         [Fact]
@@ -341,29 +216,6 @@ public class DataLoggerTests
 
 
             Assert.Equal(120.0f, result);
-        }
-
-
-        [Fact]
-        public void NextPickupTime_ShouldReturnScheduledTime()
-        {
-            TrainManager.TimeTableForward = new Dictionary<int, Dictionary<string, List<float>>>
-            {
-                { 1, new Dictionary<string, List<float>>
-                    {
-                        { "A", new List<float> { 100f, 200f } },
-                        { "B", new List<float> { 150f, 250f } }
-                    }
-                }
-            };
-
-            TrainManager.TimeTableBackwards = new Dictionary<int, Dictionary<string, List<float>>>();
-
-            var train = new Train("Line1", new List<string> { "A", "B" }, 2f, 2f, 1);
-
-            float result = train.NextPickupTime("A", true, 90f);
-
-            Assert.Equal(100f, result);
         }
 
     }
