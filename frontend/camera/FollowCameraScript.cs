@@ -1,4 +1,5 @@
 using Godot;
+using Interface;
 
 namespace Camera;
 
@@ -8,7 +9,7 @@ public partial class FollowCameraScript : Node3D
     private Node3D Target;
     private Node3D Tilt;
     private const float MouseSensitivity = 0.02f;
-    private const float Distance = 200f;
+    private const float Distance = 300f;
     private bool Rotating = false;
     private float Yaw;
     private float Pitch;
@@ -41,6 +42,35 @@ public partial class FollowCameraScript : Node3D
                 }
                 return;
             }
+            if (button.ButtonIndex == MouseButton.Left && button.Pressed)
+            {
+                Vector2 mousePos = GetViewport().GetMousePosition();
+                Vector3 from = Camera.ProjectRayOrigin(mousePos);
+                Vector3 to = from + Camera.ProjectRayNormal(mousePos) * 10000f;
+
+                var spaceState = GetWorld3D().DirectSpaceState;
+                var result = spaceState.IntersectRay(new PhysicsRayQueryParameters3D
+                {
+                    From = from,
+                    To = to,
+                    CollisionMask = 1,
+                });
+
+                if (result.TryGetValue("collider", out var colliderObj))
+                {
+                    var colliderNode = (Node)colliderObj;
+                    if (colliderNode != null)
+                    {
+                        if (colliderNode is IInteractable interactable)
+                        {
+                            Node3D obj = interactable.Select();
+                            SetTarget(obj);
+                            Camera.Current = true;
+                        }
+                    }
+                }
+                return;
+            }
         }
 
         if (@event is InputEventMouseMotion mouseMotion && Rotating)
@@ -55,8 +85,14 @@ public partial class FollowCameraScript : Node3D
 
     public override void _Process(double delta)
     {
-        if (!Camera.Current) return;
-        if (Target == null) return;
+        if (!Camera.Current)
+        {
+            return;
+        }
+        if (Target == null)
+        {
+            return;
+        }
 
         RotationDegrees = new Vector3(0, Yaw, 0);
         Tilt.RotationDegrees = new Vector3(Pitch, 0, 0);

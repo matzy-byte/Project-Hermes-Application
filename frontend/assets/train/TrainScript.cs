@@ -58,7 +58,7 @@ public partial class TrainScript : StaticBody3D, IInteractable
     {
         Data = data;
         this.lineName = lineName;
-        iconName.Text = lineName;
+        iconName.Text = "Train #" + data.TrainId.ToString();
         GradientTexture2D gradTex = (GradientTexture2D)iconCircle.Texture.Duplicate(true);
         iconCircle.Texture = gradTex;
         gradTex.Gradient.SetColor(1, new Color(lineColor, 1.0f));

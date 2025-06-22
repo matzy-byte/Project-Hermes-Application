@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=4 uid="uid://q6e6r8ms22mn"]
+[gd_scene load_steps=15 format=4 uid="uid://q6e6r8ms22mn"]
 
 [ext_resource type="Script" uid="uid://b46y70j4c5ycb" path="res://assets/robot/RobotScript.cs" id="1_3rcvh"]
 [ext_resource type="Material" uid="uid://dnssdo0kwh2bx" path="res://materials/M_Yellow.tres" id="2_xpmq1"]
 [ext_resource type="Material" uid="uid://dir6ycnoflu16" path="res://materials/M_Red.tres" id="3_v6p7s"]
 [ext_resource type="Material" uid="uid://cx8tp0u2bchoe" path="res://materials/M_Black.tres" id="4_xsv1t"]
 [ext_resource type="Texture2D" uid="uid://cab2kov6pafm3" path="res://assets/robot/T_Robot_Icon.png" id="5_v6p7s"]
+[ext_resource type="LabelSettings" uid="uid://87qgxudp4tmy" path="res://font/Label.tres" id="6_xsv1t"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_e7lns"]
 _surfaces = [{
@@ -89,6 +90,9 @@ shadow_mesh = SubResource("ArrayMesh_e7lns")
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_v6p7s"]
 points = PackedVector3Array(0.1478, 0.416141, 0.2788, -0.1535, 0.00184599, -0.228883, -0.152341, 0.0129379, -0.246058, 0.152221, 0.00109137, -0.229706, 0.1478, 0.416141, -0.2788, -0.144707, 0.403387, 0.306813, 0.150495, 0.0129611, 0.246029, -0.143419, 0.4207, -0.285016, -0.1535, 0.00184599, 0.228883, 0.1478, 0.0722627, -0.297433, -0.143863, 0.0687113, 0.305011, 0.1478, 0.0722627, 0.297433, -0.143863, 0.0687113, -0.305011, -0.144707, 0.403387, -0.306813, -0.158422, 0.103367, 0.25594, -0.143488, 0.4208, 0.285152, 0.152219, 0.00109345, 0.229704, 0.1478, 0.397526, -0.297433, 0.1478, 0.397526, 0.297433, -0.158422, 0.103367, -0.25594, 0.150513, 0.0129379, -0.246058, -0.153374, 0.021103, 0.257229, -0.153403, 0.0210667, -0.257278)
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_xsv1t"]
+radius = 275.0
+
 [sub_resource type="ViewportTexture" id="ViewportTexture_v6p7s"]
 viewport_path = NodePath("IconViewport")
 
@@ -118,16 +122,22 @@ skeleton = NodePath("")
 transform = Transform3D(40, 0, 0, 0, 40, 0, 0, 0, 40, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_v6p7s")
 
-[node name="Icon" type="Sprite3D" parent="."]
-transform = Transform3D(75, 0, 0, 0, 75, 0, 0, 0, 75, 0.795227, 300, 0.396545)
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." groups=["SpriteCollider"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 230, 0)
+shape = SubResource("SphereShape3D_xsv1t")
+
+[node name="Icon" type="Sprite3D" parent="." groups=["Sprite"]]
+transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0.795, 230, 0.397)
 billboard = 1
 texture = SubResource("ViewportTexture_v6p7s")
 
-[node name="IconName" type="Sprite3D" parent="."]
+[node name="IconName" type="Sprite3D" parent="." groups=["Sprite"]]
 unique_name_in_owner = true
-transform = Transform3D(120, 0, 0, 0, 120, 0, 0, 0, 120, 0, 226.568, 0)
+transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0, 130, 0)
 visible = false
+pixel_size = 0.015
 billboard = 1
+render_priority = 1
 texture = SubResource("ViewportTexture_xsv1t")
 
 [node name="IconViewport" type="SubViewport" parent="."]
@@ -157,7 +167,7 @@ texture = SubResource("GradientTexture2D_db1xy")
 
 [node name="NameViewport" type="SubViewport" parent="."]
 transparent_bg = true
-size = Vector2i(128, 64)
+size = Vector2i(512, 64)
 
 [node name="Control" type="Control" parent="NameViewport"]
 layout_mode = 3
@@ -169,7 +179,7 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="NameViewport/Control"]
+[node name="RobotLabel" type="Label" parent="NameViewport/Control"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -178,5 +188,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Robot #N"
+label_settings = ExtResource("6_xsv1t")
 horizontal_alignment = 1
 vertical_alignment = 1

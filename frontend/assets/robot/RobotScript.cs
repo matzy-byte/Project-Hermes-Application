@@ -28,7 +28,7 @@ public partial class RobotScript : StaticBody3D, IInteractable
     {
         iconSpriteName = GetNode<Sprite3D>("%IconName");
         iconCircle = GetNode<TextureRect>("%Circle");
-        iconName = GetNode<Label>("%Label");
+        iconName = GetNode<Label>("%RobotLabel");
     }
 
     public override void _MouseEnter()
@@ -52,6 +52,7 @@ public partial class RobotScript : StaticBody3D, IInteractable
         gradTex.Gradient.SetColor(1, green);
         gradTex.Gradient.SetColor(2, green);
         totalBatteryCapacity = GameManagerScript.Instance.SimulationSettings.TotalRobotBatteryCapacity;
+        iconName.Text = "Robot #" + data.RobotId.ToString();
     }
 
     public void Update(RobotData data)

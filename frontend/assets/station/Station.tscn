@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=4 uid="uid://4xs0cysw7d4v"]
+[gd_scene load_steps=10 format=4 uid="uid://4xs0cysw7d4v"]
 
 [ext_resource type="Script" uid="uid://c2c71v2u0rrqt" path="res://assets/station/StationScript.cs" id="1_lrann"]
 [ext_resource type="Material" uid="uid://b3brehf5mcsog" path="res://materials/M_Concrete.tres" id="2_ln6vn"]
 [ext_resource type="Material" uid="uid://dirtr3y8ho2wl" path="res://materials/M_Iron.tres" id="3_id2a3"]
 [ext_resource type="Material" uid="uid://dnssdo0kwh2bx" path="res://materials/M_Yellow.tres" id="4_cvmt3"]
+[ext_resource type="LabelSettings" uid="uid://87qgxudp4tmy" path="res://font/Label.tres" id="5_id2a3"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ch7ye"]
 _surfaces = [{
@@ -105,16 +106,18 @@ skeleton = NodePath("")
 transform = Transform3D(3.75, 0, 0, 0, 3.75, 0, 0, 0, 3.75, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_id2a3")
 
-[node name="IconName" type="Sprite3D" parent="."]
+[node name="IconName" type="Sprite3D" parent="." groups=["Sprite"]]
 unique_name_in_owner = true
-transform = Transform3D(120, 0, 0, 0, 120, 0, 0, 0, 120, 0, 226.568, 0)
+transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0, 130, 0)
 visible = false
+pixel_size = 0.015
 billboard = 1
+render_priority = 1
 texture = SubResource("ViewportTexture_ln6vn")
 
 [node name="NameViewport" type="SubViewport" parent="."]
 transparent_bg = true
-size = Vector2i(128, 64)
+size = Vector2i(512, 64)
 
 [node name="Control" type="Control" parent="NameViewport"]
 layout_mode = 3
@@ -135,5 +138,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Station "
+label_settings = ExtResource("5_id2a3")
 horizontal_alignment = 1
 vertical_alignment = 1

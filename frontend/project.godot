@@ -29,6 +29,11 @@ project/assembly_name="frontend"
 
 enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
 
+[global_group]
+
+Sprite=""
+SpriteCollider=""
+
 [input]
 
 move_forward={
