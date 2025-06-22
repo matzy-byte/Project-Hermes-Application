@@ -155,7 +155,8 @@ public partial class GameManagerScript : Node
         {
             TrainScript train = trainScene.Instantiate<TrainScript>();
             GetTree().CurrentScene.AddChild(train);
-            train.Initialize(trainData, lines.Find(entry => entry.TrainId == trainData.TrainId).LineName);
+            LineData line = lines.Find(entry => entry.TrainId == trainData.TrainId);
+            train.Initialize(trainData, line.LineName, line.LineColor);
             Trains.Add(train);
         }
     }

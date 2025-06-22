@@ -8,7 +8,7 @@ public partial class FollowCameraScript : Node3D
     private Node3D Target;
     private Node3D Tilt;
     private const float MouseSensitivity = 0.02f;
-    private const float Distance = 100f;
+    private const float Distance = 200f;
     private bool Rotating = false;
     private float Yaw;
     private float Pitch;

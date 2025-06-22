@@ -9,7 +9,7 @@ public partial class CameraControlScript : Camera3D
     private FollowCameraScript followCamera;
     private bool IsFreeCam = false;
     private float MouseSensitivity = 0.002f;
-    private float Speed = 5.0f;
+    private float Speed = 30.0f;
     private Vector3 TargetVelocity = new();
     private bool Rotating = false;
 
@@ -116,7 +116,7 @@ public partial class CameraControlScript : Camera3D
             direction += projectionXZ * (Input.GetActionStrength("move_backward") - Input.GetActionStrength("move_forward"));
         }
 
-        direction = direction.Normalized() * Speed;
+        direction = direction.Normalized() * Speed + direction.Normalized() * (Speed * Input.GetActionStrength("sprint"));
 
         if (direction.Length() > 0)
         {
