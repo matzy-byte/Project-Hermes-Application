@@ -1,0 +1,21 @@
+{
+    "Id": 105,
+    "MessageType": "SIMULATIONSTATE",
+    "Data": {
+        "SimulationRunning": true,
+        "SimulationPaused": false,
+        "SimulationTotalTime": 390.46237,
+        "SimulationTotalTimeScaled": 117122.94,
+        "SimulationSpeed": 0.0,
+        "TrainWaitingTimeAtStation": 0.0,
+        "LoadingStationIds": [],
+        "ChargingStationIds": [],
+        "StartPackagesCount": 0,
+        "NumberOfPackagesInRobot": 0,
+        "NumberOfRobots": 0,
+        "TotalRobotBatteryCapacity": 0.0,
+        "RobotIdleBatteryConsumption": 0.0,
+        "RobotActionBatteryConsumption": 0.0,
+        "RobotBatteryChargingSpeed": 0.0
+    }
+}
