@@ -75,17 +75,17 @@ public static class WebSocketMessageGenerator
     /// </summary>
     private static JToken GetPackageData()
     {
-        List<Package> packagesInRobot = RobotManager.AllRobots.SelectMany(robot => robot.LoadedPackages.Values)
+        List<PackageData> packagesInRobot = RobotManager.AllRobots.SelectMany(robot => robot.LoadedPackages.Values)
                                                             .SelectMany(packageList => packageList).ToList();
 
-        List<Package> packagesInStations = PackageManager.WaitingTable.Values.SelectMany(waitingList => waitingList.Values)
+        List<PackageData> packagesInStations = PackageManager.WaitingTable.Values.SelectMany(waitingList => waitingList.Values)
                                                                             .SelectMany(packages => packages).ToList();
 
-        List<Package> reservatedPackages = PackageManager.ReservationTable.Values.SelectMany(dict => dict.Values)
+        List<PackageData> reservatedPackages = PackageManager.ReservationTable.Values.SelectMany(dict => dict.Values)
                                                                                 .SelectMany(packages => packages).ToList();
 
         //All Packages in the Simulation
-        List<Package> allPackages = packagesInRobot;
+        List<PackageData> allPackages = packagesInRobot;
         allPackages.AddRange(packagesInStations);
         allPackages.AddRange(reservatedPackages);
 
@@ -141,7 +141,6 @@ public static class WebSocketMessageGenerator
     {
         List<Robot> robots = RobotManager.AllRobots;
         List<RobotData> robotDatas = robots.Cast<RobotData>().ToList();
-
         return ToJToken(new RobotListData { Robots = robotDatas });
     }
 

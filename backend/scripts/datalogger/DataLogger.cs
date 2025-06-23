@@ -1,6 +1,4 @@
-using System;
-using System.IO;
-using System.Threading;
+using System.Collections.Concurrent;
 using Json;
 
 public static class DataLogger
@@ -8,7 +6,7 @@ public static class DataLogger
     public const string PathLoggingFolder = "backend\\logs";
     private static string FullPath { get; set; }
     private static readonly object fileLock = new object();
-    private static List<string> BufferedLogs { get; set; } = [];
+    private static ConcurrentQueue<string> BufferedLogs { get; set; } = new();
 
     /// <summary>
     /// Initialize the Data logger (create file)
@@ -47,7 +45,7 @@ public static class DataLogger
     public static void AddLog(string message)
     {
         string logEntry = Environment.NewLine + GetTimeStamp() + ": " + message;
-        BufferedLogs.Add(GetTimeStamp() + ": " + message);
+        BufferedLogs.Enqueue(GetTimeStamp() + ": " + message);
 
         lock (fileLock)
         {
@@ -67,8 +65,11 @@ public static class DataLogger
     /// </summary>
     public static List<string> CollectLog()
     {
-        List<string> logs = [.. BufferedLogs];
-        BufferedLogs.Clear();
+        List<string> logs = [];
+        while (BufferedLogs.TryDequeue(out var log))
+        {
+            logs.Add(log);
+        }
         return logs;
     }
 }

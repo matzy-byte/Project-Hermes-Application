@@ -32,9 +32,9 @@ public static class ChargingManager
     {
         //Delta Time in Minutes
         float deltaTimeMinute = SimulationManager.scaledDeltaTime / 60f;
-        float newCapacity = robot.BatteryCapacaty + deltaTimeMinute * SimulationSettings.SimulationSettingsParameters.RobotBatteryChargingSpeed;
+        float newCapacity = robot.BatteryCapacity + deltaTimeMinute * SimulationSettings.SimulationSettingsParameters.RobotBatteryChargingSpeed;
 
         //Add Battery Capacaty
-        robot.BatteryCapacaty = Math.Clamp(newCapacity, 0, SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity);
+        robot.BatteryCapacity = Math.Clamp(newCapacity, 0, SimulationSettings.SimulationSettingsParameters.TotalRobotBatteryCapacity);
     }
 }

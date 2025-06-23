@@ -1,3 +1,5 @@
+using System.Linq;
+using CommandLine;
 using Godot;
 using Newtonsoft.Json;
 using shared;
@@ -15,6 +17,7 @@ public partial class ControlMenuScript : HBoxContainer
     private Button CameraMovableButton { get; set; }
     private Button CameraFreeButton { get; set; }
     private Button StopSimulationButton { get; set; }
+    private Button NewSimulationButton { get; set; }
     private TextureButton ControlMenuButton { get; set; }
 
     public override void _Ready()
@@ -33,6 +36,8 @@ public partial class ControlMenuScript : HBoxContainer
         CameraFreeButton.Pressed += OnCameraFreePressed;
         StopSimulationButton = GetNode<Button>("%StopSimulationButton");
         StopSimulationButton.Pressed += OnStopSimulationPressed;
+        NewSimulationButton = GetNode<Button>("%NewSimulationButton");
+        NewSimulationButton.Pressed += OnNewSimulationPressed;
         ControlMenuButton = GetNode<TextureButton>("%ControlMenuButton");
         ControlMenuButton.Pressed += OnControlMenuPressed;
     }
@@ -44,8 +49,19 @@ public partial class ControlMenuScript : HBoxContainer
 
     private void OnStopSimulationPressed()
     {
-        GameManagerScript.StopSimulation();
-        GetParent<HUDScript>().StopSimulation();
+        GameManagerScript.Instance.StopSimulation();
+        NewSimulationButton.Disabled = false;
+        StopSimulationButton.Disabled = true;
+    }
+
+    private void OnNewSimulationPressed()
+    {
+        GetParent<HUDScript>().NewSimulation();
+        NewSimulationButton.Disabled = true;
+        StopSimulationButton.Disabled = false;
+
+        OnCameraStaticPressed();
+        GameManagerScript.Instance.Reset(true);
     }
 
     private void OnControlMenuPressed()
@@ -72,18 +88,24 @@ public partial class ControlMenuScript : HBoxContainer
     private void OnCameraStaticPressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraStatic").Current = true;
+        GetTree().GetNodesInGroup("Sprite").ToList().ForEach(x => x.Cast<Sprite3D>().Scale = new Vector3(550, 550, 550));
+        GetTree().GetNodesInGroup("SpriteCollider").ToList().ForEach(x => ((SphereShape3D)x.Cast<CollisionShape3D>().Shape).Radius = 275f);
         ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 
     private void OnCameraMovablePressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraMovable").Current = true;
+        GetTree().GetNodesInGroup("Sprite").ToList().ForEach(x => x.Cast<Sprite3D>().Scale = new Vector3(150, 150, 150));
+        GetTree().GetNodesInGroup("SpriteCollider").ToList().ForEach(x => ((SphereShape3D)x.Cast<CollisionShape3D>().Shape).Radius = 75);
         ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 
     private void OnCameraFreePressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraFree").Current = true;
+        GetTree().GetNodesInGroup("Sprite").ToList().ForEach(x => x.Cast<Sprite3D>().Scale = new Vector3(75, 75, 75));
+        GetTree().GetNodesInGroup("SpriteCollider").ToList().ForEach(x => ((SphereShape3D)x.Cast<CollisionShape3D>().Shape).Radius = 37.5f);
         ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 }

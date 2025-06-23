@@ -7,14 +7,14 @@ using Newtonsoft.Json;
 
 namespace Packages;
 
-using PackageTable = Dictionary<string, Dictionary<string, List<Package>>>;
+using PackageTable = Dictionary<string, Dictionary<string, List<PackageData>>>;
 
 
 public static class PackageManager
 {
     public static PackageTable WaitingTable = [];
 
-    public static Dictionary<Tuple<int, string>, Dictionary<string, List<Package>>> ReservationTable = [];
+    public static Dictionary<Tuple<int, string>, Dictionary<string, List<PackageData>>> ReservationTable = [];
     private static Random random = new();
 
     /// <summary>
@@ -41,7 +41,7 @@ public static class PackageManager
     /// </summary>
     private static void InitializeWaitingList()
     {
-        foreach (KeyValuePair<string, Dictionary<string, List<Package>>> entry in WaitingTable)
+        foreach (KeyValuePair<string, Dictionary<string, List<PackageData>>> entry in WaitingTable)
         {
             TrainManager.AllStations.Where(id => id != entry.Key).ToList().ForEach(id => entry.Value[id] = []);
         }
@@ -52,13 +52,13 @@ public static class PackageManager
     /// </summary>
     private static void InitializePackages()
     {
-        foreach (KeyValuePair<string, Dictionary<string, List<Package>>> entry in WaitingTable)
+        foreach (KeyValuePair<string, Dictionary<string, List<PackageData>>> entry in WaitingTable)
         {
             for (int i = 0; i < SimulationSettings.SimulationSettingsParameters.StartPackagesCount; i++)
             {
                 List<string> stations = [.. TrainManager.AllStations.Where(id => !WaitingTable.ContainsKey(id))];
                 string destinationId = stations[random.Next(0, stations.Count)];
-                Package package = new(destinationId, entry.Key);
+                PackageData package = new(destinationId, entry.Key);
                 entry.Value[package.DestinationId].Add(package);
             }
 
@@ -101,13 +101,13 @@ public static class PackageManager
             return;
         }
 
-        Dictionary<string, List<Package>> waitingPackagesInStation = WaitingTable[robot.CurrentStationId];
+        Dictionary<string, List<PackageData>> waitingPackagesInStation = WaitingTable[robot.CurrentStationId];
         List<string> stationIdsToPass = [.. robot.TotalPath.SelectMany(x => x.StationIds).Distinct()];
         int currentStationIndex = stationIdsToPass.IndexOf(robot.CurrentStationId);
         stationIdsToPass.RemoveRange(0, currentStationIndex);
 
-        Dictionary<string, List<Package>> packagesOnPath = [];
-        foreach (KeyValuePair<string, List<Package>> entry in waitingPackagesInStation)
+        Dictionary<string, List<PackageData>> packagesOnPath = [];
+        foreach (KeyValuePair<string, List<PackageData>> entry in waitingPackagesInStation)
         {
             if (stationIdsToPass.Contains(entry.Key) && entry.Value.Count > 0)
             {
@@ -117,9 +117,9 @@ public static class PackageManager
 
         packagesOnPath = packagesOnPath.OrderByDescending(kvp => kvp.Value.Count).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        Dictionary<string, List<Package>> packagesForRobot = GetPackagesThatFitInRobot(packagesOnPath, remainingSpace);
+        Dictionary<string, List<PackageData>> packagesForRobot = GetPackagesThatFitInRobot(packagesOnPath, remainingSpace);
 
-        //Updae Package Info
+        //Updae PackageData Info
         packagesForRobot.Values.SelectMany(list => list).ToList().ForEach(x => { x.StationId = ""; x.RobotId = robot.RobotId; });
 
         int packageSum = packagesForRobot.Sum(kvp => kvp.Value.Count);
@@ -130,7 +130,7 @@ public static class PackageManager
         }
 
         //Copy the packages to the robot
-        foreach (KeyValuePair<string, List<Package>> entry in packagesForRobot)
+        foreach (KeyValuePair<string, List<PackageData>> entry in packagesForRobot)
         {
             //Copy to robot
             if (robot.LoadedPackages.ContainsKey(entry.Key))
@@ -143,7 +143,7 @@ public static class PackageManager
             }
 
             //remove from waiting list
-            foreach (Package package in entry.Value.ToList())
+            foreach (PackageData package in entry.Value.ToList())
             {
                 RemovePackage(package, robot.CurrentStationId);
             }
@@ -168,11 +168,11 @@ public static class PackageManager
     /// <summary>
     /// Selects packages that fit within the robot's remaining space.
     /// </summary>
-    private static Dictionary<string, List<Package>> GetPackagesThatFitInRobot(Dictionary<string, List<Package>> packagesOnPath, int remainingSpace)
+    private static Dictionary<string, List<PackageData>> GetPackagesThatFitInRobot(Dictionary<string, List<PackageData>> packagesOnPath, int remainingSpace)
     {
-        Dictionary<string, List<Package>> packagesForRobot = [];
+        Dictionary<string, List<PackageData>> packagesForRobot = [];
 
-        foreach (KeyValuePair<string, List<Package>> entry in packagesOnPath)
+        foreach (KeyValuePair<string, List<PackageData>> entry in packagesOnPath)
         {
             if (entry.Value.Count <= 0)
             {
@@ -191,7 +191,7 @@ public static class PackageManager
                 continue;
             }
 
-            List<Package> lastPackages = [];
+            List<PackageData> lastPackages = [];
 
             for (int i = 0; i < remainingSpace; i++)
             {
@@ -209,7 +209,7 @@ public static class PackageManager
     /// <summary>
     /// Removes a package from the waiting list at a specified station.
     /// </summary>
-    private static void RemovePackage(Package package, string loadingStationId)
+    private static void RemovePackage(PackageData package, string loadingStationId)
     {
         WaitingTable[loadingStationId][package.DestinationId].Remove(package);
     }
@@ -228,19 +228,19 @@ public static class PackageManager
 
         //Get the Station that the robot is taking after picking up the packages
         string destinationWithMostPackages = GetDestinationStationWithMostPackagesWaiting(loadingStationId);
-        List<Package> allPackagesForRobot = WaitingTable[loadingStationId][destinationWithMostPackages];
+        List<PackageData> allPackagesForRobot = WaitingTable[loadingStationId][destinationWithMostPackages];
 
         //only save the packages that are fitting into the robot
-        List<Package> packagesForRobot = allPackagesForRobot.Take(SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot).ToList();
+        List<PackageData> packagesForRobot = allPackagesForRobot.Take(SimulationSettings.SimulationSettingsParameters.NumberOfPackagesInRobot).ToList();
 
         //Save the dictionary in the Reservation table
-        ReservationTable[robotStation] = new Dictionary<string, List<Package>> { { destinationWithMostPackages, packagesForRobot } };
+        ReservationTable[robotStation] = new Dictionary<string, List<PackageData>> { { destinationWithMostPackages, packagesForRobot } };
 
         Console.WriteLine("Robot " + robotId + " Reserved " + packagesForRobot.Count + " Packages at Station " + loadingStationId);
         DataLogger.AddLog("Robot " + robotId + " Reserved " + packagesForRobot.Count + " Packages at Station " + loadingStationId);
 
         //Remove the packages from the waiting list
-        foreach (Package package in packagesForRobot)
+        foreach (PackageData package in packagesForRobot)
         {
             RemovePackage(package, loadingStationId);
         }
@@ -289,7 +289,7 @@ public static class PackageManager
             validPackages = validPackages.Select(p => { p.RobotId = -1; return p; }).ToList();
 
             //Add the Packages to the Waiting Table
-            validPackages.ForEach(p => WaitingTable[p.StationId][p.DestinationId].Add(new Package(p.DestinationId, p.StationId)));
+            validPackages.ForEach(p => WaitingTable[p.StationId][p.DestinationId].Add(new PackageData(p.DestinationId, p.StationId)));
 
             Console.WriteLine("Packagemanager Added " + validPackages.Count + " Packages");
             DataLogger.AddLog("Packagemanager Added " + validPackages.Count + " Packages");

@@ -1,5 +1,6 @@
-using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Camera;
 using Godot;
 using Newtonsoft.Json;
 using Robots;
@@ -13,6 +14,7 @@ namespace Singletons;
 public partial class GameManagerScript : Node
 {
     public static GameManagerScript Instance { get; set; }
+    public SimulationStateData SimulationState { get; set; }
     public SimulationSettingsData SimulationSettings { get; set; }
     public List<StationScript> Stations { get; set; } = [];
     public List<TrainScript> Trains { get; set; } = [];
@@ -22,10 +24,13 @@ public partial class GameManagerScript : Node
     private PackedScene trainScene = ResourceLoader.Load<PackedScene>("res://assets/train/Train.tscn");
     private PackedScene robotScene = ResourceLoader.Load<PackedScene>("res://assets/robot/Robot.tscn");
 
+    private List<LineData> lines = [];
+
     public override void _Ready()
     {
         Instance = this;
         SimulationSettings = new();
+        SimulationState = new();
     }
 
     public static void SetSimulationConfiguration(SimulationSettingsData simulationSettingsData)
@@ -34,12 +39,13 @@ public partial class GameManagerScript : Node
         SessionManager.Instance.Request(settingsMessage);
     }
 
-    public static void StartSimulation()
+    public void StartSimulation()
     {
+        Reset(false);
         SessionManager.Instance.Request(200, MessageType.STARTSIMULATION);
     }
 
-    public static void StopSimulation()
+    public void StopSimulation()
     {
         SessionManager.Instance.Request(205, MessageType.STOPSIMULATION);
     }
@@ -71,6 +77,7 @@ public partial class GameManagerScript : Node
 
     public void DrawLinePaths(List<LineData> lineDatas)
     {
+        lines = lineDatas;
         Dictionary<(string, string), List<(string, string)>> segments = [];
         foreach (LineData lineData in lineDatas)
         {
@@ -148,7 +155,8 @@ public partial class GameManagerScript : Node
         {
             TrainScript train = trainScene.Instantiate<TrainScript>();
             GetTree().CurrentScene.AddChild(train);
-            train.Initialize(trainData);
+            LineData line = lines.Find(entry => entry.TrainId == trainData.TrainId);
+            train.Initialize(trainData, line.LineName, line.LineColor);
             Trains.Add(train);
         }
     }
@@ -167,7 +175,7 @@ public partial class GameManagerScript : Node
     {
         foreach (TrainData trainData in trains)
         {
-            TrainScript train = this.Trains.Find(train => train.Data.TrainId == trainData.TrainId);
+            TrainScript train = Trains.Find(train => train.Data.TrainId == trainData.TrainId);
             train?.Update(trainData);
         }
     }
@@ -176,18 +184,26 @@ public partial class GameManagerScript : Node
     {
         foreach (RobotData robotData in robots)
         {
-            RobotScript robot = this.Robots.Find(train => train.Data.TrainId == robotData.RobotId);
+            RobotScript robot = Robots.Find(robot => robot.Data.RobotId == robotData.RobotId);
             robot?.Update(robotData);
         }
     }
 
-    public void Reset()
+    public void Reset(bool withStationExtras)
     {
+        FollowCameraScript followCamera = (FollowCameraScript)GetTree().GetFirstNodeInGroup("FollowCamera");
+        followCamera.GetParent().RemoveChild(followCamera);
+        GetTree().CurrentScene.GetNode("Cameras").AddChild(followCamera);
+        
         Robots.ForEach(robot => robot.QueueFree());
         Robots.Clear();
+        Stations.ForEach(station => station.Robots.Clear());
         Trains.ForEach(train => train.QueueFree());
         Trains.Clear();
-        Stations.ForEach(station => station.QueueFree());
-        Stations.Clear();
+        if (withStationExtras)
+        {
+            Stations.ForEach(station => station.DisableExtraLoading());
+            Stations.ForEach(station => station.DisableExtraCharging());
+        }
     }
 }
