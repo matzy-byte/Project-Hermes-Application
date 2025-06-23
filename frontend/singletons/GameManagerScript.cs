@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Camera;
 using Godot;
 using Newtonsoft.Json;
 using Robots;
@@ -190,6 +191,10 @@ public partial class GameManagerScript : Node
 
     public void Reset(bool withStationExtras)
     {
+        FollowCameraScript followCamera = (FollowCameraScript)GetTree().GetFirstNodeInGroup("FollowCamera");
+        followCamera.GetParent().RemoveChild(followCamera);
+        GetTree().CurrentScene.GetNode("Cameras").AddChild(followCamera);
+        
         Robots.ForEach(robot => robot.QueueFree());
         Robots.Clear();
         Stations.ForEach(station => station.Robots.Clear());
