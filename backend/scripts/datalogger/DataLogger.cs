@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
-using Json;
+
+namespace Logs;
 
 public static class DataLogger
 {
-    public const string PathLoggingFolder = "backend\\logs";
     private static string FullPath { get; set; }
     private static readonly object fileLock = new object();
     private static ConcurrentQueue<string> BufferedLogs { get; set; } = new();
@@ -13,15 +13,17 @@ public static class DataLogger
     /// </summary>
     public static void Initialize()
     {
-        FullPath = JsonReader.GetFullPath(PathLoggingFolder);
+        string baseDir = AppContext.BaseDirectory;
+        Console.WriteLine(baseDir);
 
-        if (!Directory.Exists(FullPath))
-            Directory.CreateDirectory(FullPath);
+        string logDir = Path.Combine(baseDir, "logs");
+        if (!Directory.Exists(logDir))
+        {
+            Directory.CreateDirectory(logDir);
+        }
 
-        string time = GetTimeStamp();
-        string fileName = $"{time}.log";
-        FullPath = Path.Combine(FullPath, fileName);
-        FullPath = FullPath.Replace('\\', '/');
+        string fileName = $"{GetTimeStamp()}.log";
+        FullPath = Path.Combine(logDir, fileName);
 
         lock (fileLock)
         {

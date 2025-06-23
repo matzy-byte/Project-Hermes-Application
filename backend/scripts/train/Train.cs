@@ -1,7 +1,6 @@
-using System.Reflection.Metadata.Ecma335;
+using Logs;
 using shared;
 using Simulation;
-
 
 namespace Trains;
 
@@ -101,7 +100,6 @@ public class Train : TrainData
             EnterStation();
     }
 
-
     /// <summary>
     /// Update Train when in Station
     /// </summary>
@@ -114,7 +112,6 @@ public class Train : TrainData
         if (WaitingTime >= 1)
             ExitStation();
     }
-
 
     /// <summary>
     /// Train enters a Station
@@ -146,7 +143,6 @@ public class Train : TrainData
 
     }
 
-
     /// <summary>
     /// Train Exits the Station
     /// </summary>
@@ -157,7 +153,6 @@ public class Train : TrainData
 
         DataLogger.AddLog("Train " + TrainId + " Exited Station " + CurrentStationId + " Next Station " + NextStationId);
     }
-
 
     /// <summary>
     /// Get The stations that are between two stations (start and end inclusive)

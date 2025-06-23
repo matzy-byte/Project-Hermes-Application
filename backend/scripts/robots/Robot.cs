@@ -4,6 +4,7 @@ using Pathfinding;
 using Trains;
 using Simulation;
 using Charging;
+using Logs;
 
 namespace Robots;
 

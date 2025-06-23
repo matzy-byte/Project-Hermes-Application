@@ -1,9 +1,7 @@
 using Simulation;
 using Robots;
-using Pathfinding;
-using Helper;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Trains;
+
 namespace Charging;
 
 public static class ChargingManager
