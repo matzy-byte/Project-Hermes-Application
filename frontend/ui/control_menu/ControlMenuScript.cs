@@ -17,6 +17,7 @@ public partial class ControlMenuScript : HBoxContainer
     private Button CameraMovableButton { get; set; }
     private Button CameraFreeButton { get; set; }
     private Button StopSimulationButton { get; set; }
+    private Button NewSimulationButton { get; set; }
     private TextureButton ControlMenuButton { get; set; }
 
     public override void _Ready()
@@ -35,6 +36,8 @@ public partial class ControlMenuScript : HBoxContainer
         CameraFreeButton.Pressed += OnCameraFreePressed;
         StopSimulationButton = GetNode<Button>("%StopSimulationButton");
         StopSimulationButton.Pressed += OnStopSimulationPressed;
+        NewSimulationButton = GetNode<Button>("%NewSimulationButton");
+        NewSimulationButton.Pressed += OnNewSimulationPressed;
         ControlMenuButton = GetNode<TextureButton>("%ControlMenuButton");
         ControlMenuButton.Pressed += OnControlMenuPressed;
     }
@@ -47,7 +50,18 @@ public partial class ControlMenuScript : HBoxContainer
     private void OnStopSimulationPressed()
     {
         GameManagerScript.Instance.StopSimulation();
-        GetParent<HUDScript>().StopSimulation();
+        NewSimulationButton.Disabled = false;
+        StopSimulationButton.Disabled = true;
+    }
+
+    private void OnNewSimulationPressed()
+    {
+        GetParent<HUDScript>().NewSimulation();
+        NewSimulationButton.Disabled = true;
+        StopSimulationButton.Disabled = false;
+
+        OnCameraStaticPressed();
+        GameManagerScript.Instance.Reset(true);
     }
 
     private void OnControlMenuPressed()

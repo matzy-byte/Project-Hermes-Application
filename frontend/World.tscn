@@ -42,14 +42,14 @@ length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("ChatLog:position")
+tracks/0/path = NodePath("ChatLogAnchor/ChatLog:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.333333),
+"times": PackedFloat32Array(0, 0.35),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(752, 373), Vector2(752, 623)]
+"values": [Vector2(-400, -275), Vector2(-400, -25)]
 }
 
 [sub_resource type="Animation" id="Animation_fvag4"]
@@ -58,14 +58,14 @@ length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("ChatLog:position")
+tracks/0/path = NodePath("ChatLogAnchor/ChatLog:position")
 tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.333333),
+"times": PackedFloat32Array(0, 0.35),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(752, 623), Vector2(752, 373)]
+"values": [Vector2(-400, -25), Vector2(-400, -275)]
 }
 
 [sub_resource type="Animation" id="Animation_fv4w7"]
@@ -117,14 +117,14 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("ChatLog:position")
+tracks/1/path = NodePath("ChatLogAnchor/ChatLog:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(752, 623)]
+"values": [Vector2(-400, -25)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fv4w7"]
@@ -183,7 +183,17 @@ layout_mode = 1
 offset_left = -350.0
 offset_right = 25.0
 
-[node name="ChatLog" parent="HUD" instance=ExtResource("5_fvag4")]
+[node name="ChatLogAnchor" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="ChatLog" parent="HUD/ChatLogAnchor" instance=ExtResource("5_fvag4")]
 visible = false
 layout_mode = 1
 offset_top = -25.0

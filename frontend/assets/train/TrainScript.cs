@@ -38,7 +38,7 @@ public partial class TrainScript : StaticBody3D, IInteractable
         Mathf.Lerp(currentStation.GlobalPosition.Z, nextStation.GlobalPosition.Z, Data.TravelDistance)
         );
 
-        if (GlobalPosition.DistanceTo(nextStation.GlobalPosition) > 0.001f)
+        if (GlobalPosition.DistanceTo(nextStation.GlobalPosition) > 1f)
         {
             LookAt(nextStation.GlobalPosition, Vector3.Up);
         }

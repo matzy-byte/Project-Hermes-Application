@@ -51,6 +51,6 @@ public partial class ChatLogScript : VBoxContainer
 
     public void OnChatLogButtonPressed()
     {
-        GetParent<HUDScript>().OpenChatLog();
+        GetParent().GetParent<HUDScript>().OpenChatLog();
     }
 }

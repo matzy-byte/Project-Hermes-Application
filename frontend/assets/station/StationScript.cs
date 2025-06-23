@@ -10,12 +10,12 @@ namespace Stations;
 public partial class StationScript : StaticBody3D
 {
     public StationData Data { get; set; }
+    public List<RobotScript> Robots { get; set; } = [];
     private Sprite3D iconSprite;
     private Sprite3D iconSpriteName;
     private TextureRect icon;
     private Label iconName;
 
-    private List<RobotScript> robots = [];
     private float radius = 75;
     private float stepDeg = 12;
 
@@ -49,27 +49,27 @@ public partial class StationScript : StaticBody3D
 
     public void RobotEnterStation(RobotScript robot)
     {
-        if (robots.Contains(robot))
+        if (Robots.Contains(robot))
         {
             return;
         }
         robot.GlobalPosition = GlobalPosition;
-        float radian = Mathf.DegToRad(stepDeg * robots.Count);
+        float radian = Mathf.DegToRad(stepDeg * Robots.Count);
         Vector3 pos = new(Mathf.Cos(radian) * radius, 2.6f, Mathf.Sin(radian) * radius);
         robot.Position = pos;
         robot.LookAt(GlobalPosition, Vector3.Up);
-        robots.Add(robot);
+        Robots.Add(robot);
     }
 
     public void RobotExitStation(RobotScript robot)
     {
-        robots.Remove(robot);
-        for (int i = 0; i < robots.Count; i++)
+        Robots.Remove(robot);
+        for (int i = 0; i < Robots.Count; i++)
         {
             float radian = Mathf.DegToRad(stepDeg * i + 20);
             Vector3 pos = new(Mathf.Cos(radian) * radius, 2.6f, Mathf.Sin(radian) * radius);
-            robots[i].Position = pos;
-            robots[i].LookAt(GlobalPosition, Vector3.Up);
+            Robots[i].Position = pos;
+            Robots[i].LookAt(GlobalPosition, Vector3.Up);
         }
     }
 

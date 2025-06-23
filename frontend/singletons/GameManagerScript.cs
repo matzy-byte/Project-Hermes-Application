@@ -40,14 +40,13 @@ public partial class GameManagerScript : Node
 
     public void StartSimulation()
     {
-        Reset();
+        Reset(false);
         SessionManager.Instance.Request(200, MessageType.STARTSIMULATION);
     }
 
     public void StopSimulation()
     {
         SessionManager.Instance.Request(205, MessageType.STOPSIMULATION);
-        Reset();
     }
 
     public static void PauseSimulation(bool isPaused)
@@ -175,7 +174,7 @@ public partial class GameManagerScript : Node
     {
         foreach (TrainData trainData in trains)
         {
-            TrainScript train = this.Trains.Find(train => train.Data.TrainId == trainData.TrainId);
+            TrainScript train = Trains.Find(train => train.Data.TrainId == trainData.TrainId);
             train?.Update(trainData);
         }
     }
@@ -184,16 +183,22 @@ public partial class GameManagerScript : Node
     {
         foreach (RobotData robotData in robots)
         {
-            RobotScript robot = this.Robots.Find(robot => robot.Data.RobotId == robotData.RobotId);
+            RobotScript robot = Robots.Find(robot => robot.Data.RobotId == robotData.RobotId);
             robot?.Update(robotData);
         }
     }
 
-    public void Reset()
+    public void Reset(bool withStationExtras)
     {
         Robots.ForEach(robot => robot.QueueFree());
         Robots.Clear();
+        Stations.ForEach(station => station.Robots.Clear());
         Trains.ForEach(train => train.QueueFree());
         Trains.Clear();
+        if (withStationExtras)
+        {
+            Stations.ForEach(station => station.DisableExtraLoading());
+            Stations.ForEach(station => station.DisableExtraCharging());
+        }
     }
 }

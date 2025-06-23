@@ -19,7 +19,7 @@ public partial class HUDScript : Control
         LoadingStationsMenu = GetNode<LoadingStationsMenuScript>("LoadingStationsMenu");
         ChargingStationsMenu = GetNode<ChargingStationsMenuScript>("ChargingStationsMenu");
         ControlMenu = GetNode<ControlMenuScript>("ControlMenu");
-        ChatLog = GetNode<ChatLogScript>("ChatLog");
+        ChatLog = GetNode<ChatLogScript>("ChatLogAnchor/ChatLog");
         ObjectInfo = GetNode<ObjectInfoScript>("ObjectInfo");
         AnimationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
     }
@@ -34,7 +34,7 @@ public partial class HUDScript : Control
         ControlMenu.UpdateSpeedSlider();
     }
 
-    public void StopSimulation()
+    public void NewSimulation()
     {
         ConfigurationMenu.Visible = true;
         LoadingStationsMenu.Clear();

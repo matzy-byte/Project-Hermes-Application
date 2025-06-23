@@ -46,7 +46,7 @@ public partial class SessionManager : Node
         {
             GD.Print("Connected to WebSocket: " + connectionString);
             connected = false;
-            GameManagerScript.Instance.Reset();
+            GameManagerScript.Instance.Reset(true);
             return;
         }
 
