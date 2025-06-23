@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://q40gqifrnnn1"]
+
+[ext_resource type="Script" uid="uid://gvjvm8rv2wc3" path="res://ui/charging_stations/EntryChargingStationScript.cs" id="1_woj4o"]
+
+[node name="Entry" type="HBoxContainer"]
+script = ExtResource("1_woj4o")
+
+[node name="IdLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Id"
+horizontal_alignment = 1
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 1
+
+[node name="StationNameLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Station Name"
+horizontal_alignment = 1
+
+[node name="RemoveEntryButton" type="Button" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Remove"

@@ -1,0 +1,23 @@
+{
+    "Id": 207,
+    "MessageType": "ADDPACKAGES",
+    "Data": {
+        "Packages": [
+            {
+                "DestinationId": "de:08212:4495",
+                "RobotId": -1,
+                "StationId": "de:08212:302"
+            },
+            {
+                "DestinationId": "de:08212:4495",
+                "RobotId": 2,
+                "StationId": "de:08212:302"
+            },
+            {
+                "DestinationId": "de:08215:1902",
+                "RobotId": 1,
+                "StationId": "Test"
+            }
+        ]
+    }
+}

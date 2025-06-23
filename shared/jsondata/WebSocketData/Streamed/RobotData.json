@@ -1,0 +1,127 @@
+{
+    "Id": 1,
+    "MessageType": "ROBOTDATA",
+    "Data": {
+        "Robots": [
+            {
+                "OnPath": true,
+                "NextExitStationId": "de:08212:39",
+                "LoadedPackages": {
+                    "de:08212:610": [
+                        {
+                            "DestinationId": "de:08212:610",
+                            "RobotId": -1,
+                            "StationId": "de:08212:3013"
+                        }
+                    ]
+                },
+                "RobotId": 0,
+                "OnTrain": false,
+                "OnStation": true,
+                "TrainId": -1,
+                "CurrentStationId": "de:08212:39",
+                "BatteryCapacaty": 53.39251,
+                "IsCharging": false,
+                "TotalPath": [
+                    {
+                        "TrainId": 12,
+                        "StationIds": [
+                            "de:08212:3013",
+                            "de:08212:3301",
+                            "de:08212:233",
+                            "de:08212:3102",
+                            "de:08212:231",
+                            "de:08212:404",
+                            "de:08212:403",
+                            "de:08212:402",
+                            "de:08212:626",
+                            "de:08212:7",
+                            "de:08212:6",
+                            "de:08212:1001",
+                            "de:08212:1002",
+                            "de:08212:1003",
+                            "de:08212:1004",
+                            "de:08212:39"
+                        ]
+                    },
+                    {
+                        "TrainId": 3,
+                        "StationIds": [
+                            "de:08212:39",
+                            "de:08212:40",
+                            "de:08212:602",
+                            "de:08212:603",
+                            "de:08212:604",
+                            "de:08212:605",
+                            "de:08212:606",
+                            "de:08212:607",
+                            "de:08212:608",
+                            "de:08212:609",
+                            "de:08212:610"
+                        ]
+                    }
+                ]
+            },
+            {
+                "OnPath": true,
+                "NextExitStationId": "de:08212:39",
+                "LoadedPackages": {
+                    "de:08212:610": [
+                        {
+                            "DestinationId": "de:08212:610",
+                            "RobotId": -1,
+                            "StationId": "de:08215:1902"
+                        }
+                    ]
+                },
+                "RobotId": 1,
+                "OnTrain": true,
+                "OnStation": false,
+                "TrainId": 13,
+                "CurrentStationId": "de:08212:626",
+                "BatteryCapacaty": 79.82496,
+                "IsCharging": false,
+                "TotalPath": [
+                    {
+                        "TrainId": 13,
+                        "StationIds": [
+                            "de:08215:1902",
+                            "de:08212:3013",
+                            "de:08212:3301",
+                            "de:08212:233",
+                            "de:08212:3102",
+                            "de:08212:231",
+                            "de:08212:404",
+                            "de:08212:403",
+                            "de:08212:402",
+                            "de:08212:626",
+                            "de:08212:7",
+                            "de:08212:6",
+                            "de:08212:1001",
+                            "de:08212:1002",
+                            "de:08212:1003",
+                            "de:08212:1004",
+                            "de:08212:39"
+                        ]
+                    },
+                    {
+                        "TrainId": 3,
+                        "StationIds": [
+                            "de:08212:39",
+                            "de:08212:40",
+                            "de:08212:602",
+                            "de:08212:603",
+                            "de:08212:604",
+                            "de:08212:605",
+                            "de:08212:606",
+                            "de:08212:607",
+                            "de:08212:608",
+                            "de:08212:609",
+                            "de:08212:610"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

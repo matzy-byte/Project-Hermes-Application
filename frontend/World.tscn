@@ -1,0 +1,243 @@
+[gd_scene load_steps=25 format=3 uid="uid://w3vb06w2ecuq"]
+
+[ext_resource type="PackedScene" uid="uid://cr3k1ilnvy8it" path="res://ui/configuration_menu/ConfigurationMenu.tscn" id="1_p1v5b"]
+[ext_resource type="Script" uid="uid://cslv2u871m8xs" path="res://ui/HUDScript.cs" id="1_wygdx"]
+[ext_resource type="PackedScene" uid="uid://dgo0m131fjiiv" path="res://ui/loading_stations/LoadingStationsMenu.tscn" id="2_wygdx"]
+[ext_resource type="PackedScene" uid="uid://drsfjyset2h87" path="res://ui/charging_stations/ChargingStationsMenu.tscn" id="3_bah7m"]
+[ext_resource type="PackedScene" uid="uid://bkmtcunm6cjju" path="res://ui/control_menu/ControlMenu.tscn" id="4_fv4w7"]
+[ext_resource type="PackedScene" uid="uid://db351iefsnjvn" path="res://ui/chat_log/ChatLog.tscn" id="5_fvag4"]
+[ext_resource type="PackedScene" uid="uid://cayyhf2plj4f4" path="res://ui/object_info/ObjectInfo.tscn" id="6_kva58"]
+[ext_resource type="Script" uid="uid://bha3pc0dyn4nx" path="res://camera/CameraControlScript.cs" id="8_bah7m"]
+[ext_resource type="Script" uid="uid://k4vl4ymso55k" path="res://camera/CameraControlStaticScript.cs" id="9_f5c0m"]
+[ext_resource type="PackedScene" uid="uid://dlaftvfugseeo" path="res://assets/city/karlsruhe_part_one.glb" id="9_fvag4"]
+[ext_resource type="Script" uid="uid://bbuel23ty10e6" path="res://camera/FollowCameraScript.cs" id="9_kva58"]
+[ext_resource type="PackedScene" uid="uid://bvdv4xc11bbx1" path="res://assets/city/karlsruhe_part_two.glb" id="10_kva58"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cmany"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_c6gwx"]
+sky_material = SubResource("ProceduralSkyMaterial_cmany")
+
+[sub_resource type="Environment" id="Environment_2dftf"]
+background_mode = 2
+sky = SubResource("Sky_c6gwx")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cmany"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_c6gwx"]
+material = SubResource("StandardMaterial3D_cmany")
+size = Vector3(30000, 2, 30000)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_fv4w7"]
+data = PackedVector3Array(-15000, 1, 15000, 15000, 1, 15000, -15000, -1, 15000, 15000, 1, 15000, 15000, -1, 15000, -15000, -1, 15000, 15000, 1, -15000, -15000, 1, -15000, 15000, -1, -15000, -15000, 1, -15000, -15000, -1, -15000, 15000, -1, -15000, 15000, 1, 15000, 15000, 1, -15000, 15000, -1, 15000, 15000, 1, -15000, 15000, -1, -15000, 15000, -1, 15000, -15000, 1, -15000, -15000, 1, 15000, -15000, -1, -15000, -15000, 1, 15000, -15000, -1, 15000, -15000, -1, -15000, 15000, 1, 15000, -15000, 1, 15000, 15000, 1, -15000, -15000, 1, 15000, -15000, 1, -15000, 15000, 1, -15000, -15000, -1, 15000, 15000, -1, 15000, -15000, -1, -15000, 15000, -1, 15000, 15000, -1, -15000, -15000, -1, -15000)
+
+[sub_resource type="Animation" id="Animation_kva58"]
+resource_name = "ChatFold"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ChatLogAnchor/ChatLog:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-400, -275), Vector2(-400, -25)]
+}
+
+[sub_resource type="Animation" id="Animation_fvag4"]
+resource_name = "ChatUnfold"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ChatLogAnchor/ChatLog:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-400, -25), Vector2(-400, -275)]
+}
+
+[sub_resource type="Animation" id="Animation_fv4w7"]
+resource_name = "ControlFold"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ControlMenu:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-350, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_wygdx"]
+resource_name = "ControlUnfold"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ControlMenu:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-350, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_bah7m"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ControlMenu:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-350, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ChatLogAnchor/ChatLog:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-400, -25)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fv4w7"]
+_data = {
+&"ChatFold": SubResource("Animation_kva58"),
+&"ChatUnfold": SubResource("Animation_fvag4"),
+&"ControlFold": SubResource("Animation_fv4w7"),
+&"ControlUnfold": SubResource("Animation_wygdx"),
+&"RESET": SubResource("Animation_bah7m")
+}
+
+[node name="World" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2dftf")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("BoxMesh_c6gwx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("ConcavePolygonShape3D_fv4w7")
+
+[node name="HUD" type="Control" parent="." groups=["HUD"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_wygdx")
+
+[node name="ConfigurationMenu" parent="HUD" instance=ExtResource("1_p1v5b")]
+layout_mode = 1
+
+[node name="LoadingStationsMenu" parent="HUD" instance=ExtResource("2_wygdx")]
+visible = false
+layout_mode = 1
+
+[node name="ChargingStationsMenu" parent="HUD" instance=ExtResource("3_bah7m")]
+visible = false
+layout_mode = 1
+
+[node name="ControlMenu" parent="HUD" instance=ExtResource("4_fv4w7")]
+visible = false
+layout_mode = 1
+offset_left = -350.0
+offset_right = 25.0
+
+[node name="ChatLogAnchor" type="Control" parent="HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="ChatLog" parent="HUD/ChatLogAnchor" instance=ExtResource("5_fvag4")]
+visible = false
+layout_mode = 1
+offset_top = -25.0
+offset_bottom = 250.0
+
+[node name="ObjectInfo" parent="HUD" instance=ExtResource("6_kva58")]
+visible = false
+layout_mode = 1
+offset_bottom = 40.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HUD"]
+libraries = {
+&"": SubResource("AnimationLibrary_fv4w7")
+}
+
+[node name="Cameras" type="Node3D" parent="."]
+
+[node name="CameraFollow" type="Node3D" parent="Cameras" groups=["FollowCamera"]]
+script = ExtResource("9_kva58")
+
+[node name="Tilt" type="Node3D" parent="Cameras/CameraFollow"]
+
+[node name="Camera3D" type="Camera3D" parent="Cameras/CameraFollow/Tilt"]
+
+[node name="CameraStatic" type="Camera3D" parent="Cameras" groups=["Camera"]]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 750, 0)
+projection = 1
+current = true
+size = 16000.0
+far = 160000.0
+script = ExtResource("9_f5c0m")
+
+[node name="CameraMovable" type="Camera3D" parent="Cameras" groups=["Camera"]]
+transform = Transform3D(-4.37114e-08, 0.707107, -0.707107, 0, 0.707107, 0.707107, 1, 3.09086e-08, -3.09086e-08, -2000, 1500, 2000)
+far = 10000.0
+script = ExtResource("8_bah7m")
+
+[node name="CameraFree" type="Camera3D" parent="Cameras" groups=["Camera"]]
+transform = Transform3D(-4.37114e-08, 0.573576, -0.819152, 0, 0.819152, 0.573576, 1, 2.50718e-08, -3.58063e-08, -2000, 1000, 2000)
+far = 16000.0
+script = ExtResource("8_bah7m")
+
+[node name="karlsruhe_part_one" parent="." instance=ExtResource("9_fvag4")]
+transform = Transform3D(-0.70993, 0, -0.00991316, 0, 0.71, 0, 0.00991316, 0, -0.70993, -463.697, -0.1, 3326.31)
+
+[node name="karlsruhe_part_two" parent="." instance=ExtResource("10_kva58")]
+transform = Transform3D(-0.70993, 0, -0.00991316, 0, 0.71, 0, 0.00991316, 0, -0.70993, -463.697, -0.1, 3326.31)
