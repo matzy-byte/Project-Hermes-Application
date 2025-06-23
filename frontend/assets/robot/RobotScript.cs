@@ -60,6 +60,7 @@ public partial class RobotScript : StaticBody3D, IInteractable
         if (Data.OnStation == data.OnStation && Data.OnTrain == data.OnTrain)
         {
             Data = data;
+            CheckBatteryStatus();
             return;
         }
 

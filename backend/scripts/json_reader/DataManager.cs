@@ -1,6 +1,7 @@
-namespace Json;
-
 using Helper;
+using Logs;
+
+namespace Json;
 
 public static class DataManager
 {
@@ -9,10 +10,10 @@ public static class DataManager
     public static List<Station> AllStations = [];
 
     // Paths to the json files
-    private const string PATHSTATIONJSON = "shared\\jsondata\\haltestellen_v2.json";
-    private const string PATHLINEJSON = "shared\\jsondata\\lines_v2.json";
-    private const string PATHGEODATA = "shared\\jsondata\\KVVLinesGeoJSON.json";
-    private const string PATHTRANSITINFO = "shared\\jsondata\\KVV_Transit_Information.json";
+    private const string FILESTATIONJSON = "haltestellen_v2.json";
+    private const string FILELINEJSON = "lines_v2.json";
+    private const string FILEGEODATA = "KVVLinesGeoJSON.json";
+    private const string FILETRANSITINFO = "KVV_Transit_Information.json";
 
     /// <summary>
     /// Loads all necessary data from JSON files into memory.
@@ -21,13 +22,13 @@ public static class DataManager
     {
         Console.WriteLine("Start Extracting Data from JSON Files ...");
 
-        AllStations = JsonReader.LoadListedData<Station, StationWrapper>(PATHSTATIONJSON, x => new Station(x));
+        AllStations = JsonReader.LoadListedData<Station, StationWrapper>(FILESTATIONJSON, x => new Station(x));
         DataLogger.AddLog("Number of Stations Loaded: " + AllStations.Count);
 
-        AllLines = JsonReader.LoadNestedListData<RootObjectWrapper, LineWrapper>(PATHLINEJSON, x => x.Lines);
+        AllLines = JsonReader.LoadNestedListData<RootObjectWrapper, LineWrapper>(FILELINEJSON, x => x.Lines);
         DataLogger.AddLog("Number of Lines Loaded: " + AllLines.Count);
 
-        AllTransits = JsonReader.LoadData<List<TransitInfoWrapper>>(PATHTRANSITINFO);
+        AllTransits = JsonReader.LoadData<List<TransitInfoWrapper>>(FILETRANSITINFO);
         DataLogger.AddLog("Number of Transits Loaded: " + AllLines.Count);
 
         Console.WriteLine($"Number Of Stations: {AllStations.Count}");

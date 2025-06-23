@@ -1,6 +1,6 @@
 using Helper;
 using Json;
-using Simulation;
+using Logs;
 
 namespace Trains;
 
@@ -79,5 +79,4 @@ public static class TrainManager
     {
         AllStations = [.. AllTrains.SelectMany(train => train.StationIds).Distinct()];
     }
-
 }

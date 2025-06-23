@@ -2,9 +2,9 @@ using Simulation;
 using Json;
 using Trains;
 using Robots;
+using Logs;
 
 DataLogger.Initialize();
-
 
 // Create an instance of the WebSocketManager
 Websocket.WebSocketManager webSocketManager = new Websocket.WebSocketManager(SimulationSettingsGlobal.WebSocketURL);
@@ -12,8 +12,6 @@ Websocket.WebSocketManager webSocketManager = new Websocket.WebSocketManager(Sim
 Task.Run(() => webSocketManager.Start());
 Console.WriteLine("WebSocket server started on " + SimulationSettingsGlobal.WebSocketURL);
 DataLogger.AddLog("WebSocket server started on " + SimulationSettingsGlobal.WebSocketURL);
-
-
 
 DataManager.LoadDataFromJson();
 SimulationSettings.Initialize();

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using Logs;
 using Newtonsoft.Json;
 using Packages;
 using shared;

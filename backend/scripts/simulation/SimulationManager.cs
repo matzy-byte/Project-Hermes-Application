@@ -5,6 +5,7 @@ using Trains;
 using Pathfinding;
 using Packages;
 using Charging;
+using Logs;
 
 namespace Simulation;
 

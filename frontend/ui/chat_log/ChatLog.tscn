@@ -1,9 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://db351iefsnjvn"]
 
 [ext_resource type="Script" uid="uid://dnpi88gjjrs5u" path="res://ui/chat_log/ChatLogScript.cs" id="1_1ukrb"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_2dftf"]
-size = Vector2(25, 25)
+[ext_resource type="Texture2D" uid="uid://dvybub2cg7a5v" path="res://ui/T_Arrow_Big_Horizontal.png" id="2_ixay8"]
 
 [node name="ChatLog" type="VBoxContainer"]
 anchors_preset = 3
@@ -22,7 +20,7 @@ script = ExtResource("1_1ukrb")
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-texture_normal = SubResource("PlaceholderTexture2D_2dftf")
+texture_normal = ExtResource("2_ixay8")
 stretch_mode = 1
 
 [node name="Panel" type="Panel" parent="."]

@@ -1,6 +1,5 @@
 using System.Linq;
 using Godot;
-using shared;
 using Singletons;
 
 namespace UI;
