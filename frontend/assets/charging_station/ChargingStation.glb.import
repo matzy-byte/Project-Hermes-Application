@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bjeop0kmo0841"
-path="res://.godot/imported/LoadingStation.glb-ad9cfb51f4a00e7dbb55446f1c99f84d.scn"
+uid="uid://ugdjv7cylx5j"
+path="res://.godot/imported/ChargingStation.glb-928659dc9ff748b7b202f25051dba76e.scn"
 
 [deps]
 
-source_file="res://assets/loading_station/LoadingStation.glb"
-dest_files=["res://.godot/imported/LoadingStation.glb-ad9cfb51f4a00e7dbb55446f1c99f84d.scn"]
+source_file="res://assets/charging_station/ChargingStation.glb"
+dest_files=["res://.godot/imported/ChargingStation.glb-928659dc9ff748b7b202f25051dba76e.scn"]
 
 [params]
 

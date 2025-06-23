@@ -114,7 +114,7 @@ public partial class RobotScript : StaticBody3D, IInteractable
             ["Loaded Packages"] = loadedPackages.ToString(),
             ["Destination Station"] = destinationStationName,
             ["Current Train"] = currentTrain == null ? "None" : Data.TrainId.ToString(),
-            ["Current / Latest Station"] = currentStation == null ? "None" : currentStation.Data.StationName
+            ["Latest Station"] = currentStation == null ? "None" : currentStation.Data.StationName
         };
     }
 

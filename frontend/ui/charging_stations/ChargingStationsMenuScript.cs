@@ -28,6 +28,7 @@ public partial class ChargingStationsMenuScript : Panel
     public void RemoveEntry(EntryChargingStationScript entry)
     {
         chargingStations.Remove(entry);
+        DisableStationExtra(entry.StationId);
         entry.QueueFree();
         int index = 0;
         foreach (EntryChargingStationScript validEntry in chargingStations)
@@ -73,5 +74,17 @@ public partial class ChargingStationsMenuScript : Panel
         entry.Initialize(id, name, stationName, stationId);
         NameEdit.Clear();
         StationOptionButton.Select(-1);
+
+        EnableStationExtra(stationId);
+    }
+
+    private static void EnableStationExtra(string stationId)
+    {
+        GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == stationId).EnableExtraCharging();
+    }
+
+    private static void DisableStationExtra(string stationId)
+    {
+        GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == stationId).DisableExtraCharging();
     }
 }

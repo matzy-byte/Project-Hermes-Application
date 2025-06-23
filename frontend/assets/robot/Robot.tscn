@@ -99,12 +99,12 @@ viewport_path = NodePath("IconViewport")
 [sub_resource type="ViewportTexture" id="ViewportTexture_xsv1t"]
 viewport_path = NodePath("NameViewport")
 
-[sub_resource type="Gradient" id="Gradient_oe0pk"]
+[sub_resource type="Gradient" id="Gradient_xsv1t"]
 offsets = PackedFloat32Array(0.418947, 0.68, 0.705263, 0.736842)
 colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_db1xy"]
-gradient = SubResource("Gradient_oe0pk")
+gradient = SubResource("Gradient_xsv1t")
 width = 128
 height = 128
 fill = 1
@@ -129,6 +129,7 @@ shape = SubResource("SphereShape3D_xsv1t")
 [node name="Icon" type="Sprite3D" parent="." groups=["Sprite"]]
 transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0.795, 230, 0.397)
 billboard = 1
+render_priority = 2
 texture = SubResource("ViewportTexture_v6p7s")
 
 [node name="IconName" type="Sprite3D" parent="." groups=["Sprite"]]
@@ -137,7 +138,7 @@ transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0, 130, 0)
 visible = false
 pixel_size = 0.015
 billboard = 1
-render_priority = 1
+render_priority = 3
 texture = SubResource("ViewportTexture_xsv1t")
 
 [node name="IconViewport" type="SubViewport" parent="."]

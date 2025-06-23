@@ -10,16 +10,23 @@ namespace Stations;
 public partial class StationScript : StaticBody3D
 {
     public StationData Data { get; set; }
+    private Sprite3D iconSprite;
     private Sprite3D iconSpriteName;
+    private TextureRect icon;
     private Label iconName;
 
     private List<RobotScript> robots = [];
     private float radius = 75;
     private float stepDeg = 12;
 
+    private bool extraLoading = false;
+    private bool extraCharging = false;
+
     public override void _Ready()
     {
+        iconSprite = GetNode<Sprite3D>("%Icon");
         iconSpriteName = GetNode<Sprite3D>("%IconName");
+        icon = GetNode<TextureRect>("%StationIcon");
         iconName = GetNode<Label>("%Label");
     }
 
@@ -64,5 +71,50 @@ public partial class StationScript : StaticBody3D
             robots[i].Position = pos;
             robots[i].LookAt(GlobalPosition, Vector3.Up);
         }
+    }
+
+    public void EnableExtraLoading()
+    {
+        iconSprite.Visible = true;
+        GetNode<Node3D>("%LoadingStations").Visible = true;
+        GetNode<Node3D>("%ChargingStations").Visible = true;
+        icon.Texture = ResourceLoader.Load<Texture2D>("res://assets/loading_station/T_Load_Icon.png");
+        extraLoading = true;
+    }
+
+    public void DisableExtraLoading()
+    {
+        GetNode<Node3D>("%LoadingStations").Visible = false;
+        if (!extraCharging)
+        {
+            iconSprite.Visible = false;
+            GetNode<Node3D>("%ChargingStations").Visible = false;
+        }
+        else
+        {
+            icon.Texture = ResourceLoader.Load<Texture2D>("res://assets/charging_station/T_Charge_Icon.png");
+        }
+        extraLoading = false;
+    }
+
+    public void EnableExtraCharging()
+    {
+        iconSprite.Visible = true;
+        GetNode<Node3D>("%ChargingStations").Visible = true;
+        if (!extraLoading)
+        {
+            icon.Texture = ResourceLoader.Load<Texture2D>("res://assets/charging_station/T_Charge_Icon.png");
+        }
+        extraCharging = true;
+    }
+
+    public void DisableExtraCharging()
+    {
+        if (!extraLoading)
+        {
+            iconSprite.Visible = false;
+            GetNode<Node3D>("%ChargingStations").Visible = false;
+        }
+        extraCharging = false;
     }
 }

@@ -28,6 +28,7 @@ public partial class LoadingStationsMenuScript : Panel
     public void RemoveEntry(EntryLoadingStationScript entry)
     {
         loadingStations.Remove(entry);
+        DisableStationExtra(entry.StationId);
         entry.QueueFree();
         int index = 0;
         foreach (EntryLoadingStationScript validEntry in loadingStations)
@@ -73,5 +74,17 @@ public partial class LoadingStationsMenuScript : Panel
         entry.Initialize(id, name, stationName, stationId);
         NameEdit.Clear();
         StationOptionButton.Select(-1);
+
+        EnableStationExtra(stationId);
+    }
+
+    private static void EnableStationExtra(string stationId)
+    {
+        GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == stationId).EnableExtraLoading();
+    }
+
+    private static void DisableStationExtra(string stationId)
+    {
+        GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == stationId).DisableExtraLoading();
     }
 }

@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using shared;
 using Singletons;
@@ -69,8 +70,8 @@ public partial class ConfigurationMenuScript : Panel
 
     private void SetLoadingAndChargingStations()
     {
-        GameManagerScript.Instance.SimulationSettings.LoadingStationIds = GetParent<HUDScript>().LoadingStationsMenu.GetLoadingStations();
-        GameManagerScript.Instance.SimulationSettings.ChargingStationIds = GetParent<HUDScript>().ChargingStationsMenu.GetChargingStations();
+        GameManagerScript.Instance.SimulationSettings.LoadingStationIds = [.. GetParent<HUDScript>().LoadingStationsMenu.GetLoadingStations().Distinct()];
+        GameManagerScript.Instance.SimulationSettings.ChargingStationIds = [.. GetParent<HUDScript>().ChargingStationsMenu.GetChargingStations().Distinct()];
     }
 
     private void OnTrainWaitingTimeChanged(double value)
