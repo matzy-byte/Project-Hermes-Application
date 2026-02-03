@@ -1512,12 +1512,21 @@
     }
   },
   {
-    "name": "Augartenstr.",
+    "name": "Bruchsal Augartenstr.",
     "triasID": "de:08215:12656",
     "triasName": "Bruchsal Augartenstraße",
     "coordPositionWGS84": {
-      "lat": "48.999574353211",
-      "long": "8.40452131003"
+      "lat": "49.1225487937914",
+      "long": "8.60823197421509"
+    }
+  },
+  {
+    "name": "Karlsruhe Augartenstr.",
+    "triasID": "de:08212:74",
+    "triasName": "Karlsruhe Augartenstraße",
+    "coordPositionWGS84": {
+      "lat": "48.99884507909163",
+      "long": "8.403664076412133"
     }
   },
   {
@@ -3356,7 +3365,7 @@
   },
   {
     "name": "Rülzheim Freizeitzentrum",
-    "triasID": "de:07334:32451",
+    "triasID": "de:07334:1745",
     "triasName": "Rülzheim Freizeitzentrum",
     "coordPositionWGS84": {
       "lat": "49.1607767111652",
@@ -3829,6 +3838,15 @@
     "coordPositionWGS84": {
       "lat": "48.7780754995777",
       "long": "8.08809844155705"
+    }
+  },
+  {
+    "name": "Achern Bahnhof",
+    "triasID": "de:08317:33013",
+    "triasName": "Achern Bahnhof",
+    "coordPositionWGS84": {
+      "lat": "48.63380572687245",
+      "long": "8.065379673602973"
     }
   }
 ]

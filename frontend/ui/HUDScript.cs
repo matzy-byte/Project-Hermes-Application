@@ -36,8 +36,6 @@ public partial class HUDScript : Control
     public void NewSimulation()
     {
         ConfigurationMenu.Visible = true;
-        LoadingStationsMenu.Clear();
-        ChargingStationsMenu.Clear();
         ControlMenu.Visible = false;
         ChatLog.Visible = false;
         ObjectInfo.Visible = false;

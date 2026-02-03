@@ -88,8 +88,8 @@ public partial class ControlMenuScript : HBoxContainer
     private void OnCameraStaticPressed()
     {
         GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraStatic").Current = true;
-        GetTree().GetNodesInGroup("Sprite").ToList().ForEach(x => x.Cast<Sprite3D>().Scale = new Vector3(550, 550, 550));
-        GetTree().GetNodesInGroup("SpriteCollider").ToList().ForEach(x => ((SphereShape3D)x.Cast<CollisionShape3D>().Shape).Radius = 275f);
+        GetTree().GetNodesInGroup("Sprite").ToList().ForEach(x => x.Cast<Sprite3D>().Scale = new Vector3(175, 175, 175));
+        GetTree().GetNodesInGroup("SpriteCollider").ToList().ForEach(x => ((SphereShape3D)x.Cast<CollisionShape3D>().Shape).Radius = 100);
         ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
     }
 

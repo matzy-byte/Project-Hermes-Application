@@ -212,17 +212,19 @@ libraries = {
 [node name="Cameras" type="Node3D" parent="."]
 
 [node name="CameraFollow" type="Node3D" parent="Cameras" groups=["FollowCamera"]]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 1.4238644, 0)
 script = ExtResource("9_kva58")
 
 [node name="Tilt" type="Node3D" parent="Cameras/CameraFollow"]
 
 [node name="Camera3D" type="Camera3D" parent="Cameras/CameraFollow/Tilt"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6926528, 0.3999033)
 
 [node name="CameraStatic" type="Camera3D" parent="Cameras" groups=["Camera"]]
 transform = Transform3D(-1, -8.742278e-08, -3.821371e-15, 0, -4.371139e-08, 1, -8.742278e-08, 1, 4.371139e-08, 0, 750, 2000)
 projection = 1
 current = true
-size = 8000.0
+size = 5500.0
 far = 160000.0
 script = ExtResource("9_f5c0m")
 

@@ -16,5 +16,5 @@ public enum MessageType
     CONTINUESTIMULATION,
     ADDPACKAGES,
     LOG,
-    CONTROLDATA
+    CONTROLHOVER
 }

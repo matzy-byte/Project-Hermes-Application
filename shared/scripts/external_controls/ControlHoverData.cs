@@ -1,8 +1,7 @@
 namespace shared;
 
-public class ControlData
+public class ControlHoverData
 {
     public int X { get; set; }
     public int Y { get; set; }
-    public float SimulationSpeed { get; set;}
 }

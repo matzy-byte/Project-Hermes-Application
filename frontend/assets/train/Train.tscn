@@ -175,14 +175,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 230, 0)
 shape = SubResource("SphereShape3D_oe0pk")
 
 [node name="Icon" type="Sprite3D" parent="." groups=["Sprite"]]
-transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0.795, 230, 0.397)
+transform = Transform3D(175, 0, 0, 0, 175, 0, 0, 0, 175, 0.795, 230, 0.397)
 billboard = 1
 render_priority = 2
 texture = SubResource("ViewportTexture_pn0wk")
 
 [node name="IconName" type="Sprite3D" parent="." groups=["Sprite"]]
 unique_name_in_owner = true
-transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0, 130, 0)
+transform = Transform3D(175, 0, 0, 0, 175, 0, 0, 0, 175, 0, 130, 0)
 visible = false
 pixel_size = 0.015
 billboard = 1

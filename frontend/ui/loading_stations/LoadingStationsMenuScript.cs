@@ -52,6 +52,24 @@ public partial class LoadingStationsMenuScript : Panel
     {
         return [.. loadingStations.Select(entry => entry.StationId)];
     }
+    
+    public void LoadLoadingStations(List<string> stationIds)
+    {
+        foreach (string stationId in stationIds)
+        {
+            EntryLoadingStationScript entry = entryScene.Instantiate<EntryLoadingStationScript>();
+            int id = loadingStations.Count;
+            string name = NameEdit.Text == "" ? $"LoadingStation#{id}" : NameEdit.Text;
+            string stationName = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == stationId).Data.StationName;
+            loadingStations.Add(entry);
+            EntryContainer.AddChild(entry);
+            entry.Initialize(id, name, stationName, stationId);
+            NameEdit.Clear();
+            StationOptionButton.Select(-1);
+
+            EnableStationExtra(stationId);
+        }
+    }
 
     public void Clear()
     {

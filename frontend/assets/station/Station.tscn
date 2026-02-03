@@ -264,7 +264,7 @@ skeleton = NodePath("")
 
 [node name="Icon" type="Sprite3D" parent="." groups=["Sprite"]]
 unique_name_in_owner = true
-transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0.795, 230, 0.397)
+transform = Transform3D(175, 0, 0, 0, 175, 0, 0, 0, 175, 0.795, 230, 0.397)
 visible = false
 billboard = 1
 render_priority = 1
@@ -272,7 +272,7 @@ texture = SubResource("ViewportTexture_cvmt3")
 
 [node name="IconName" type="Sprite3D" parent="." groups=["Sprite"]]
 unique_name_in_owner = true
-transform = Transform3D(550, 0, 0, 0, 550, 0, 0, 0, 550, 0, 130, 0)
+transform = Transform3D(175, 0, 0, 0, 175, 0, 0, 0, 175, 0, 130, 0)
 visible = false
 pixel_size = 0.015
 billboard = 1

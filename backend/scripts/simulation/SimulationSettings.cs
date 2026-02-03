@@ -13,11 +13,11 @@ public static class SimulationSettings
     /// </summary>
     public static void Initialize()
     {
-        SimulationSettingsParameters.SimulationSpeed = 300f;
+        SimulationSettingsParameters.SimulationSpeed = 10f;
         SimulationSettingsParameters.TrainWaitingTimeAtStation = 30f;
         SimulationSettingsParameters.LoadingStationIds = ["de:08212:1011", "de:08212:302", "de:08212:17"];
         SimulationSettingsParameters.ChargingStationIds = ["de:08212:521", "de:08212:1004", "de:08212:45", "de:08212:409", "de:08212:1208", "de:08215:1902"];
-        SimulationSettingsParameters.StartPackagesCount = 100;
+        SimulationSettingsParameters.StartPackagesCount = 300;
         SimulationSettingsParameters.NumberOfPackagesInRobot = 15;
         SimulationSettingsParameters.NumberOfRobots = 5;
         SimulationSettingsParameters.TotalRobotBatteryCapacity = 1000;

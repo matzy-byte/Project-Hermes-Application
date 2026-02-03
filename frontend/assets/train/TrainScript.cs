@@ -23,6 +23,10 @@ public partial class TrainScript : StaticBody3D, IInteractable
     private readonly Vector3 robotStartPosition = new(0, 4.0f, -45.0f);
     private List<RobotScript> robots = [];
 
+    private const float MoveSmoothness = 6f;
+    private const float RotateSmoothness = 8f;
+
+
     public override void _Ready()
     {
         iconSpriteName = GetNode<Sprite3D>("%IconName");
@@ -32,15 +36,33 @@ public partial class TrainScript : StaticBody3D, IInteractable
 
     public override void _PhysicsProcess(double delta)
     {
-        Position = new Vector3(
-        Mathf.Lerp(currentStation.GlobalPosition.X, nextStation.GlobalPosition.X, Data.TravelDistance),
-        0,
-        Mathf.Lerp(currentStation.GlobalPosition.Z, nextStation.GlobalPosition.Z, Data.TravelDistance)
+        if (currentStation == null || nextStation == null)
+            return;
+
+        float t = Data.TravelDistance;
+
+        Vector3 targetPos = new(
+            Mathf.Lerp(currentStation.GlobalPosition.X, nextStation.GlobalPosition.X, t),
+            GlobalPosition.Y,
+            Mathf.Lerp(currentStation.GlobalPosition.Z, nextStation.GlobalPosition.Z, t)
         );
 
-        if (GlobalPosition.DistanceTo(nextStation.GlobalPosition) > 1f)
+        GlobalPosition = GlobalPosition.Lerp(
+            targetPos,
+            (float)(MoveSmoothness * delta)
+        );
+
+        Vector3 dir = nextStation.GlobalPosition - GlobalPosition;
+        dir.Y = 0;
+
+        if (dir.LengthSquared() > 0.01f)
         {
-            LookAt(nextStation.GlobalPosition, Vector3.Up);
+            Basis targetBasis = Basis.LookingAt(dir.Normalized(), Vector3.Up);
+
+            GlobalBasis = GlobalBasis.Slerp(
+                targetBasis,
+                (float)(RotateSmoothness * delta)
+            );
         }
     }
 

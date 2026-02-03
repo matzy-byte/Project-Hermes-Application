@@ -53,6 +53,24 @@ public partial class ChargingStationsMenuScript : Panel
         return [.. chargingStations.Select(entry => entry.StationId)];
     }
 
+    public void LoadChargingStations(List<string> stationIds)
+    {
+        foreach (string stationId in stationIds)
+        {
+            EntryChargingStationScript entry = entryScene.Instantiate<EntryChargingStationScript>();
+            int id = chargingStations.Count;
+            string name = NameEdit.Text == "" ? $"ChargingStation#{id}" : NameEdit.Text;
+            string stationName = GameManagerScript.Instance.Stations.Find(station => station.Data.StationId == stationId).Data.StationName;
+            chargingStations.Add(entry);
+            EntryContainer.AddChild(entry);
+            entry.Initialize(id, name, stationName, stationId);
+            NameEdit.Clear();
+            StationOptionButton.Select(-1);
+
+            EnableStationExtra(stationId);
+        }
+    }
+
     public void Clear()
     {
         chargingStations.Clear();
@@ -66,7 +84,7 @@ public partial class ChargingStationsMenuScript : Panel
     {
         EntryChargingStationScript entry = entryScene.Instantiate<EntryChargingStationScript>();
         int id = chargingStations.Count;
-        string name = NameEdit.Text == "" ? $"LoadingStation#{id}" : NameEdit.Text;
+        string name = NameEdit.Text == "" ? $"ChargingStation#{id}" : NameEdit.Text;
         string stationName = StationOptionButton.GetItemText(StationOptionButton.Selected);
         string stationId = GameManagerScript.Instance.Stations.Find(station => station.Data.StationName == stationName).Data.StationId;
         chargingStations.Add(entry);

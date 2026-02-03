@@ -32,6 +32,15 @@ public partial class GameManagerScript : Node
         SimulationState = new();
     }
 
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
+        {
+            Input.SetCustomMouseCursor(null);
+        }
+    }
+
+
     public static void SetSimulationConfiguration(SimulationSettingsData simulationSettingsData)
     {
         WebSocketMessage settingsMessage = new(204, MessageType.SETTINGS, JsonConvert.SerializeObject(simulationSettingsData));
@@ -68,9 +77,11 @@ public partial class GameManagerScript : Node
             station.Initialize(stationData);
             Stations.Add(station);
         }
-
+        
         GetTree().CurrentScene.GetNode<LoadingStationsMenuScript>("HUD/LoadingStationsMenu").UpdateStationsOption(stations);
         GetTree().CurrentScene.GetNode<ChargingStationsMenuScript>("HUD/ChargingStationsMenu").UpdateStationsOption(stations);
+        GetTree().CurrentScene.GetNode<HUDScript>("HUD").LoadingStationsMenu.LoadLoadingStations(Instance.SimulationSettings.LoadingStationIds);
+        GetTree().CurrentScene.GetNode<HUDScript>("HUD").ChargingStationsMenu.LoadChargingStations(Instance.SimulationSettings.ChargingStationIds);
         SessionManager.Instance.Request(102, MessageType.TRAINLINES);
     }
 
@@ -103,6 +114,8 @@ public partial class GameManagerScript : Node
             StationScript to = Stations.Find(x => x.Data.StationId == entry.Key.Item2);
 
             int lineIndex = 0;
+            float width = 20f;
+            float spacing = width + 1f;
             foreach (var line in entry.Value)
             {
                 SurfaceTool st = new();
@@ -113,17 +126,19 @@ public partial class GameManagerScript : Node
                 Vector3 dir = (end - start).Normalized();
                 Vector3 right = dir.Cross(Vector3.Up).Normalized();
 
-                float centerOffset = (entry.Value.Count - 1) * 11f * 0.5f;
-                Vector3 adjustedOffset = (lineIndex * 11f - centerOffset) * right;
-                start += adjustedOffset + lineIndex * 0.01f * Vector3.Up;
-                end += adjustedOffset + lineIndex * 0.01f * Vector3.Up;
+                float centerOffset = (entry.Value.Count - 1) * spacing * 0.5f;
+                Vector3 adjustedOffset = (lineIndex * spacing - centerOffset) * right;
 
-                Vector3 side = right * (10f / 2.0f);
+                start += adjustedOffset + lineIndex * 0.01f * Vector3.Up;
+                end   += adjustedOffset + lineIndex * 0.01f * Vector3.Up;
+
+                Vector3 side = right * (width * 0.5f);
+
                 Vector3 a = start + side;
                 Vector3 b = start - side;
                 Vector3 c = end + side;
                 Vector3 d = end - side;
-                
+
                 st.AddVertex(a);
                 st.AddVertex(b);
                 st.AddVertex(c);
@@ -132,6 +147,7 @@ public partial class GameManagerScript : Node
                 st.AddVertex(d);
 
                 Mesh mesh = st.Commit();
+
                 MeshInstance3D meshInstance = new();
                 meshInstance.Mesh = mesh;
                 meshInstance.MaterialOverride = new StandardMaterial3D
@@ -141,6 +157,7 @@ public partial class GameManagerScript : Node
                     DepthDrawMode = BaseMaterial3D.DepthDrawModeEnum.Always,
                     CullMode = BaseMaterial3D.CullModeEnum.Disabled
                 };
+
                 path.AddChild(meshInstance);
 
                 lineIndex++;
@@ -199,10 +216,5 @@ public partial class GameManagerScript : Node
         Stations.ForEach(station => station.Robots.Clear());
         Trains.ForEach(train => train.QueueFree());
         Trains.Clear();
-        if (withStationExtras)
-        {
-            Stations.ForEach(station => station.DisableExtraLoading());
-            Stations.ForEach(station => station.DisableExtraCharging());
-        }
     }
 }

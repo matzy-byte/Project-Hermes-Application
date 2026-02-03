@@ -50,16 +50,24 @@ public partial class SessionControlManager : Node
             WebSocketMessage message = JsonConvert.DeserializeObject<WebSocketMessage>(packetData);
             switch (message.MessageType)
             {
-                case MessageType.CONTROLDATA:
+                case MessageType.CONTROLHOVER:
                     {
-                        ControlData data = message.Data.ToObject<ControlData>();
+                        var img = Image.LoadFromFile("res://cursor_transparent.png");
+                        var tex = ImageTexture.CreateFromImage(img);
+
+                        Input.SetCustomMouseCursor(
+                            tex,
+                            Input.CursorShape.Arrow,
+                            Vector2.Zero
+                        );
+                        ControlHoverData data = message.Data.ToObject<ControlHoverData>();
                         Input.MouseMode = Input.MouseModeEnum.Confined;
 	                    Input.WarpMouse(new Vector2(data.X, data.Y));
                         break;
                     }
                 case MessageType.SETSIMULATIONSPEED:
                     {
-                        ControlData data = message.Data.ToObject<ControlData>();
+                        ControlSpeedData data = message.Data.ToObject<ControlSpeedData>();
                         WebSocketMessage speedMessage = new(
                             201,
                             MessageType.SETSIMULATIONSPEED,
