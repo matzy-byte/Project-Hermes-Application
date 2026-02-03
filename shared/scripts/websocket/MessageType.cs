@@ -15,5 +15,6 @@ public enum MessageType
     PAUSESIMULATION,
     CONTINUESTIMULATION,
     ADDPACKAGES,
-    LOG
+    LOG,
+    CONTROLDATA
 }

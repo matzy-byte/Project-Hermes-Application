@@ -15,9 +15,11 @@ dest_files=["res://.godot/imported/Train.glb-d92edc7122fa24ec710cf433f7301594.sc
 
 nodes/root_type=""
 nodes/root_name=""
+nodes/root_script=null
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
 nodes/import_as_skeleton_bones=false
+nodes/use_name_suffixes=true
 nodes/use_node_type_suffixes=true
 meshes/ensure_tangents=true
 meshes/generate_lods=true
@@ -32,26 +34,34 @@ animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
 import_script/path=""
+materials/extract=0
+materials/extract_format=0
+materials/extract_path=""
 _subresources={
 "materials": {
 "M_Black": {
 "use_external/enabled": true,
+"use_external/fallback_path": "res://materials/M_Black.tres",
 "use_external/path": "uid://cx8tp0u2bchoe"
 },
 "M_Glass": {
 "use_external/enabled": true,
+"use_external/fallback_path": "res://materials/M_Glass.tres",
 "use_external/path": "uid://dwqgxo4iq5ko7"
 },
 "M_Iron": {
 "use_external/enabled": true,
+"use_external/fallback_path": "res://materials/M_Iron.tres",
 "use_external/path": "uid://dirtr3y8ho2wl"
 },
 "M_Red": {
 "use_external/enabled": true,
+"use_external/fallback_path": "res://materials/M_Red.tres",
 "use_external/path": "uid://dir6ycnoflu16"
 },
 "M_Yellow": {
 "use_external/enabled": true,
+"use_external/fallback_path": "res://materials/M_Yellow.tres",
 "use_external/path": "uid://dnssdo0kwh2bx"
 }
 }
