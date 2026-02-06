@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Camera;
 using Godot;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using Robots;
 using shared;
@@ -18,6 +19,7 @@ public partial class GameManagerScript : Node
     public List<StationScript> Stations { get; set; } = [];
     public List<TrainScript> Trains { get; set; } = [];
     public List<RobotScript> Robots { get; set; } = [];
+    public bool Paused { get; set; } = false;
 
     private PackedScene stationScene = ResourceLoader.Load<PackedScene>("res://assets/station/Station.tscn");
     private PackedScene trainScene = ResourceLoader.Load<PackedScene>("res://assets/train/Train.tscn");
@@ -51,6 +53,7 @@ public partial class GameManagerScript : Node
     {
         Reset(false);
         SessionManager.Instance.Request(200, MessageType.STARTSIMULATION);
+        GetTree().CurrentScene.GetNode<HUDScript>("HUD").StartSimulation();
     }
 
     public void StopSimulation()
@@ -63,9 +66,11 @@ public partial class GameManagerScript : Node
         if (isPaused)
         {
             SessionManager.Instance.Request(203, MessageType.CONTINUESTIMULATION);
+            Instance.Paused = true;
             return;
         }
         SessionManager.Instance.Request(202, MessageType.PAUSESIMULATION);
+        Instance.Paused = false;
     }
 
     public void SpawnStations(List<StationData> stations)

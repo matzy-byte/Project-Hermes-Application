@@ -64,7 +64,6 @@ public partial class ConfigurationMenuScript : Panel
         SetLoadingAndChargingStations();
         GameManagerScript.SetSimulationConfiguration(GameManagerScript.Instance.SimulationSettings);
         GameManagerScript.Instance.StartSimulation();
-        GetParent<HUDScript>().StartSimulation();
     }
 
     private void SetLoadingAndChargingStations()
