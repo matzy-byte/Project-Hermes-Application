@@ -1,6 +1,11 @@
 # Project HERMES
 This repository is for the HERMES Project that creates and visualizes a simulation of a delivery system with robots using public transport.
 
+## How to run
+
+1. Run ./bundle/backend/backend.exe and keep it running in the background
+2. Run ./bundle/frontend/ProjectHermesApplication.exe
+
 ## Getting Started
 
 This guide shows you  how to setup your local environment to run this application.
