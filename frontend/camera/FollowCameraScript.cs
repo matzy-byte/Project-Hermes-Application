@@ -89,7 +89,7 @@ public partial class FollowCameraScript : Node3D
         GlobalPosition = target.GlobalPosition;
 
         Yaw = target.GlobalRotationDegrees.Y + 25f;
-        Pitch = -30f;
+        Pitch = -50f;
 
 
         RotationDegrees = new Vector3(0, Yaw, 0);

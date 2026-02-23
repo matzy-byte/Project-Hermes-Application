@@ -19,7 +19,7 @@ public partial class SessionControlManager : Node
     private string connectionString = "ws://localhost:5001/ws/";
     private WebSocketPeer webSocket = new();
     private bool connected = false;
-    private Process _backendProcess;
+    private bool resetBlocked = false;
 
     public override void _Ready()
     {
@@ -61,11 +61,13 @@ public partial class SessionControlManager : Node
                 {
                     case 31:
                         {
+                            if (!GameManagerScript.Instance.Paused) break;
                             GameManagerScript.PauseSimulation(false);
                             break;
                         }
                     case 32:
                         {
+                            if (GameManagerScript.Instance.Paused) break;
                             GameManagerScript.PauseSimulation(true);
                             break;
                         }
@@ -148,6 +150,8 @@ public partial class SessionControlManager : Node
                         }
                     case 33:
                         {
+                            if (resetBlocked) break;
+                            resetBlocked = true;
                             GameManagerScript.Instance.StopSimulation();
                             GetTree().CurrentScene.GetNode<HUDScript>("HUD").NewSimulation();
                             GetTree().CurrentScene.GetNode("Cameras").GetNode<Camera3D>("CameraStatic").Current = true;
@@ -155,6 +159,7 @@ public partial class SessionControlManager : Node
                             GetTree().GetNodesInGroup("SpriteCollider").ToList().ForEach(x => ((SphereShape3D)x.Cast<CollisionShape3D>().Shape).Radius = 100);
                             ((HUDScript)GetTree().GetFirstNodeInGroup("HUD")).ObjectInfo.Stop();
                             GameManagerScript.Instance.StartSimulation();
+                            StartResetTimer();
                             break;
                         }
                 }
@@ -234,6 +239,12 @@ public partial class SessionControlManager : Node
             GD.Print("Error connecting to WebSocket: " + error);
             return;
         }
+    }
+
+    private async void StartResetTimer()
+    {
+        await ToSignal(GetTree().CreateTimer(2.0), SceneTreeTimer.SignalName.Timeout);
+        resetBlocked = false;
     }
 
     private class Markers

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://w3vb06w2ecuq"]
+[gd_scene format=3 uid="uid://w3vb06w2ecuq"]
 
 [ext_resource type="PackedScene" uid="uid://cr3k1ilnvy8it" path="res://ui/configuration_menu/ConfigurationMenu.tscn" id="1_p1v5b"]
 [ext_resource type="Script" uid="uid://cslv2u871m8xs" path="res://ui/HUDScript.cs" id="1_wygdx"]
@@ -27,7 +27,7 @@ tonemap_mode = 2
 glow_enabled = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cmany"]
-albedo_color = Color(0, 0, 0, 1)
+shading_mode = 0
 
 [sub_resource type="BoxMesh" id="BoxMesh_c6gwx"]
 material = SubResource("StandardMaterial3D_cmany")
@@ -136,27 +136,44 @@ _data = {
 &"RESET": SubResource("Animation_bah7m")
 }
 
-[node name="World" type="Node3D"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f5c0m"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="World" type="Node3D" unique_id=124516411]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2014602336]
 environment = SubResource("Environment_2dftf")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=678148904]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Ground" type="StaticBody3D" parent="."]
+[node name="Ground" type="StaticBody3D" parent="." unique_id=391857620]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1928972496]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 mesh = SubResource("BoxMesh_c6gwx")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=1449610582]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 shape = SubResource("ConcavePolygonShape3D_fv4w7")
 
-[node name="HUD" type="Control" parent="." groups=["HUD"]]
+[node name="HUD" type="Control" parent="." unique_id=374266782 groups=["HUD"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -166,24 +183,24 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_wygdx")
 
-[node name="ConfigurationMenu" parent="HUD" instance=ExtResource("1_p1v5b")]
+[node name="ConfigurationMenu" parent="HUD" unique_id=1633391167 instance=ExtResource("1_p1v5b")]
 layout_mode = 1
 
-[node name="LoadingStationsMenu" parent="HUD" instance=ExtResource("2_wygdx")]
+[node name="LoadingStationsMenu" parent="HUD" unique_id=510170751 instance=ExtResource("2_wygdx")]
 visible = false
 layout_mode = 1
 
-[node name="ChargingStationsMenu" parent="HUD" instance=ExtResource("3_bah7m")]
+[node name="ChargingStationsMenu" parent="HUD" unique_id=2059664353 instance=ExtResource("3_bah7m")]
 visible = false
 layout_mode = 1
 
-[node name="ControlMenu" parent="HUD" instance=ExtResource("4_fv4w7")]
+[node name="ControlMenu" parent="HUD" unique_id=366969817 instance=ExtResource("4_fv4w7")]
 visible = false
 layout_mode = 1
 offset_left = -350.0
 offset_right = 25.0
 
-[node name="ChatLogAnchor" type="Control" parent="HUD"]
+[node name="ChatLogAnchor" type="Control" parent="HUD" unique_id=1187665658]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -193,34 +210,45 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
 
-[node name="ChatLog" parent="HUD/ChatLogAnchor" instance=ExtResource("5_fvag4")]
+[node name="ChatLog" parent="HUD/ChatLogAnchor" unique_id=1031096603 instance=ExtResource("5_fvag4")]
 visible = false
 layout_mode = 1
 offset_top = -25.0
 offset_bottom = 250.0
 
-[node name="ObjectInfo" parent="HUD" instance=ExtResource("6_kva58")]
+[node name="ObjectInfo" parent="HUD" unique_id=1239549746 instance=ExtResource("6_kva58")]
 visible = false
 layout_mode = 1
 offset_bottom = 40.0
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="HUD"]
-libraries = {
-&"": SubResource("AnimationLibrary_fv4w7")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HUD" unique_id=227441454]
+libraries/ = SubResource("AnimationLibrary_fv4w7")
 
-[node name="Cameras" type="Node3D" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="HUD" unique_id=6851977]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -485.0
+offset_top = -278.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_f5c0m")
 
-[node name="CameraFollow" type="Node3D" parent="Cameras" groups=["FollowCamera"]]
+[node name="Cameras" type="Node3D" parent="." unique_id=24256028]
+
+[node name="CameraFollow" type="Node3D" parent="Cameras" unique_id=1125085149 groups=["FollowCamera"]]
 transform = Transform3D(1, 0, 0, 0, 0.8660254, 0.5, 0, -0.5, 0.8660254, 0, 1.4238644, 0)
 script = ExtResource("9_kva58")
 
-[node name="Tilt" type="Node3D" parent="Cameras/CameraFollow"]
+[node name="Tilt" type="Node3D" parent="Cameras/CameraFollow" unique_id=1712920230]
 
-[node name="Camera3D" type="Camera3D" parent="Cameras/CameraFollow/Tilt"]
+[node name="Camera3D" type="Camera3D" parent="Cameras/CameraFollow/Tilt" unique_id=1450401798]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6926528, 0.3999033)
 
-[node name="CameraStatic" type="Camera3D" parent="Cameras" groups=["Camera"]]
+[node name="CameraStatic" type="Camera3D" parent="Cameras" unique_id=1410463334 groups=["Camera"]]
 transform = Transform3D(-1, -8.742278e-08, -3.821371e-15, 0, -4.371139e-08, 1, -8.742278e-08, 1, 4.371139e-08, 0, 750, 2000)
 projection = 1
 current = true
@@ -228,18 +256,18 @@ size = 5500.0
 far = 160000.0
 script = ExtResource("9_f5c0m")
 
-[node name="CameraMovable" type="Camera3D" parent="Cameras" groups=["Camera"]]
-transform = Transform3D(-4.37114e-08, 0.707107, -0.707107, 0, 0.707107, 0.707107, 1, 3.09086e-08, -3.09086e-08, -2000, 1500, 2000)
+[node name="CameraMovable" type="Camera3D" parent="Cameras" unique_id=69470856 groups=["Camera"]]
+transform = Transform3D(-1, -7.161256e-08, 5.0143658e-08, 0, 0.57357657, 0.81915224, -8.742278e-08, 0.81915224, -0.57357657, 0, 2000, 500)
 far = 10000.0
 script = ExtResource("8_bah7m")
 
-[node name="CameraFree" type="Camera3D" parent="Cameras" groups=["Camera"]]
+[node name="CameraFree" type="Camera3D" parent="Cameras" unique_id=1317847846 groups=["Camera"]]
 transform = Transform3D(-4.37114e-08, 0.573576, -0.819152, 0, 0.819152, 0.573576, 1, 2.50718e-08, -3.58063e-08, -2000, 1000, 2000)
 far = 16000.0
 script = ExtResource("8_bah7m")
 
-[node name="karlsruhe_part_one" parent="." instance=ExtResource("9_fvag4")]
+[node name="karlsruhe_part_one" parent="." unique_id=84949402 instance=ExtResource("9_fvag4")]
 transform = Transform3D(-0.70993, 0, -0.00991316, 0, 0.71, 0, 0.00991316, 0, -0.70993, -463.697, -0.1, 3326.31)
 
-[node name="karlsruhe_part_two" parent="." instance=ExtResource("10_kva58")]
+[node name="karlsruhe_part_two" parent="." unique_id=1675283353 instance=ExtResource("10_kva58")]
 transform = Transform3D(-0.70993, 0, -0.00991316, 0, 0.71, 0, 0.00991316, 0, -0.70993, -463.697, -0.1, 3326.31)
