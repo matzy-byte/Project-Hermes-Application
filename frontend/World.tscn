@@ -136,23 +136,6 @@ _data = {
 &"RESET": SubResource("Animation_bah7m")
 }
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f5c0m"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 1)
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-corner_detail = 5
-
 [node name="World" type="Node3D" unique_id=124516411]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2014602336]
@@ -224,19 +207,6 @@ offset_bottom = 40.0
 [node name="AnimationPlayer" type="AnimationPlayer" parent="HUD" unique_id=227441454]
 libraries/ = SubResource("AnimationLibrary_fv4w7")
 
-[node name="PanelContainer" type="PanelContainer" parent="HUD" unique_id=6851977]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -485.0
-offset_top = -278.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_f5c0m")
-
 [node name="Cameras" type="Node3D" parent="." unique_id=24256028]
 
 [node name="CameraFollow" type="Node3D" parent="Cameras" unique_id=1125085149 groups=["FollowCamera"]]
@@ -249,7 +219,7 @@ script = ExtResource("9_kva58")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6926528, 0.3999033)
 
 [node name="CameraStatic" type="Camera3D" parent="Cameras" unique_id=1410463334 groups=["Camera"]]
-transform = Transform3D(-1, -8.742278e-08, -3.821371e-15, 0, -4.371139e-08, 1, -8.742278e-08, 1, 4.371139e-08, 0, 750, 2000)
+transform = Transform3D(-1, -8.742278e-08, -3.821371e-15, 0, -4.371139e-08, 1, -8.742278e-08, 1, 4.371139e-08, 0, 750, 2500)
 projection = 1
 current = true
 size = 5500.0
@@ -257,7 +227,7 @@ far = 160000.0
 script = ExtResource("9_f5c0m")
 
 [node name="CameraMovable" type="Camera3D" parent="Cameras" unique_id=69470856 groups=["Camera"]]
-transform = Transform3D(-1, -7.161256e-08, 5.0143658e-08, 0, 0.57357657, 0.81915224, -8.742278e-08, 0.81915224, -0.57357657, 0, 2000, 500)
+transform = Transform3D(-1, -7.161256e-08, 5.0143658e-08, 0, 0.57357657, 0.81915224, -8.742278e-08, 0.81915224, -0.57357657, 0, 2000, 550)
 far = 10000.0
 script = ExtResource("8_bah7m")
 

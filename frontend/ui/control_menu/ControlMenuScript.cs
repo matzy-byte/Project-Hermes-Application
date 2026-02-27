@@ -27,7 +27,7 @@ public partial class ControlMenuScript : HBoxContainer
         SimulationSpeedSlider.Value = GameManagerScript.Instance.SimulationSettings.SimulationSpeed;
         SimulationSpeedSlider.ValueChanged += OnSimulationSpeedChanged;
         SimulationPausedCheckButton = GetNode<CheckButton>("%SimulationPausedCheckButton");
-        SimulationPausedCheckButton.Pressed += OnSimulationPausedPressed;
+        SimulationPausedCheckButton.Toggled += OnSetSimulationPause;
         CameraStaticButton = GetNode<Button>("%CameraStaticButton");
         CameraStaticButton.Pressed += OnCameraStaticPressed;
         CameraMovableButton = GetNode<Button>("%CameraMovableButton");
@@ -80,9 +80,9 @@ public partial class ControlMenuScript : HBoxContainer
         GameManagerScript.Instance.SimulationSettings.SimulationSpeed = (float)value;
     }
 
-    private void OnSimulationPausedPressed()
+    private void OnSetSimulationPause(bool toggle)
     {
-        GameManagerScript.PauseSimulation(!SimulationPausedCheckButton.ButtonPressed);
+        GameManagerScript.PauseSimulation(toggle);
     }
 
     private void OnCameraStaticPressed()

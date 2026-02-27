@@ -61,16 +61,17 @@ public partial class GameManagerScript : Node
         SessionManager.Instance.Request(205, MessageType.STOPSIMULATION);
     }
 
-    public static void PauseSimulation(bool isPaused)
+    public static void PauseSimulation(bool setPaused)
     {
-        if (isPaused)
+        if (setPaused)
         {
-            SessionManager.Instance.Request(203, MessageType.CONTINUESTIMULATION);
+            SessionManager.Instance.Request(202, MessageType.PAUSESIMULATION);
             Instance.Paused = true;
             return;
         }
-        SessionManager.Instance.Request(202, MessageType.PAUSESIMULATION);
+        SessionManager.Instance.Request(203, MessageType.CONTINUESTIMULATION);
         Instance.Paused = false;
+        return;
     }
 
     public void SpawnStations(List<StationData> stations)
